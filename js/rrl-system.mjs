@@ -74,10 +74,10 @@ class RrlSystem extends RrlElement {
                 <div style="display: flex; flex-direction: column; flex: 1; width: 100%">
                     <div class='txt' style="width: 100%; ">RRL System</div>
                 </div>
-                <chess-button name='refresh' border='none' size=28 @click=${() => document.location.reload()} title='refresh' style='margin-right: 8px'></chess-button>
-                <chess-button name='face' border='none' size=28 @click=${() => this.gameFind()} title='Нейросеть' style='margin-right: 8px'></chess-button>
-                <chess-button name='screenshot' border='none' size=28 @click=${() => this.login()} title='Подключиться' style='margin-right: 8px'></chess-button>
-                <chess-button name='signUp' border='none' size=28 @click=${() => this.signUp()} title='Зарегистрироваться' style='margin-right: 8px'></chess-button>
+                <rrl-button name='refresh' border='none' size=28 @click=${() => document.location.reload()} title='refresh' style='margin-right: 8px'></rrl-button>
+                <rrl-button name='face' border='none' size=28 @click=${() => this.gameFind()} title='Нейросеть' style='margin-right: 8px'></rrl-button>
+                <rrl-button name='screenshot' border='none' size=28 @click=${() => this.login()} title='Подключиться' style='margin-right: 8px'></rrl-button>
+                <rrl-button name='signUp' border='none' size=28 @click=${() => this.signUp()} title='Зарегистрироваться' style='margin-right: 8px'></rrl-button>
             </header>
             <login-form></login-form>
             <sign-up-form></sign-up-form>
@@ -163,7 +163,7 @@ class RrlSystem extends RrlElement {
         //if (e.has('row') || e.has('column')) this.init();
     }
 
-    get _url() { return this.$url.replace('js/chess.js', '') }
+    get _url() { return this.$url.replace('js/rrl.js', '') }
 
     get odd() { return (this.row * this.column) % 2 === 0 ? '' : Math.floor(this.row * this.column / 2) }
 
