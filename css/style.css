@@ -1,0 +1,21 @@
+html * {
+    font-family: var(--open-font-family);
+}
+
+body {
+    margin: 0;
+}
+
+:root {
+    --nav-item-color: #1a1a1a;
+    --nav-item-active-color: white;
+    --nav-item-active-background-color: #f7cf00;
+    --nav-item-hover-color: white;
+    --nav-item-hover-background-color: #f9dd4b;
+    --footer-background-color: #333;
+    --footer-color: white;
+    --ubuntu-font-family: Ubuntu, sans-serif;
+    --open-font-family: 'Open Sans', sans-serif;
+    --background-green: #17cad0;
+    --background-magenta: #d954db;
+}
