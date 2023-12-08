@@ -37,13 +37,11 @@ export class RrlElement extends LitElement {
         }
         const name = this.localName.replace('lit-', '');
         this.$url = `${urlRRL.replace('rrl-element.mjs', '')}${name}.js`;
-        console.log(this.$url);
-        console.log(urlRRL);
 
         this.$ulid = this.$ulid || RRL.ulid();
         if (this._useInfo) this.$urlInfo = `${urlRRL.replace('rrl-element.mjs', '')}/${name}/$info/$info.js`;
     }
-    
+
     connectedCallback() {
         super.connectedCallback();
         this._initBus();

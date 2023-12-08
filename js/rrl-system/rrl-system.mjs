@@ -52,7 +52,8 @@ class RrlSystem extends RrlElement {
     }
 
     * lazyLoad() {
-        const lazyPages=['about-me', 'my-pride', 'my-stack', 'catch-me'];
+        // const lazyPages=['about-me', 'my-pride', 'my-stack', 'catch-me'];
+        const lazyPages=[];
         for (const pageName of lazyPages) {
             import(`./pages/${pageName}/${pageName}.mjs`);
             yield pageName;
