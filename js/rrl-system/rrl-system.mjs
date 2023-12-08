@@ -1,10 +1,9 @@
-import { RrlElement, html, css } from './rrl-element.mjs'
+import { RrlElement, html, css } from '../rrl-element.mjs'
 
 import './rrl-system-header.mjs';
 import './rrl-system-footer.mjs';
 
 import './pages/home/home.mjs'
-// import './pages/about-me/about-me.mjs'
 
 class RrlSystem extends RrlElement {
     static get properties() {
@@ -38,13 +37,32 @@ class RrlSystem extends RrlElement {
         super();
         this.version = "1.0.0";
         addEventListener("hashchange", () => {this.requestUpdate()});
+        // this.lazyLoad = {};
+        // this.lazyLoad[Symbol.iterator] = function* () {
+        //     var index = 0;
+        //     while (true) {
+        //         console.log(index);
+        //         yield index++;
+        //     }
+        // }
     }
 
     get pageName() {
         return location.hash.startsWith('#') ? location.hash.slice(1) : location.hash || 'home-page';
     }
 
+    * lazyLoad() {
+        const lazyPages=['about-me', 'my-pride', 'my-stack', 'catch-me'];
+        for (const pageName of lazyPages) {
+            import(`./pages/${pageName}/${pageName}.mjs`);
+            yield pageName;
+        }
+    }
+
     render() {
+        if (!window.customElements.get(this.pageName)) {
+            import(`./pages/${this.pageName}/${this.pageName}.mjs`);
+        }
         const page = document.createElement(this.pageName);
         return html`
             <rrl-system-header active-page="${this.pageName}"></rrl-system-header>
@@ -57,6 +75,8 @@ class RrlSystem extends RrlElement {
 
     firstUpdated() {
         super.firstUpdated();
+        const lazyIterator = this.lazyLoad();
+        setInterval(() => lazyIterator.next(), 2000);
     }
 }
 

@@ -43,6 +43,7 @@ export class RrlElement extends LitElement {
         this.$ulid = this.$ulid || RRL.ulid();
         if (this._useInfo) this.$urlInfo = `${urlRRL.replace('rrl-element.mjs', '')}/${name}/$info/$info.js`;
     }
+    
     connectedCallback() {
         super.connectedCallback();
         this._initBus();

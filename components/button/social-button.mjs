@@ -42,7 +42,7 @@ customElements.define('social-button', class SocialButton extends RrlElement {
     render() {
         return html`
             <a href="${this.href}" style="background-color: ${this.backgroundColor};" target="_blank" title="${this.title}">
-                <portfolio-icon name="${this.name}" fill="${this.color}" size="${this.size}" scale="${this.scale}"></portfolio-icon>
+                <rrl-icon name="${this.name}" fill="${this.color}" size="${this.size}" scale="${this.scale}"></rrl-icon>
             </a>
         `;
     }
