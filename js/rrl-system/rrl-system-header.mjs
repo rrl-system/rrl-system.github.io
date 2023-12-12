@@ -1,6 +1,7 @@
 import { RrlElement, html, css } from '../rrl-element.mjs'
 
 import '../../components/button/toggle-button.mjs';
+import '../../components/forms/login-form.mjs';
 
 class RrlSystemHeader extends RrlElement {
     static get properties() {
@@ -158,6 +159,7 @@ class RrlSystemHeader extends RrlElement {
                         </h3>
                     </a>
                 </div>
+                <login-form></login-form>
         `
     }
 
@@ -171,7 +173,7 @@ class RrlSystemHeader extends RrlElement {
                         <li><a href="#about-me" ?active=${this.activePage==="about-me"}>About me</a></li>
                         <li><a href="#my-courses" ?active=${this.activePage==="my-courses"}>My courses</a></li>
                         <li><a href="#my-stack" ?active=${this.activePage=="my-stack"}>My stack</a></li>
-                        <li><a href="#catch-me" ?active=${this.activePage=="catch-me"}>Catch me</a></li>
+                        <li><a @click=${this.login}>Log In</a></li>
                     </ul>
                 </nav>
             </header>
@@ -179,6 +181,7 @@ class RrlSystemHeader extends RrlElement {
     }
 
     verticalHeader() {
+        // <toggle-button name="bars" toggledname="xmark" border="0" color="var(--header-background-color)" @click=${this.login.bind(this)} size="36"></toggle-button>
         return html`
             <header>
                 ${this.logo()}
@@ -190,7 +193,7 @@ class RrlSystemHeader extends RrlElement {
                     <li><a href="#about-me" ?active=${this.activePage==="about-me"}>About me</a></li>
                     <li><a href="#my-courses" ?active=${this.activePage=="my-courses"}>My courses</a></li>
                     <li><a href="#my-stack" ?active=${this.activePage=="my-stack"}>My stack</a></li>
-                    <li><a href="#catch-me" ?active=${this.activePage=="catch-me"}>Catch me</a></li>
+                    <li><a @click=${this.login}>Log In</a></li>
                 </ul>
             </nav>
         `;
@@ -205,6 +208,10 @@ class RrlSystemHeader extends RrlElement {
         const md = window.matchMedia( "(min-width: 920px)" );
         this.isHorizontal = md.matches;
         md.addEventListener('change', this.matchMediaChange.bind(this), false);
+    }
+
+    login() {
+        this.renderRoot.querySelector("login-form").open();
     }
 
     matchMediaChange(e) {

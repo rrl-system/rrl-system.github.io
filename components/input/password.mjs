@@ -5,7 +5,7 @@ import '../button/button.mjs'
 
 import styles from './input-css.mjs'
 
-class RrlInput extends RrlElement {
+class RrlPassword extends RrlElement {
     static get properties() {
         return {
             type: { type: String, default: 'text'},
@@ -36,7 +36,8 @@ class RrlInput extends RrlElement {
             toggled: { type: Boolean, default: false, reflect: true },
             path: { type: String, default: '' },
             icon: { type: Object, default: undefined },
-            buttonName: { type: String, default: '' },
+            visibleIcon: { type: String, default: '' },
+            invisibleIcon: { type: String, default: '' },
 
         }
     }
@@ -68,6 +69,14 @@ class RrlInput extends RrlElement {
             this.height = arr[2] || this.height;
         }
     }
+    get _icon() {
+        let _icon = '{}';
+        this.fill = this.fill || this.color;
+        this.size = this.size || this.height || this.width;
+        if (this.icon) _icon = JSON.stringify(this.icon);
+        return html`<rrl-icon class="${this.toggled ? this.toggledClass : this.notoggledClass}" icon=${_icon} name="${this.name}" fill="${this.fill}" size="${this.size}" scale="${this.scale}"
+            rotate="${this.rotate}" speed="${this.speed}" blink="${this.blink}" blval="${this.blval}" path="${this.path}"></rrl-icon>`;
+    }
 
     get #label() {
         return html`
@@ -82,15 +91,20 @@ class RrlInput extends RrlElement {
     }
 
     updateLoginValue() {
-        console.log("111");
+        this.type = this.type==="text" ? "password" : "text"
     }
 
     get #button() {
         return html`
-            <rrl-icon class="button" icon="{}" name=${this.buttonName || nothing} fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path="" @click=${this.updateLoginValue}></rrl-icon>
+            <rrl-icon class="button" icon="{}" name=${this.type==="password" ? this.visibleIcon : this.invisibleIcon} fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path="" @click=${this.updateLoginValue} @mouseenter=${this.updateLoginValue} @mouseleave=${this.updateLoginValue} ></rrl-icon>
         `
     }
-
+    get #button1() {
+        return html`
+            <rrl-button class="button" icon="{}" name="remove-red-eye" fill="gray" size="30" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-button>
+        `
+    }
+    // {"eye-regular"
     render() {
         return html`
             ${this.label ? this.#label : ''}
@@ -101,10 +115,10 @@ class RrlInput extends RrlElement {
                     class=""
                     .value=${this.login || nothing} @change=${this.updateLoginValue}>
                 ${this.name ? this.#icon : ''}
-                ${this.buttonName ? this.#button : ''}
+                ${this.visibleIcon ? this.#button : ''}
             </div>
         `;
     }
 };
 
-customElements.define("rrl-input", RrlInput);
+customElements.define("rrl-password", RrlPassword);

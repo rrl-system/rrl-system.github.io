@@ -3,13 +3,12 @@ import { RrlElement, html, css } from '../rrl-element.mjs'
 import './rrl-system-header.mjs';
 import './rrl-system-footer.mjs';
 
-import './pages/home/home.mjs'
+import './pages/home-page/home-page.mjs'
 
 class RrlSystem extends RrlElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true, category: 'settings' },
-
         }
     }
 

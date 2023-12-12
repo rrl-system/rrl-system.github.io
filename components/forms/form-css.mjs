@@ -179,8 +179,9 @@ button {
     padding: 14px 20px;
     border: none;
     overflow: hidden;
-    background-color: var(--button-color);
+    background-color: var(--background-green);
     color: white;
+    font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
     cursor: pointer;
@@ -293,6 +294,7 @@ button:hover {
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
+    margin: 8px 0;
 }
 
 .checkbox-remember {

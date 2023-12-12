@@ -17,7 +17,7 @@ class RrlSystemFooter extends RrlElement {
         return [
             css`
                 :host {
-                    padding: 0 10px;
+                    padding: 20px 0;
                     background-color: var(--footer-background-color);
                 }
 
@@ -36,6 +36,7 @@ class RrlSystemFooter extends RrlElement {
 
                 p {
                     text-align: center;
+                    margin: 0;
                 }
 
                 a {
@@ -48,16 +49,17 @@ class RrlSystemFooter extends RrlElement {
                     flex-direction: column;
                     justify-content: center;
                     align-items: center;
+                    gap: 10px;
                 }
 
-                .social-icons {
+                div {
                     display: flex;
                     flex-wrap: wrap;
                     justify-content: center;
                     gap: 10px;
                 }
 
-                .social-icons a {
+                div a {
                     display: flex;
                     align-items: center;
                 }
@@ -108,7 +110,7 @@ class RrlSystemFooter extends RrlElement {
 
     social() {
         return html`
-            <div class="social-icons">
+            <div>
                 <a href="https://t.me/moodrila"><img src="/images/telegram.svg" alt=""/></a>
                 <a href="https://vk.com/moodrila"><img src="/images/vk.svg" alt=""/></a>
                 <a href="mailto:a.mudrova0205@stud.rsu.edu.ru"><img src="/images/mail.svg" alt=""/></a>

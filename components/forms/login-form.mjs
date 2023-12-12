@@ -8,6 +8,7 @@ import { formStyles } from './form-css.mjs'
 import '../dialogs/modal-dialog.mjs';
 
 import '../input/input.mjs';
+import '../input/password.mjs';
 
 class LoginForm extends RrlElement {
     static get properties() {
@@ -62,26 +63,8 @@ class LoginForm extends RrlElement {
 
                 <div class="form-body">
                     <div id="db-tab-section" class="form-tab-section selected">
-                        <label for="uname"><b>Пользователь</b></label>
-                        <input type="text" placeholder="Логин" name="username" .value=${this.login} @change=${this.updateLoginValue} required>
-
-                        <label for="password"><b>Password</b></label>
-                        <input type="password" placeholder="Пароль" name="password" .value=${this.password} @change=${this.updatePasswordValue} required>
-
-                        <label for="host"><b>Хост</b></label>
-                        <input type="text" placeholder="http://example.com" name="host" required>
-
-                        <span class="icon-font-2 user">аволыаволаыв</span>
-                        <!-- <i class="fa fa-user" aria-hidden="true"></i> -->
-                        <rrl-icon class="notoggled" icon="{}" name="face" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-icon>
-
-                        <rrl-input type="text" placeholder="Логин" label="Пользователь" class="notoggled" icon="{}" name="face" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
-
-                        <div class="user-input-group-component">
-                            <input type="email" id="username" name="_username" required="required" form-error-clear="" class="ui_v5-input-component ui_v5-input-group-space-left login-input" placeholder="Username or Email" autofocus="" aria-label="Username or Email" autocomplete="email">
-                            <rrl-icon class="notoggled rrl-icon ev-f-person-add" icon="{}" name="face" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-icon>
-                            <rrl-icon class="notoggled rrl-icon remove-red-eye" icon="{}" name="remove-red-eye" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-icon>
-                        </div>
+                        <rrl-input type="text" placeholder="Логин" label="Пользователь" class="notoggled" icon="{}" name="user" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
+                        <rrl-password type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
 
                         <div class="login-options">
                             <div class="checkbox-remember">
@@ -91,23 +74,7 @@ class LoginForm extends RrlElement {
                             <a href="http://localhost/forgot" class="forgot-password" title="Forgot Password?">Forgot Password?</a>
                         </div>
 
-                        <label for="port"><b>Порт</b></label>
-                        <input type="text" placeholder="Порт: 5984" name="port" required>
-
-                        <button type="button" @click=${()=>this.sendLogin()}>Login</button>
-                    </div>
-                </div>
-
-                <div class="form-footer no-select">
-                    <div id="db-tab-buttons" class="footer-buttons-section">
-                        <div class="footer-buttons">
-                            <button type="button" name="clear" class="footer-button cancel-button">Очистить</button>
-                            <button type="button" name="delete" class="footer-button">Удалить</button>
-                            <button type="button" name="compact" class="footer-button">Сжать</button>
-                            <button type="button" name="download" class="footer-button">Скачать</button>
-                            <button type="button" name="upload" class="footer-button">Загрузить</button>
-                            <button type="button" name="close" class="footer-button">Закрыть</button>
-                        </div>
+                        <button type="button" @click=${()=>this.sendLogin()}>Log In</button>
                     </div>
                 </div>
             </form>
