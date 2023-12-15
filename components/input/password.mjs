@@ -104,12 +104,18 @@ class RrlPassword extends RrlElement {
             <rrl-button class="button" icon="{}" name="remove-red-eye" fill="gray" size="30" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-button>
         `
     }
+
+    get value() {
+        return this.renderRoot?.querySelector('#input1')?.value ?? null;
+    }
+
     // {"eye-regular"
     render() {
         return html`
             ${this.label ? this.#label : ''}
             <div class="input-group">
                 <input type=${this.type}
+                    id="input1"
                     placeholder=${this.placeholder || nothing}
                     ${this.required ? 'required' : ''}
                     class=""

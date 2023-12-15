@@ -37,7 +37,6 @@ class RrlInput extends RrlElement {
             path: { type: String, default: '' },
             icon: { type: Object, default: undefined },
             buttonName: { type: String, default: '' },
-
         }
     }
 
@@ -81,8 +80,8 @@ class RrlInput extends RrlElement {
         `
     }
 
-    updateLoginValue() {
-        console.log("111");
+    get value() {
+        return this.renderRoot?.querySelector('#input1')?.value ?? null;
     }
 
     get #button() {
@@ -96,10 +95,12 @@ class RrlInput extends RrlElement {
             ${this.label ? this.#label : ''}
             <div class="input-group">
                 <input type=${this.type}
+                    id="input1"
                     placeholder=${this.placeholder || nothing}
                     ${this.required ? 'required' : ''}
                     class=""
-                    .value=${this.login || nothing} @change=${this.updateLoginValue}>
+                    .value=${this.login || nothing} @change=${this.updateLoginValue}
+                >
                 ${this.name ? this.#icon : ''}
                 ${this.buttonName ? this.#button : ''}
             </div>

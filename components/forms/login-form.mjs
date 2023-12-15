@@ -16,7 +16,8 @@ class LoginForm extends RrlElement {
             version: { type: String, default: '1.0.0', save: true, category: 'settings' },
             opened: { type: Boolean, default: false, category: 'settings' },
             login: { type: String, default: ''},
-            password: {type: String, default: ''}
+            password: {type: String, default: ''},
+            isSingUp: {type: Boolean, default: false},
         }
     }
 
@@ -63,8 +64,8 @@ class LoginForm extends RrlElement {
 
                 <div class="form-body">
                     <div id="db-tab-section" class="form-tab-section selected">
-                        <rrl-input type="text" placeholder="Логин" label="Пользователь" class="notoggled" icon="{}" name="user" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
-                        <rrl-password type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
+                        <rrl-input id="login" type="text" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
+                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
 
                         <div class="login-options">
                             <div class="checkbox-remember">
@@ -77,6 +78,10 @@ class LoginForm extends RrlElement {
                         <button type="button" @click=${()=>this.sendLogin()}>Log In</button>
                     </div>
                 </div>
+                <div class="form-footer">
+                    <a class="forgot-password" title="Sign Up" @click=${this.signUpClick}>New user? Sign Up!</a>
+                </div>
+            </div>
             </form>
         </div>
         `;
@@ -86,6 +91,10 @@ class LoginForm extends RrlElement {
         super.firstUpdated();
     }
 
+    signUpClick() {
+        this.isSingUp = true;
+        console.log(this);
+    }
     neuroClick() {
         // let cells = this.renderRoot.querySelectorAll(".cell");
         // const id = Math.floor(Math.random() * cells.length);
@@ -101,9 +110,30 @@ class LoginForm extends RrlElement {
         this.opened = false
         repairDialog()
     }
-
+    get #login() {
+        return this.renderRoot?.querySelector('#login')?.value ?? null;
+    }
+    get #password() {
+        return this.renderRoot?.querySelector('#password')?.value ?? null;
+    }
     sendLogin() {
-        sendMessage("login", {login: this.login, password: this.password})
+        const data = {
+            login: this.#login,
+            password: this.#password,
+            remember: 1,
+            date: Date.now(),
+        };
+        fetch("http://localhost:7000/sing-up",
+        {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify(data)
+        })
+        .then(function(res){ console.log(res) })
+        .catch(function(res){ console.log(res) })
     }
 
     async authOk(message) {
