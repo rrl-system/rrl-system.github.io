@@ -21,6 +21,7 @@ const styles = css`
 
 input[type="text"],
 input[type="password"],
+input[type="mail"],
 input[type="number"] {
     display: inline-block;
     width: 100%;

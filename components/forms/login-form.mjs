@@ -8,6 +8,7 @@ import { formStyles } from './form-css.mjs'
 import '../dialogs/modal-dialog.mjs';
 
 import '../input/input.mjs';
+import '../input/email.mjs';
 import '../input/password.mjs';
 
 class LoginForm extends RrlElement {
@@ -36,6 +37,10 @@ class LoginForm extends RrlElement {
                     font-family: FontAwesome;
                     content:"\f001";
                 }
+                .form-footer {
+                    display: flex;
+                    justify-content: right;
+                }
             `
         ]
     }
@@ -45,7 +50,7 @@ class LoginForm extends RrlElement {
         this.version = "1.0.0";
     }
 
-    render() {
+    #singIn() {
         return html`
            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
            <div id="form-background" class="form-background" style="${this.opened ? 'display: block' : ''}">
@@ -85,6 +90,50 @@ class LoginForm extends RrlElement {
             </form>
         </div>
         `;
+    }
+
+    #signUp() {
+        return html`
+           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+           <div id="form-background" class="form-background" style="${this.opened ? 'display: block' : ''}">
+            <modal-dialog></modal-dialog>
+            <cancel-dialog></cancel-dialog>
+            <close-dialog></close-dialog>
+            <form class="form animate" method="post" id="form">
+                <div class="form-header">
+                    <div class="form-tabs no-select">
+                        <div class="form-tab" selected>
+                            <span id="db-tab" class="form-tab-link select">Sing in</span>
+                        </div>
+                    </div>
+                    <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close()}>&times;</span>
+                </div>
+
+                <div class="form-body">
+                    <div id="db-tab-section" class="form-tab-section selected">
+                        <rrl-input id="login" type="text" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
+                        <rrl-email id="email" type="mail" name="mail" placeholder="EMail" label="Почта" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-email>
+                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
+
+                        <div class="login-options">
+                            <div class="checkbox-remember">
+                                <input type="checkbox" name="remember">
+                                <label for="remember"><b>Remember me</b></label>
+                            </div>
+                            <a href="http://localhost/forgot" class="forgot-password" title="Forgot Password?">Forgot Password?</a>
+                        </div>
+
+                        <button type="button" @click=${()=>this.sendLogin()}>Log In</button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+        `;
+    }
+
+    render() {
+        return this.isSingUp ? this.#signUp() : this.#singIn();
     }
 
     firstUpdated() {
