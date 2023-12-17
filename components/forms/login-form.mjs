@@ -83,6 +83,7 @@ class LoginForm extends RrlElement {
                         <button type="button" @click=${()=>this.sendLogin()}>Log In</button>
                     </div>
                 </div>
+                <div id="google"></div>
                 <div class="form-footer">
                     <a class="forgot-password" title="Sign Up" @click=${this.signUpClick}>New user? Sign Up!</a>
                 </div>
@@ -124,6 +125,7 @@ class LoginForm extends RrlElement {
                         </div>
 
                         <button type="button" @click=${()=>this.sendLogin()}>Log In</button>
+                        <div id="google"></div>
                     </div>
                 </div>
             </div>
@@ -136,20 +138,33 @@ class LoginForm extends RrlElement {
         return this.isSingUp ? this.#signUp() : this.#singIn();
     }
 
+    sendToken(response) {
+        console.log(response);
+        console.log(this);
+    }
+
+    addGoogleSingIn() {
+        google.accounts.id.initialize({
+            client_id: '152529125992-enoddnchd7n8mug7he2juk5fh3fhevqe.apps.googleusercontent.com',
+            callback: (res) => this.sendToken(res)
+          });
+        google.accounts.id.renderButton(
+
+            this.renderRoot.querySelector('#google'),
+            { theme: 'outline', size: 'large'}
+        );
+    }
+
     firstUpdated() {
         super.firstUpdated();
+        this.addGoogleSingIn();
     }
 
     signUpClick() {
         this.isSingUp = true;
         console.log(this);
     }
-    neuroClick() {
-        // let cells = this.renderRoot.querySelectorAll(".cell");
-        // const id = Math.floor(Math.random() * cells.length);
-        // if (id != this.odd)
-        //     cells[id].dispatchEvent(new CustomEvent("click", { bubbles: true, composed: true}));
-    }
+
     open() {
         this.opened = true;
         setDialog(this.renderRoot.querySelector('modal-dialog'))
