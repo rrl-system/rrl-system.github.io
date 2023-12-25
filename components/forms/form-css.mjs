@@ -297,6 +297,12 @@ button:hover {
     margin: 8px 0;
 }
 
+.sign-up-options {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+}
+
 .checkbox-remember {
     display: inline-flex;
     align-items: center;
@@ -306,7 +312,7 @@ button:hover {
 {
     width: 20px;
     height: 20px;
-    accent-color: var(--button-color);
+    accent-color: var(--checkbox-accent-color);
 }
 
 .checkbox-remember label {
@@ -498,6 +504,23 @@ span.psw {
     font-weight: bold;
 }
 
+.sign-up-link {
+    text-decoration: underline;
+    color: #444;
+    cursor: pointer;
+}
+
+.sign-up-link:active {
+    color: -webkit-activelink;
+}
+
+
+#google {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+}
+
 .close-button:hover,
 .close-button:focus,
 #form.dark .close-button:hover,
@@ -617,4 +640,5 @@ span.psw {
         margin-bottom: 8px;
     }
 }
+
 `;

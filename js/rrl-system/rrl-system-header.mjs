@@ -1,7 +1,8 @@
 import { RrlElement, html, css } from '../rrl-element.mjs'
 
 import '../../components/button/toggle-button.mjs';
-import '../../components/forms/login-form.mjs';
+import '../../components/forms/sign-in-form.mjs';
+import '../../components/forms/sign-up-form.mjs';
 
 class RrlSystemHeader extends RrlElement {
     static get properties() {
@@ -9,7 +10,8 @@ class RrlSystemHeader extends RrlElement {
             isShow: { type: Boolean, default: false },
             isHorizontal: { type: Boolean, default: true },
             version: { type: String, default: '1.0.0', save: true },
-            activePage: { type: String, default: '#my-pride', attribute: 'active-page'}
+            activePage: { type: String, default: '#my-pride', attribute: 'active-page'},
+            successUserIn: { type: Boolean, default: false}
         }
     }
 
@@ -149,20 +151,25 @@ class RrlSystemHeader extends RrlElement {
         //     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/images/favicon.svg"></use>
         // </svg>
         return html`
-                <div class="logo" title="Home">
-                    <a href="#">
-                        <img src="images/favicon.svg" alt="">
-                    </a>
-                    <a href="#">
-                        <h3 class="text">
-                            ${this.title}
-                        </h3>
-                    </a>
-                </div>
-                <login-form></login-form>
+            <div class="logo" title="Home">
+                <a href="#">
+                    <img src="images/favicon.svg" alt="">
+                </a>
+                <a href="#">
+                    <h3 class="text">
+                        ${this.title}
+                    </h3>
+                </a>
+            </div>
+            <sign-in-form></sign-in-form>
+            <sign-up-form></sign-up-form>
         `
     }
 
+    userAccount() {
+        return this.successUserIn ?  html`<li><a href="#personal-account" ?active=${this.activePage=="personal-account"}>Personal Account</a></li>` :
+            html`<li><a @click=${this.login}>Log In</a></li>`
+    }
     horizontalHeader() {
         return html`
             <header class="">
@@ -173,7 +180,7 @@ class RrlSystemHeader extends RrlElement {
                         <li><a href="#about-me" ?active=${this.activePage==="about-me"}>About me</a></li>
                         <li><a href="#my-courses" ?active=${this.activePage==="my-courses"}>My courses</a></li>
                         <li><a href="#my-stack" ?active=${this.activePage=="my-stack"}>My stack</a></li>
-                        <li><a @click=${this.login}>Log In</a></li>
+                        ${this.userAccount()}
                     </ul>
                 </nav>
             </header>
@@ -181,11 +188,10 @@ class RrlSystemHeader extends RrlElement {
     }
 
     verticalHeader() {
-        // <toggle-button name="bars" toggledname="xmark" border="0" color="var(--header-background-color)" @click=${this.login.bind(this)} size="36"></toggle-button>
         return html`
             <header>
                 ${this.logo()}
-                <toggle-button name="bars" toggledname="xmark" border="0" color="var(--header-background-color)" @click=${this.showMenu} size="36"></toggle-button>
+                <toggle-button name="bars" .toggled=${this.isShow} toggledname="xmark" border="0" color="var(--header-background-color)" @click=${this.showMenu} size="36"></toggle-button>
             </header>
             <nav class="vertical${this.isShow ? ' show' : ''}">
                 <ul>
@@ -193,7 +199,7 @@ class RrlSystemHeader extends RrlElement {
                     <li><a href="#about-me" ?active=${this.activePage==="about-me"}>About me</a></li>
                     <li><a href="#my-courses" ?active=${this.activePage=="my-courses"}>My courses</a></li>
                     <li><a href="#my-stack" ?active=${this.activePage=="my-stack"}>My stack</a></li>
-                    <li><a @click=${this.login}>Log In</a></li>
+                    ${this.userAccount()}
                 </ul>
             </nav>
         `;
@@ -211,9 +217,15 @@ class RrlSystemHeader extends RrlElement {
     }
 
     login() {
-        this.renderRoot.querySelector("login-form").open();
+        if (!this.isHorizontal)
+            this.showMenu();
+        this.renderRoot.querySelector("sign-in-form").open().then(() => this.showUserAccount());
     }
 
+    showUserAccount() {
+        this.successUserIn = true;
+        window.location.hash = '#personal-account';
+    }
     matchMediaChange(e) {
         this.isHorizontal = e.matches;
     }

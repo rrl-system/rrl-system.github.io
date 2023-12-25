@@ -38,7 +38,7 @@ class RrlPassword extends RrlElement {
             icon: { type: Object, default: undefined },
             visibleIcon: { type: String, default: '' },
             invisibleIcon: { type: String, default: '' },
-
+            placeholder: { type: String, default: '' },
         }
     }
 
@@ -106,7 +106,10 @@ class RrlPassword extends RrlElement {
     }
 
     get value() {
-        return this.renderRoot?.querySelector('#input1')?.value ?? null;
+        return this.renderRoot?.querySelector('#input')?.value ?? null;
+    }
+    set value(value) {
+        this.login = value;
     }
 
     // {"eye-regular"
@@ -115,7 +118,7 @@ class RrlPassword extends RrlElement {
             ${this.label ? this.#label : ''}
             <div class="input-group">
                 <input type=${this.type}
-                    id="input1"
+                    id="input"
                     placeholder=${this.placeholder || nothing}
                     ${this.required ? 'required' : ''}
                     class=""

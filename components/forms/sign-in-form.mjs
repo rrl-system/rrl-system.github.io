@@ -11,14 +11,13 @@ import '../input/input.mjs';
 import '../input/email.mjs';
 import '../input/password.mjs';
 
-class LoginForm extends RrlElement {
+class SignInForm extends RrlElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true, category: 'settings' },
             opened: { type: Boolean, default: false, category: 'settings' },
             login: { type: String, default: ''},
             password: {type: String, default: ''},
-            isSingUp: {type: Boolean, default: false},
         }
     }
 
@@ -50,7 +49,7 @@ class LoginForm extends RrlElement {
         this.version = "1.0.0";
     }
 
-    #singIn() {
+    render() {
         return html`
            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
            <div id="form-background" class="form-background" style="${this.opened ? 'display: block' : ''}">
@@ -61,59 +60,15 @@ class LoginForm extends RrlElement {
                 <div class="form-header">
                     <div class="form-tabs no-select">
                         <div class="form-tab" selected>
-                            <span id="db-tab" class="form-tab-link select">Sing in</span>
+                            <span id="db-tab" class="form-tab-link select">Sign In</span>
                         </div>
                     </div>
-                    <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close()}>&times;</span>
+                    <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close('CANCEL')}>&times;</span>
                 </div>
 
                 <div class="form-body">
                     <div id="db-tab-section" class="form-tab-section selected">
                         <rrl-input id="login" type="text" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
-                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
-
-                        <div class="login-options">
-                            <div class="checkbox-remember">
-                                <input type="checkbox" name="remember">
-                                <label for="remember"><b>Remember me</b></label>
-                            </div>
-                            <a href="http://localhost/forgot" class="forgot-password" title="Forgot Password?">Forgot Password?</a>
-                        </div>
-
-                        <button type="button" @click=${()=>this.sendLogin()}>Log In</button>
-                    </div>
-                </div>
-                <div id="google"></div>
-                <div class="form-footer">
-                    <a class="forgot-password" title="Sign Up" @click=${this.signUpClick}>New user? Sign Up!</a>
-                </div>
-            </div>
-            </form>
-        </div>
-        `;
-    }
-
-    #signUp() {
-        return html`
-           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-           <div id="form-background" class="form-background" style="${this.opened ? 'display: block' : ''}">
-            <modal-dialog></modal-dialog>
-            <cancel-dialog></cancel-dialog>
-            <close-dialog></close-dialog>
-            <form class="form animate" method="post" id="form">
-                <div class="form-header">
-                    <div class="form-tabs no-select">
-                        <div class="form-tab" selected>
-                            <span id="db-tab" class="form-tab-link select">Sing in</span>
-                        </div>
-                    </div>
-                    <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close()}>&times;</span>
-                </div>
-
-                <div class="form-body">
-                    <div id="db-tab-section" class="form-tab-section selected">
-                        <rrl-input id="login" type="text" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
-                        <rrl-email id="email" type="mail" name="mail" placeholder="EMail" label="Почта" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-email>
                         <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
 
                         <div class="login-options">
@@ -128,28 +83,38 @@ class LoginForm extends RrlElement {
                         <div id="google"></div>
                     </div>
                 </div>
+
+                <div class="form-footer">
+                    <a class="sign-up-link" title="Sign Up" @click=${this.signUpClick}>Sign Up if you New user!</a>
+                </div>
             </div>
             </form>
         </div>
         `;
     }
 
-    render() {
-        return this.isSingUp ? this.#signUp() : this.#singIn();
+    sendToken(res) {
+        console.log(res)
+        const token = { user: 'v.antoshkin', token: res.credential, type: 'google'}
+        console.log(JSON.stringify(token))
+        let response = fetch('http://localhost:7000/api/sign-up', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(token)
+          }).then(response => {
+            let result = response.json().then((res) => console.log(res));
+          }).catch(res => console.log(res));
     }
 
-    sendToken(response) {
-        console.log(response);
-        console.log(this);
-    }
 
-    addGoogleSingIn() {
+    createGoogleButton() {
         google.accounts.id.initialize({
             client_id: '152529125992-enoddnchd7n8mug7he2juk5fh3fhevqe.apps.googleusercontent.com',
-            callback: (res) => this.sendToken(res)
-          });
+            callback: res => this.sendToken(res)
+        });
         google.accounts.id.renderButton(
-
             this.renderRoot.querySelector('#google'),
             { theme: 'outline', size: 'large'}
         );
@@ -157,29 +122,58 @@ class LoginForm extends RrlElement {
 
     firstUpdated() {
         super.firstUpdated();
-        this.addGoogleSingIn();
-    }
-
-    signUpClick() {
-        this.isSingUp = true;
-        console.log(this);
+        this.createGoogleButton();
     }
 
     open() {
         this.opened = true;
-        setDialog(this.renderRoot.querySelector('modal-dialog'))
-        setForm(this);
+        // setDialog(this.renderRoot.querySelector('modal-dialog'))
+        // setForm(this);
+        return new Promise((res, rej) => {
+            this.resolveForm = res
+            this.rejectFrom = rej
+        })
     }
-    close() {
+
+    close(modalResult) {
+        this.#login = ''
+        this.#password = ''
         this.opened = false
-        repairDialog()
+        if (modalResult == 'OK')
+            this.resolveForm(modalResult)
+        else
+            this.rejectFrom(modalResult)
+        // repairDialog()
     }
+
+    signUpClick() {
+        this.opened = false;
+        this.#signUpForm.open().then(modalResult => {
+            if (modalResult == "SINGIN") {
+                this.opened = false;
+            }
+            else {
+                this.close(modalResult)
+            }
+        }, modalResult => this.close(modalResult));
+    }
+
     get #login() {
         return this.renderRoot?.querySelector('#login')?.value ?? null;
+    }
+    set #login(value) {
+        this.login = value;
+    }
+    get #signUpForm() {
+        return this.parentElement.querySelector('sign-up-form') ?? null;
     }
     get #password() {
         return this.renderRoot?.querySelector('#password')?.value ?? null;
     }
+    set #password(value) {
+        this.password = value;
+    }
+
     sendLogin() {
         const data = {
             login: this.#login,
@@ -187,7 +181,7 @@ class LoginForm extends RrlElement {
             remember: 1,
             date: Date.now(),
         };
-        fetch("http://localhost:7000/sing-up",
+        fetch("http://localhost:7000/sign-up",
         {
             headers: {
                 'Accept': 'application/json',
@@ -228,4 +222,4 @@ class LoginForm extends RrlElement {
     }
 }
 
-customElements.define("login-form", LoginForm);
+customElements.define("sign-in-form", SignInForm);

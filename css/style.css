@@ -25,4 +25,5 @@ body {
     --footer-background-color: #05303a;
     --button-hover-color: #129da2;
     --exo-2-font-family: 'Exo 2', sans-serif;
+    --checkbox-accent-color: var(--button-hover-color)
 }

@@ -3,9 +3,11 @@ import { RrlElement, html, css } from '../../js/rrl-element.mjs';
 
 import { formStyles } from './form-css.mjs'
 
-//import { default as wsClient, sendMessage, setDialog, repairDialog, setForm} from '../../js/ws-client.mjs'
-
 import '../dialogs/modal-dialog.mjs';
+
+import '../input/input.mjs';
+import '../input/email.mjs';
+import '../input/password.mjs';
 
 class SignUpForm extends RrlElement {
     static get properties() {
@@ -13,7 +15,7 @@ class SignUpForm extends RrlElement {
             version: { type: String, default: '1.0.0', save: true, category: 'settings' },
             opened: { type: Boolean, default: false, category: 'settings' },
             login: { type: String, default: ''},
-            password: {type: String, default: ''}
+            password: {type: String, default: ''},
         }
     }
 
@@ -23,6 +25,18 @@ class SignUpForm extends RrlElement {
             css`
                 :host {
                     user-select: none;
+                }
+                .icon-font-2.user {
+                    color: red;
+                    font-family: FontAwesome;
+                }
+                .icon-font-2.user::before {
+                    font-family: FontAwesome;
+                    content:"\f001";
+                }
+                .form-footer {
+                    display: flex;
+                    justify-content: right;
                 }
             `
         ]
@@ -35,6 +49,7 @@ class SignUpForm extends RrlElement {
 
     render() {
         return html`
+           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
            <div id="form-background" class="form-background" style="${this.opened ? 'display: block' : ''}">
             <modal-dialog></modal-dialog>
             <cancel-dialog></cancel-dialog>
@@ -43,69 +58,167 @@ class SignUpForm extends RrlElement {
                 <div class="form-header">
                     <div class="form-tabs no-select">
                         <div class="form-tab" selected>
-                            <span id="db-tab" class="form-tab-link select">Sing in</span>
+                            <span id="db-tab" class="form-tab-link select">Sign Up</span>
                         </div>
                     </div>
-                    <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close()}>&times;</span>
+                    <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close('Cancel')}>&times;</span>
                 </div>
 
                 <div class="form-body">
                     <div id="db-tab-section" class="form-tab-section selected">
-                        <label for="uname"><b>Пользователь</b></label>
-                        <input type="text" placeholder="Логин" name="username" .value=${this.login} @change=${this.updateLoginValue} required>
+                        <rrl-input type="text" id="login" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
+                        <rrl-email type="mail" id="email" name="mail" placeholder="EMail" label="Почта" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-email>
+                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
 
-                        <label for="password"><b>Password</b></label>
-                        <input type="password" placeholder="Пароль" name="password" .value=${this.password} @change=${this.updatePasswordValue} required>
-
-                        <label for="host"><b>Хост</b></label>
-                        <input type="text" placeholder="http://example.com" name="host" required>
-
-                        <label for="port"><b>Порт</b></label>
-                        <input type="text" placeholder="Порт: 5984" name="port" required>
-
-                        <button type="button" @click=${()=>this.sendLogin()}>Login</button>
-                    </div>
-                </div>
-
-                <div class="form-footer no-select">
-                    <div id="db-tab-buttons" class="footer-buttons-section">
-                        <div class="footer-buttons">
-                            <button type="button" name="clear" class="footer-button cancel-button">Очистить</button>
-                            <button type="button" name="delete" class="footer-button">Удалить</button>
-                            <button type="button" name="compact" class="footer-button">Сжать</button>
-                            <button type="button" name="download" class="footer-button">Скачать</button>
-                            <button type="button" name="upload" class="footer-button">Загрузить</button>
-                            <button type="button" name="close" class="footer-button">Закрыть</button>
+                        <div class="sign-up-options">
+                            <div class="checkbox-remember">
+                                <label for="remember"><b>Remember me</b></label>
+                                <input type="checkbox" id="remember" name="remember" @click=${this.RememberMe}>
+                            </div>
                         </div>
+
+                        <button type="button" @click=${()=>this.sendGoogleUserToken()}>Sign Up</button>
+                        <div id="google"></div>
                     </div>
                 </div>
+            </div>
             </form>
         </div>
         `;
     }
 
+    RememberMe(){
+        if (this.#rememberMe) {
+            localStorage.setItem('rememberMe', this.#rememberMe)
+        }
+        else {
+            localStorage.removeItem('rememberMe')
+        }
+    }
+
+    sendGoogleUserToken(res) {
+        console.log(res)
+        const token = { token: res.credential, type: 'google'}
+        console.log(JSON.stringify(token))
+        let response = fetch('http://localhost:7000/api/sign-up', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(token)
+        })
+        .then(response => response.json())
+        .then(json => {
+            if (!json.token) {
+                throw Error(json)
+            }
+            this.saveToken(json.token)
+            return json.token
+        })
+        .then(token => this.getUserInfo(token))
+        .catch(res => console.log(res));
+    }
+
+
+    getUserInfo(token) {
+        return fetch('http://localhost:7000/api/user?info=fle', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => response.json())
+        .then(json => {
+            if (!json.user) {
+                throw Error(json)
+            }
+            return json.user;
+        })
+        .then(user => this.saveUserInfo(JSON.stringify(user)))
+        .then(() => this.close('OK'))
+        .catch(err => console.log(err));
+    }
+
+    saveUserInfo(userInfo) {
+        if (localStorage.getItem('rememberMe')) {
+            localStorage.setItem('userInfo', userInfo)
+        }
+        else {
+            sessionStorage.setItem('userInfo', userInfo)
+        }
+    }
+
+    async saveToken(token) {
+        if (localStorage.getItem('rememberMe')) {
+            localStorage.setItem('accessUserToken', token)
+        }
+        else {
+            sessionStorage.setItem('accessUserToken', token)
+        }
+    }
+
+    getTokenToSessionStorage(token) {
+        return sessionStorage.getItem('accessUserToken')
+    }
+
+    createGoogleButton() {
+        google.accounts.id.initialize({
+            client_id: '152529125992-enoddnchd7n8mug7he2juk5fh3fhevqe.apps.googleusercontent.com',
+            callback: res => this.sendGoogleUserToken(res)
+        });
+        google.accounts.id.renderButton(
+            this.renderRoot.querySelector('#google'),
+            { theme: 'outline', size: 'large'}
+        );
+    }
+
     firstUpdated() {
         super.firstUpdated();
+        this.createGoogleButton();
     }
 
-    neuroClick() {
-        // let cells = this.renderRoot.querySelectorAll(".cell");
-        // const id = Math.floor(Math.random() * cells.length);
-        // if (id != this.odd)
-        //     cells[id].dispatchEvent(new CustomEvent("click", { bubbles: true, composed: true}));
-    }
     open() {
         this.opened = true;
-        setDialog(this.renderRoot.querySelector('modal-dialog'))
-        setForm(this);
-    }
-    close() {
-        this.opened = false
-        repairDialog()
+        // setDialog(this.renderRoot.querySelector('modal-dialog'))
+        // setForm(this);
+        return new Promise((resolve, reject) => {
+            this.resolve = resolve
+            this.reject = reject
+        })
     }
 
+    close(modalResult) {
+        this.opened = false
+        // repairDialog()
+        this.resolve(modalResult)
+    }
+
+    get #login() {
+        return this.renderRoot?.querySelector('#login')?.value ?? null;
+    }
+    get #password() {
+        return this.renderRoot?.querySelector('#password')?.value ?? null;
+    }
+    get #rememberMe() {
+        return this.renderRoot?.querySelector('#remember')?.checked ?? null;
+    }
     sendLogin() {
-        sendMessage("login", {login: this.login, password: this.password})
+        const data = {
+            login: this.#login,
+            password: this.#password,
+            remember: 1,
+            date: Date.now(),
+        };
+        fetch("http://localhost:7000/sign-up",
+        {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify(data)
+        })
+        .then(function(res){ console.log(res) })
+        .catch(function(res){ console.log(res) })
     }
 
     async authOk(message) {
@@ -121,7 +234,7 @@ class SignUpForm extends RrlElement {
         const dialog =  this.renderRoot.querySelector('modal-dialog');
         let modalResult = await dialog.show("Подключение прошло удачно");
         if (modalResult === "Ok") {
-            this.close();
+            this.close(modalResult);
         }
     }
 

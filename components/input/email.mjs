@@ -37,6 +37,7 @@ class RrlEMail extends RrlElement {
             path: { type: String, default: '' },
             icon: { type: Object, default: undefined },
             buttonName: { type: String, default: '' },
+            placeholder: { type: String, default: '' },
         }
     }
 
