@@ -59,7 +59,18 @@ class RrlSystem extends RrlElement {
         }
     }
 
+    isAuth() {
+        if (localStorage.getItem('rememberMe')) {
+            return localStorage.getItem('accessUserToken')
+        }
+        else {
+            return sessionStorage.getItem('accessUserToken')
+        }
+    }
+
     render() {
+        // const pagesPath = isAuth ? './pages/profile' : './pages'
+        const pagesRootPath = './pages'
         if (!window.customElements.get(this.pageName)) {
             import(`./pages/${this.pageName}/${this.pageName}.mjs`);
         }

@@ -8,14 +8,13 @@ import '../dialogs/modal-dialog.mjs';
 import '../input/input.mjs';
 import '../input/email.mjs';
 import '../input/password.mjs';
+import '../button/close-button.mjs';
 
 class SignUpForm extends RrlElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true, category: 'settings' },
             opened: { type: Boolean, default: false, category: 'settings' },
-            login: { type: String, default: ''},
-            password: {type: String, default: ''},
         }
     }
 
@@ -49,7 +48,6 @@ class SignUpForm extends RrlElement {
 
     render() {
         return html`
-           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
            <div id="form-background" class="form-background" style="${this.opened ? 'display: block' : ''}">
             <modal-dialog></modal-dialog>
             <cancel-dialog></cancel-dialog>
@@ -61,14 +59,14 @@ class SignUpForm extends RrlElement {
                             <span id="db-tab" class="form-tab-link select">Sign Up</span>
                         </div>
                     </div>
-                    <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close('Cancel')}>&times;</span>
+                    <close-button class="close-button no-select" name="times" @click=${()=>this.close('CANCEL')}></close-button>
                 </div>
 
                 <div class="form-body">
                     <div id="db-tab-section" class="form-tab-section selected">
                         <rrl-input type="text" id="login" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
                         <rrl-email type="mail" id="email" name="mail" placeholder="EMail" label="Почта" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-email>
-                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
+                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-slash-regular" invisibleIcon="eye-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
 
                         <div class="sign-up-options">
                             <div class="checkbox-remember">
@@ -77,7 +75,7 @@ class SignUpForm extends RrlElement {
                             </div>
                         </div>
 
-                        <button type="button" @click=${()=>this.sendGoogleUserToken()}>Sign Up</button>
+                        <button type="button" @click=${()=>this.sendSimpleUser()}>Sign Up</button>
                         <div id="google"></div>
                     </div>
                 </div>
@@ -96,6 +94,28 @@ class SignUpForm extends RrlElement {
         }
     }
 
+    sendSimpleUser() {
+        const user = { username: this.#login, password: this.#password, type: 'simple', email: this.#email }
+        console.log(JSON.stringify(user))
+        let response = fetch('http://localhost:7000/api/sign-up', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify(user)
+        })
+        .then(response => response.json())
+        .then(json => {
+            if (json.error) {
+                throw Error(json.error)
+            }
+            this.saveToken(json.token)
+            return json.token
+        })
+        .then(token => this.getSimpleUserInfo(token))
+        .catch(err => {console.error(err.message)});
+    }
+
     sendGoogleUserToken(res) {
         console.log(res)
         const token = { token: res.credential, type: 'google'}
@@ -107,16 +127,19 @@ class SignUpForm extends RrlElement {
             },
             body: JSON.stringify(token)
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log(response.status)
+            return response.json()
+        })
         .then(json => {
-            if (!json.token) {
-                throw Error(json)
+            if (json.error) {
+                throw Error(json.error)
             }
             this.saveToken(json.token)
             return json.token
         })
         .then(token => this.getUserInfo(token))
-        .catch(res => console.log(res));
+        .catch(err => {console.error(err.message)});
     }
 
 
@@ -128,14 +151,32 @@ class SignUpForm extends RrlElement {
         })
         .then(response => response.json())
         .then(json => {
-            if (!json.user) {
-                throw Error(json)
+            if (json.error) {
+                throw Error(json.error)
             }
             return json.user;
         })
         .then(user => this.saveUserInfo(JSON.stringify(user)))
         .then(() => this.close('OK'))
-        .catch(err => console.log(err));
+        .catch(err => {console.error(err.message)});
+    }
+
+    getSimpleUserInfo(token) {
+        return fetch('http://localhost:7000/api/user?info=fle', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => response.json())
+        .then(json => {
+            if (json.error) {
+                throw Error(json.error)
+            }
+            return json.user;
+        })
+        .then(user => this.saveUserInfo(JSON.stringify(user)))
+        .then(() => this.close('OK'))
+        .catch(err => {console.error(err.message)});
     }
 
     saveUserInfo(userInfo) {
@@ -188,6 +229,10 @@ class SignUpForm extends RrlElement {
 
     close(modalResult) {
         this.opened = false
+        this.#login = "";
+        this.#password = "";
+        this.#email = "";
+        this.#rememberMe = "";
         // repairDialog()
         this.resolve(modalResult)
     }
@@ -195,30 +240,40 @@ class SignUpForm extends RrlElement {
     get #login() {
         return this.renderRoot?.querySelector('#login')?.value ?? null;
     }
+
+    set #login(value) {
+        if (this.renderRoot?.querySelector('#login')) {
+            this.renderRoot.querySelector('#login').value = value;
+        }
+    }
+
     get #password() {
         return this.renderRoot?.querySelector('#password')?.value ?? null;
+    }
+
+    set #password(value) {
+        if (this.renderRoot?.querySelector('#password')) {
+            this.renderRoot.querySelector('#password').value = value;
+        }
+    }
+
+    get #email() {
+        return this.renderRoot?.querySelector('#email')?.value ?? null;
+    }
+
+    set #email(value) {
+        if (this.renderRoot?.querySelector('#email')) {
+            this.renderRoot.querySelector('#email').value = value;
+        }
     }
     get #rememberMe() {
         return this.renderRoot?.querySelector('#remember')?.checked ?? null;
     }
-    sendLogin() {
-        const data = {
-            login: this.#login,
-            password: this.#password,
-            remember: 1,
-            date: Date.now(),
-        };
-        fetch("http://localhost:7000/sign-up",
-        {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: "POST",
-            body: JSON.stringify(data)
-        })
-        .then(function(res){ console.log(res) })
-        .catch(function(res){ console.log(res) })
+
+    set #rememberMe(value) {
+        if (this.renderRoot?.querySelector('#remember')) {
+            this.renderRoot.querySelector('#remember').checked = value;
+        }
     }
 
     async authOk(message) {

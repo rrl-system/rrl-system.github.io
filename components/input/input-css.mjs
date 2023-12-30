@@ -31,6 +31,7 @@ input[type="number"] {
     box-sizing: border-box;
     outline-color: var(--form-outline-color);
     color: var(--form-color);
+    font-size: x-large;
 }
 
 [placeholder] {
@@ -40,7 +41,7 @@ input[type="number"] {
 .icon {
     display: inline-block;
     position: absolute;
-    left: 5px
+    left: 8px
 }
 
 .button {

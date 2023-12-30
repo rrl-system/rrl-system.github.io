@@ -90,13 +90,13 @@ class RrlPassword extends RrlElement {
         `
     }
 
-    updateLoginValue() {
+    updateTypeValue() {
         this.type = this.type==="text" ? "password" : "text"
     }
 
     get #button() {
         return html`
-            <rrl-icon class="button" icon="{}" name=${this.type==="password" ? this.visibleIcon : this.invisibleIcon} fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path="" @click=${this.updateLoginValue} @mouseenter=${this.updateLoginValue} @mouseleave=${this.updateLoginValue} ></rrl-icon>
+            <rrl-icon class="button" icon="{}" name=${this.type==="password" ? this.visibleIcon : this.invisibleIcon} fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path="" @mouseenter=${this.updateTypeValue} @mouseleave=${this.updateTypeValue} ></rrl-icon>
         `
     }
     get #button1() {
@@ -108,8 +108,12 @@ class RrlPassword extends RrlElement {
     get value() {
         return this.renderRoot?.querySelector('#input')?.value ?? null;
     }
+
     set value(value) {
-        this.login = value;
+        const input = this.renderRoot?.querySelector('#input');
+        if (input) {
+            input.value= value;
+        }
     }
 
     // {"eye-regular"

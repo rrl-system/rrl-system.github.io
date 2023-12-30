@@ -59,7 +59,7 @@ button {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    background-color:  var(--button-color);
+    background-color: var(--background-green);
     color: white;
     cursor: pointer;
 }
@@ -73,7 +73,7 @@ button:hover {
     width: auto;
     margin: 4px;
     padding: 10px 18px;
-    background-color: var(--button-color);
+    background-color:  var(--background-green);
 }
 
 .footer-buttons {
@@ -106,7 +106,7 @@ button:hover {
     flex: auto;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #000;
+    color: var(--form-color);
     font-size: 20px;
 }
 
@@ -117,7 +117,7 @@ button:hover {
 /* The Close Button (x) */
 .dialog-button-close {
     flex: none;
-    color: #000;
+    color: var(--form-color);
     font-size: 35px;
     font-weight: bold;
 }

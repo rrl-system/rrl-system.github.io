@@ -16,7 +16,7 @@ export const formStyles = css`
     --form-border-color: #ddd;
     --form-header-border-color: #ddd;
     --form-outline-color: #999;
-
+    --form-close-button-color: gray;
     /* --button-color: #04aa6d; */
     --button-color: var(--black-square-background-color);
     --button-white-color: var(--white-square-background-color);
@@ -87,9 +87,11 @@ export const formStyles = css`
 .form-header {
     display: flex;
     position: relative;
+    align-items: center;
     text-align: center;
     padding: 0px 16px 0 16px;
     border-radius: 10px 10px 0 0;
+
     background-color: var(--form-header-background-color);
     /*border-bottom: solid var(--form-header-border-color) 1px;*/
 }
@@ -486,7 +488,7 @@ span.psw {
     flex: none;
     right: 20px;
     top: 0;
-    color: var(--form-tab-selected-color);
+    color: var(--form-close-button-color);
     font-size: 35px;
     font-weight: bold;
 }

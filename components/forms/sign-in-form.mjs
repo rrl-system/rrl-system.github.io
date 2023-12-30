@@ -10,6 +10,7 @@ import '../dialogs/modal-dialog.mjs';
 import '../input/input.mjs';
 import '../input/email.mjs';
 import '../input/password.mjs';
+import '../button/close-button.mjs';
 
 class SignInForm extends RrlElement {
     static get properties() {
@@ -49,9 +50,9 @@ class SignInForm extends RrlElement {
         this.version = "1.0.0";
     }
 
+    // <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close('CANCEL')}>&times;</span>
     render() {
         return html`
-           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
            <div id="form-background" class="form-background" style="${this.opened ? 'display: block' : ''}">
             <modal-dialog></modal-dialog>
             <cancel-dialog></cancel-dialog>
@@ -63,23 +64,23 @@ class SignInForm extends RrlElement {
                             <span id="db-tab" class="form-tab-link select">Sign In</span>
                         </div>
                     </div>
-                    <span id="close" class="close-button no-select" title="Закрыть"  @click=${()=>this.close('CANCEL')}>&times;</span>
+                    <close-button class="close-button no-select" name="times" @click=${()=>this.close('CANCEL')}></close-button>
                 </div>
 
                 <div class="form-body">
                     <div id="db-tab-section" class="form-tab-section selected">
                         <rrl-input id="login" type="text" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
-                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-regular" invisibleIcon="eye-slash-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
+                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-slash-regular" invisibleIcon="eye-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
 
                         <div class="login-options">
                             <div class="checkbox-remember">
-                                <input type="checkbox" name="remember">
                                 <label for="remember"><b>Remember me</b></label>
+                                <input type="checkbox" id="remember" name="remember" @click=${this.RememberMe}>
                             </div>
                             <a href="http://localhost/forgot" class="forgot-password" title="Forgot Password?">Forgot Password?</a>
                         </div>
 
-                        <button type="button" @click=${()=>this.sendLogin()}>Log In</button>
+                        <button type="button" @click=${()=>this.sendSimpleUser()}>Log In</button>
                         <div id="google"></div>
                     </div>
                 </div>
@@ -95,18 +96,26 @@ class SignInForm extends RrlElement {
 
     sendToken(res) {
         console.log(res)
-        const token = { user: 'v.antoshkin', token: res.credential, type: 'google'}
+        const token = { token: res.credential, type: 'google'}
         console.log(JSON.stringify(token))
-        let response = fetch('http://localhost:7000/api/sign-up', {
+        let response = fetch('http://localhost:7000/api/sign-in', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
             },
             body: JSON.stringify(token)
-          }).then(response => {
-            let result = response.json().then((res) => console.log(res));
-          }).catch(res => console.log(res));
-    }
+          })
+        .then(response => response.json())
+        .then(json => {
+            if (json.error) {
+                throw Error(json.error)
+            }
+            this.saveToken(json.token)
+            return json.token
+        })
+        .then(token => this.getSimpleUserInfo(token))
+        .catch(err => {console.error(err.message)});
+      }
 
 
     createGoogleButton() {
@@ -136,10 +145,11 @@ class SignInForm extends RrlElement {
     }
 
     close(modalResult) {
+        this.opened = false
         this.#login = ''
         this.#password = ''
-        this.opened = false
-        if (modalResult == 'OK')
+        this.#rememberMe = ''
+        if (modalResult == 'Ok')
             this.resolveForm(modalResult)
         else
             this.rejectFrom(modalResult)
@@ -158,40 +168,105 @@ class SignInForm extends RrlElement {
         }, modalResult => this.close(modalResult));
     }
 
-    get #login() {
-        return this.renderRoot?.querySelector('#login')?.value ?? null;
-    }
-    set #login(value) {
-        this.login = value;
-    }
+
     get #signUpForm() {
         return this.parentElement.querySelector('sign-up-form') ?? null;
     }
+    get #login() {
+        return this.renderRoot?.querySelector('#login')?.value ?? null;
+    }
+
+    set #login(value) {
+        if (this.renderRoot?.querySelector('#login')) {
+            this.renderRoot.querySelector('#login').value = value;
+        }
+    }
+
     get #password() {
         return this.renderRoot?.querySelector('#password')?.value ?? null;
     }
+
     set #password(value) {
-        this.password = value;
+        if (this.renderRoot?.querySelector('#password')) {
+            this.renderRoot.querySelector('#password').value = value;
+        }
     }
 
-    sendLogin() {
-        const data = {
-            login: this.#login,
-            password: this.#password,
-            remember: 1,
-            date: Date.now(),
-        };
-        fetch("http://localhost:7000/sign-up",
-        {
+    get #rememberMe() {
+        return this.renderRoot?.querySelector('#remember')?.checked ?? null;
+    }
+
+    set #rememberMe(value) {
+        if (this.renderRoot?.querySelector('#remember')) {
+            this.renderRoot.querySelector('#remember').checked = value;
+        }
+    }
+
+    sendSimpleUser() {
+        const user = { username: this.#login, password: this.#password, type: 'simple'}
+        console.log(JSON.stringify(user))
+        let response = fetch('http://localhost:7000/api/sign-in', {
+            method: 'POST',
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+              'Content-Type': 'application/json;charset=utf-8'
             },
-            method: "POST",
-            body: JSON.stringify(data)
+            body: JSON.stringify(user)
         })
-        .then(function(res){ console.log(res) })
-        .catch(function(res){ console.log(res) })
+        .then(response => response.json())
+        .then(json => {
+            if (json.error) {
+                throw Error(json.error)
+            }
+            this.saveToken(json.token)
+            return json.token
+        })
+        .then(token => this.getSimpleUserInfo(token))
+        .catch(err => {console.error(err.message)});
+    }
+
+    async saveToken(token) {
+        if (localStorage.getItem('rememberMe')) {
+            localStorage.setItem('accessUserToken', token)
+        }
+        else {
+            sessionStorage.setItem('accessUserToken', token)
+        }
+    }
+
+    getSimpleUserInfo(token) {
+        return fetch('http://localhost:7000/api/user?info=fle', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => response.json())
+        .then(json => {
+            if (json.error) {
+                throw Error(json.error)
+            }
+            return json.user;
+        })
+        .then(user => this.saveUserInfo(JSON.stringify(user)))
+        .then(() => this.modalDialogShow())
+        .catch(err => {console.error(err.message)});
+    }
+
+    saveUserInfo(userInfo) {
+        if (localStorage.getItem('rememberMe')) {
+            localStorage.setItem('userInfo', userInfo)
+        }
+        else {
+            sessionStorage.setItem('userInfo', userInfo)
+        }
+    }
+
+    RememberMe(){
+        if (this.#rememberMe) {
+            localStorage.setItem('rememberMe', this.#rememberMe)
+        }
+        else {
+            localStorage.removeItem('rememberMe')
+        }
     }
 
     async authOk(message) {
@@ -199,7 +274,7 @@ class SignInForm extends RrlElement {
         const dialog =  this.renderRoot.querySelector('modal-dialog');
         let modalResult = await dialog.show(message.text);
         if (modalResult === "Ok") {
-            this.close();
+            this.close(modalResult);
         }
     }
 
@@ -207,7 +282,7 @@ class SignInForm extends RrlElement {
         const dialog =  this.renderRoot.querySelector('modal-dialog');
         let modalResult = await dialog.show("Подключение прошло удачно");
         if (modalResult === "Ok") {
-            this.close();
+            this.close(modalResult);
         }
     }
 

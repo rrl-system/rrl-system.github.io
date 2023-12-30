@@ -96,7 +96,7 @@ class RrlEMail extends RrlElement {
             ${this.label ? this.#label : ''}
             <div class="input-group">
                 <input type=${this.type}
-                    id="input1"
+                    id="input"
                     placeholder=${this.placeholder || nothing}
                     ${this.required ? 'required' : ''}
                     class=""
@@ -106,6 +106,17 @@ class RrlEMail extends RrlElement {
                 ${this.buttonName ? this.#button : ''}
             </div>
         `;
+    }
+
+    get value() {
+        return this.renderRoot?.querySelector('#input')?.value ?? null;
+    }
+
+    set value(value) {
+        const input = this.renderRoot?.querySelector('#input');
+        if (input) {
+            input.value= value;
+        }
     }
 };
 

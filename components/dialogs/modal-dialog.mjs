@@ -1,7 +1,7 @@
-
 import { RrlElement, html, css } from '../../js/rrl-element.mjs';
 
 import { formStyles } from './modal-dialog-css.mjs'
+import '../button/close-button.mjs';
 
 class ModalDialog extends RrlElement {
     static get properties() {
@@ -19,6 +19,7 @@ class ModalDialog extends RrlElement {
             css`
                 :host {
                     user-select: none;
+                    color: var(--form-color);
                 }
             `
         ]
@@ -35,7 +36,7 @@ class ModalDialog extends RrlElement {
                 <div class="modal-dialog-content animate" id="modal-dialog">
                     <div class="dialog-header">
                         <span id="dialog-title" class="dialog-title no-select">Сообщение</span>
-                        <span id="dialog-button-close" class="dialog-button-close no-select" title="Закрыть" @click=${()=>this.close()}>&times;</span>
+                        <close-button class="close-button no-select" name="times" @click=${()=>this.close('CANCEL')}></close-button>
                     </div>
 
                     <div class="dialog-body">

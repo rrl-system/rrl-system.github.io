@@ -39,7 +39,6 @@ class RrlInput extends RrlElement {
             buttonName: { type: String, default: '' },
             placeholder: { type: String, default: '' },
             value: { type: String, default: '' },
-
         }
     }
 
@@ -83,8 +82,15 @@ class RrlInput extends RrlElement {
         `
     }
 
-    get value1() {
+    get value() {
         return this.renderRoot?.querySelector('#input')?.value ?? null;
+    }
+
+    set value(value) {
+        const input = this.renderRoot?.querySelector('#input');
+        if (input) {
+            input.value= value;
+        }
     }
 
     get #button() {
@@ -108,6 +114,7 @@ class RrlInput extends RrlElement {
                 ${this.buttonName ? this.#button : ''}
             </div>
         `;
+        ///.value=${this.value || nothing}
     }
 };
 
