@@ -61,7 +61,7 @@ class SignInForm extends RrlElement {
                 <div class="form-header">
                     <div class="form-tabs no-select">
                         <div class="form-tab" selected>
-                            <span id="db-tab" class="form-tab-link select">Sign In</span>
+                            <span id="db-tab" class="form-tab-link select">Sign in</span>
                         </div>
                     </div>
                     <close-button class="close-button no-select" name="times" @click=${()=>this.close('CANCEL')}></close-button>
@@ -69,15 +69,17 @@ class SignInForm extends RrlElement {
 
                 <div class="form-body">
                     <div id="db-tab-section" class="form-tab-section selected">
-                        <rrl-input id="login" type="text" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
-                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-slash-regular" invisibleIcon="eye-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
+                        <rrl-input id="login" type="text" name="user" placeholder="Login" icon="{}" class="notoggled" fill="gray" size="20" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
+                        <rrl-password id="password" type="Password" placeholder="Password" visibleIcon="eye-slash-regular" invisibleIcon="eye-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="20" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
 
                         <div class="login-options">
                             <div class="checkbox-remember">
                                 <label for="remember"><b>Remember me</b></label>
                                 <input type="checkbox" id="remember" name="remember" @click=${this.RememberMe}>
                             </div>
-                            <a href="http://localhost/forgot" class="forgot-password" title="Forgot Password?">Forgot Password?</a>
+                            <a href="http://localhost/forgot" class="forgot-password" title="Forgot password?" style="
+                                text-decoration: none; 
+                                color: #5e5e5e">Forgot password?</a>
                         </div>
 
                         <button type="button" @click=${()=>this.sendSimpleUser()}>Log In</button>
@@ -86,7 +88,7 @@ class SignInForm extends RrlElement {
                 </div>
 
                 <div class="form-footer">
-                    <a class="sign-up-link" title="Sign Up" @click=${this.signUpClick}>Sign Up if you New user!</a>
+                    <a class="sign-up-link" title="Sign Up" @click=${this.signUpClick}>New user? Sign up!</a>
                 </div>
             </div>
             </form>

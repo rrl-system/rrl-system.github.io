@@ -28,10 +28,11 @@ input[type="number"] {
     margin: 8px 0px;
     padding: 12px 20px 12px 40px;
     border: 1px solid rgb(204, 204, 204);
+    border-radius: 10px;
     box-sizing: border-box;
     outline-color: var(--form-outline-color);
     color: var(--form-color);
-    font-size: x-large;
+    font-size: 14px;
 }
 
 [placeholder] {

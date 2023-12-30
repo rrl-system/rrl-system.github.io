@@ -69,7 +69,7 @@ export const formStyles = css`
 
 /* Modal Form Box */
 .form {
-    width: 80%; /* Could be more or less, depending on screen size */
+    width: 60%; /* Could be more or less, depending on screen size */
     max-width: 800px;
     margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
     border: 1px solid var(--form-border-color);
@@ -125,9 +125,11 @@ input[type="number"] {
     margin: 8px 0;
     padding: 12px 20px;
     border: 1px solid #ccc;
+    border-radius: 10px;
     box-sizing: border-box;
     outline-color: var(--form-outline-color);
     color: var(--form-color);
+    font-size: 14px;
 }
 
 #form.dark input[type="text"],
@@ -180,6 +182,7 @@ button {
     margin: 8px 0;
     padding: 14px 20px;
     border: none;
+    border-radius: 15px;
     overflow: hidden;
     background-color: var(--background-green);
     color: white;
@@ -390,6 +393,7 @@ span.psw {
     display: flex;
     vertical-align: top;
     bottom: auto;
+    border-bottom: none;
     margin-top: 3px;
     padding-bottom: 0;
     overflow: hidden;
@@ -452,6 +456,7 @@ span.psw {
     text-align: center;
     text-decoration: none;
     border-radius: 4px 4px 0 0;
+    border-bottom: none;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
