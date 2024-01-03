@@ -21,25 +21,11 @@ class RrlSystemHeader extends RrlElement {
 
     static get styles() {
         return [
+            RrlElement.styles,
             css`
                 :host {
                     padding: 0 10px;
                     background-color: var(--header-background-color);
-                }
-
-                * {
-                    box-sizing: border-box;
-                    -webkit-touch-callout: none;
-                    -webkit-user-select: none;
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
-                    -webkit-user-drag: none;
-                    -khtml-user-drag: none;
-                    -moz-user-drag: none;
-                    -o-user-drag: none;
-                    -ms-user-drag: none;
-                    user-drag: none;
                 }
 
                 header {
@@ -167,7 +153,7 @@ class RrlSystemHeader extends RrlElement {
     }
 
     userAccount() {
-        return this.successUserIn ?  html`<li><a href="#personal-account" ?active=${this.activePage=="personal-account"}>Personal Account</a></li>` :
+        return this.successUserIn ?  html`<li><a href="#my-profile" ? active=${this.activePage=="my-profile"}>Profile</a></li>` :
             html`<li><a @click=${this.login}>Log In</a></li>`
     }
     horizontalHeader() {
@@ -219,12 +205,13 @@ class RrlSystemHeader extends RrlElement {
     login() {
         if (!this.isHorizontal)
             this.showMenu();
-        this.renderRoot.querySelector("sign-in-form").open().then(() => this.showUserAccount());
+        this.renderRoot.querySelector("sign-in-form").open().then(() => this.showUserAccount()).catch(() => '');
     }
 
     showUserAccount() {
+        this.offsetParent.successUserIn = true;
         this.successUserIn = true;
-        window.location.hash = '#profile';
+        window.location.hash = '#my-profile';
     }
     matchMediaChange(e) {
         this.isHorizontal = e.matches;

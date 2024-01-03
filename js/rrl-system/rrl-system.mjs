@@ -2,6 +2,7 @@ import { RrlElement, html, css } from '../rrl-element.mjs'
 
 import './rrl-system-header.mjs';
 import './rrl-system-footer.mjs';
+import './rrl-system-left-aside.mjs';
 
 import './pages/home-page/home-page.mjs'
 
@@ -9,24 +10,44 @@ class RrlSystem extends RrlElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true, category: 'settings' },
+            successUserIn: { type: Boolean, default: true, save: false, attribute: 'is-auth', reflect: true},
         }
     }
 
     static get styles() {
         return [
+            RrlElement.styles,
             css`
                 :host {
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
+                    height: 1vh;
+                    display: grid;
+                    grid-template-columns: 0px 1fr;
+                    grid-template-areas:
+                      "header header"
+                      "aside content"
+                      "footer footer";
+
+                    // flex-direction: column;
+                    // justify-content: center;
                     position: relative;
-                    height: 100%;
+                }
+                :host([is-auth]) {
+                    grid-template-columns: 50px 3fr;
+                }
+                main {
+                    grid-area: content;
+                    height: calc(100vh - 200px);
+                    background: linear-gradient(180deg, var(--header-background-color) 0%, var(--gradient-background-color) 100%);
                     box-sizing: border-box;
-                    -webkit-touch-callout: none;
-                    -webkit-user-select: none;
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
+                }
+                rrl-system-header {
+                    grid-area: header;
+                }
+                rrl-system-aside {
+                    grid-area: aside;
+                }
+                rrl-system-footer {
+                    grid-area: footer;
                 }
             `
         ]
@@ -68,6 +89,10 @@ class RrlSystem extends RrlElement {
         }
     }
 
+    leftAside() {
+        return html`<rrl-system-left-aside></rrl-system-left-aside>`
+    }
+
     render() {
         // const pagesPath = isAuth ? './pages/profile' : './pages'
         const pagesRootPath = './pages'
@@ -77,6 +102,7 @@ class RrlSystem extends RrlElement {
         const page = document.createElement(this.pageName);
         return html`
             <rrl-system-header active-page="${this.pageName}"></rrl-system-header>
+            ${this.successUserIn ? this.leftAside() : ""}
             <main>
                 ${page}
             </main>

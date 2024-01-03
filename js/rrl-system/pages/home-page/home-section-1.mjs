@@ -9,22 +9,13 @@ class HomeSection1 extends RrlElement {
 
     static get styles() {
         return [
+            RrlElement.styles,
             css`
                 :host {
                     display: flex;
-                    padding-top: 50px;
-                    padding-bottom: 50px;
+                    height: 100%;
+                    overflow: hidden;
                     gap: 20px;
-                    background: linear-gradient(180deg, var(--header-background-color) 0%, var(--gradient-background-color) 100%);
-                }
-
-                * {
-                    box-sizing: border-box;
-                    -webkit-touch-callout: none;
-                    -webkit-user-select: none;
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
                 }
 
                 .left-layout {

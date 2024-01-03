@@ -93,7 +93,7 @@ button:hover {
 .dialog-header {
     display: flex;
     align-items: center;
-    padding: 0 16px 0 20px;
+    padding: 8px 16px 8px 20px;
     border-radius: 10px 10px 0 0;
     background-color: var(--form-header-background-color);
 }
@@ -147,7 +147,7 @@ button:hover {
 }
 
 .dialog-footer {
-    padding: 16px;
+    padding: 8px 16px 8px 20px;
     border-radius: 0 0 10px 10px;
     overflow: hidden;
     background-color: var(--form-header-background-color);
@@ -184,10 +184,10 @@ button:hover {
 /* Modal Content/Box */
 .modal-dialog-content {
     background-color: #fefefe;
-    margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+    margin: 15% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
-    max-width: 800px;
+    max-width: 550px;
     border-radius: 10px;
 }
 

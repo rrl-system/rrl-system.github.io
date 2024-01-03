@@ -15,19 +15,12 @@ class RrlSystemFooter extends RrlElement {
 
     static get styles() {
         return [
+            RrlElement.styles,
             css`
                 :host {
                     padding: 20px 0;
+                    height: 100px;
                     background-color: var(--footer-background-color);
-                }
-
-                * {
-                    box-sizing: border-box;
-                    -webkit-touch-callout: none;
-                    -webkit-user-select: none;
-                    -moz-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
                 }
 
                 .copyright {

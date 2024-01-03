@@ -1,8 +1,26 @@
-import { RrlElement, html} from '../../../rrl-element.mjs'
+import { RrlElement, html, css} from '../../../rrl-element.mjs'
 
-import './home-section-1.mjs';
+import './my-projects-section-1.mjs';
+import '../../../../components/button/aside-button.mjs';
 
-class HomePage extends RrlElement {
+class MyProjects extends RrlElement {
+
+    static get styles() {
+        return [
+            css`
+                :host {
+                    display: flex;
+                    box-sizing: border-box;
+                    height: 100%
+                }
+                aside {
+                    display: flex;
+                    flex-direction: column;
+                }
+            `
+        ]
+    }
+
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true },
@@ -12,11 +30,16 @@ class HomePage extends RrlElement {
     constructor() {
         super();
         this.version = "1.0.0";
+        this.asideMap = [
+            {name: "user", title: "profile"},
+            {name: "right-from-bracket-solid", title: "Sing Out"},
+        ]
     }
+
 
     render() {
         return html`
-            <home-section-1></home-section-1>
+            <my-projects-section-1></my-projects-section-1>
         `;
     }
 
@@ -52,4 +75,4 @@ class HomePage extends RrlElement {
     }
 }
 
-customElements.define("home-page", HomePage);
+customElements.define("my-projects", MyProjects);

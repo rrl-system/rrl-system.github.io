@@ -1,5 +1,5 @@
 // lit: 2.0.0
-import { LitElement } from 'https://unpkg.com/lit@2.0.0/index.js?module';
+import { LitElement, css } from 'https://unpkg.com/lit@2.0.0/index.js?module';
 export * from 'https://unpkg.com/lit@2.0.0/index.js?module';
 export { styleMap } from 'https://unpkg.com/lit@2.0.0/directives/style-map.js?module';
 export { unsafeHTML } from 'https://unpkg.com/lit@2.0.0/directives/unsafe-html.js?module';
@@ -10,6 +10,26 @@ import './icaro.js';
 const urlRRL = import.meta.url;
 
 export class RrlElement extends LitElement {
+
+    static get styles() {
+        return css`
+            * {
+                box-sizing: border-box;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                -webkit-user-drag: none;
+                -khtml-user-drag: none;
+                -moz-user-drag: none;
+                -o-user-drag: none;
+                -ms-user-drag: none;
+                user-drag: none;
+            }
+        `
+    }
+
     constructor() {
         super();
 

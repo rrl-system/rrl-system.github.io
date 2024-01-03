@@ -61,7 +61,7 @@ class SignInForm extends RrlElement {
                 <div class="form-header">
                     <div class="form-tabs no-select">
                         <div class="form-tab" selected>
-                            <span id="db-tab" class="form-tab-link select">Sign in</span>
+                            Sign in
                         </div>
                     </div>
                     <close-button class="close-button no-select" name="times" @click=${()=>this.close('CANCEL')}></close-button>
@@ -74,12 +74,10 @@ class SignInForm extends RrlElement {
 
                         <div class="login-options">
                             <div class="checkbox-remember">
-                                <label for="remember"><b>Remember me</b></label>
+                                <label for="remember">Remember me</label>
                                 <input type="checkbox" id="remember" name="remember" @click=${this.RememberMe}>
                             </div>
-                            <a href="http://localhost/forgot" class="forgot-password" title="Forgot password?" style="
-                                text-decoration: none; 
-                                color: #5e5e5e">Forgot password?</a>
+                            <a href="http://localhost/forgot" class="forgot-password" title="Forgot password?">Forgot password?</a>
                         </div>
 
                         <button type="button" @click=${()=>this.sendSimpleUser()}>Log In</button>
@@ -282,7 +280,7 @@ class SignInForm extends RrlElement {
 
     async modalDialogShow() {
         const dialog =  this.renderRoot.querySelector('modal-dialog');
-        let modalResult = await dialog.show("Подключение прошло удачно");
+        let modalResult = await dialog.show("Подключение прошло успешно");
         if (modalResult === "Ok") {
             this.close(modalResult);
         }

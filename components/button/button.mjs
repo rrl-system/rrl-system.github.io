@@ -45,6 +45,7 @@ customElements.define('rrl-button', class RrlButton extends RrlElement {
             .rrl-btn {
                 display: flex;
                 align-items: center;
+                padding: 0 5px;
                 cursor: pointer;
             }
             .rrl-btn:hover {
