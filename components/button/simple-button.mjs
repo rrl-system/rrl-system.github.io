@@ -1,8 +1,8 @@
-import { RrlElement, html, css } from '../../js/rrl-element.mjs';
+import { BaseElement, html, css } from '../../js/base-element.mjs';
 
 import '../icon/icon.mjs'
 
-customElements.define('rrl-button', class RrlButton extends RrlElement {
+customElements.define('simple-button', class SimpleButton extends BaseElement {
     static get properties() {
         return {
             _useInfo: { type: Boolean, default: true },
@@ -42,21 +42,22 @@ customElements.define('rrl-button', class RrlButton extends RrlElement {
                 margin: 1px;
                 user-select: none;
             }
-            .rrl-btn {
+            .simple-btn {
                 display: flex;
                 align-items: center;
                 padding: 0 5px;
                 cursor: pointer;
+                height: 100%;
             }
-            .rrl-btn:hover {
+            .simple-btn:hover {
                 transition: .3s;
                 filter: brightness(85%);
             }
-            .rrl-btn:active {
+            .simple-btn:active {
                 transition: .1s;
                 filter: brightness(70%);
             }
-            .rrl-btn:focus {
+            .simple-btn:focus {
                 outline:none;
             }
             .left90 {
@@ -108,15 +109,13 @@ customElements.define('rrl-button', class RrlButton extends RrlElement {
         this.fill = this.fill || this.color;
         this.size = this.size || this.height || this.width;
         if (this.icon) _icon = JSON.stringify(this.icon);
-        return html`<rrl-icon class="${this.toggled ? this.toggledClass : this.notoggledClass}" icon=${_icon} name="${this.name}" fill="${this.fill}" size="${this.size}" scale="${this.scale}"
-            rotate="${this.rotate}" speed="${this.speed}" blink="${this.blink}" blval="${this.blval}" path="${this.path}"></rrl-icon>`;
+        return html`<simple-icon class="${this.toggled ? this.toggledClass : this.notoggledClass}" icon=${_icon} name="${this.name}" fill="${this.fill}" size="${this.size}" scale="${this.scale}"
+            rotate="${this.rotate}" speed="${this.speed}" blink="${this.blink}" blval="${this.blval}" path="${this.path}"></simple-icon>`;
     }
     render() {
         return html`
-            <div id="rrl-btn" class="rrl-btn"  tabindex="0" style="
+            <div id="simple-btn" class="simple-btn"  tabindex="0" style="
                     text-align: ${this.textAlign};
-                    width: ${this.width || this.size};
-                    height: ${this.height || this.size};
                     border: ${this.border} solid ${this.borderColor || this.color || this.fill};
                     border-radius: ${this.radius};
                     background-color: ${this.back};

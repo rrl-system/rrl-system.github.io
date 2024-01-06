@@ -1,8 +1,8 @@
-import { RrlElement, css, svg } from '../../js/rrl-element.mjs';
+import { BaseElement, css, svg } from '../../js/base-element.mjs';
 
 import icons from './icons/icons.mjs';
 
-customElements.define('rrl-icon', class RrlIcon extends RrlElement {
+customElements.define('simple-icon', class RrlIcon extends BaseElement {
 
     static get properties() {
         return {

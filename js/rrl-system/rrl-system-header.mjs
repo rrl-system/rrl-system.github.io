@@ -1,10 +1,8 @@
-import { RrlElement, html, css } from '../rrl-element.mjs'
+import { BaseElement, html, css } from '../base-element.mjs'
 
 import '../../components/button/toggle-button.mjs';
-import '../../components/forms/sign-in-form.mjs';
-import '../../components/forms/sign-up-form.mjs';
 
-class RrlSystemHeader extends RrlElement {
+class RrlSystemHeader extends BaseElement {
     static get properties() {
         return {
             isShow: { type: Boolean, default: false },
@@ -21,7 +19,7 @@ class RrlSystemHeader extends RrlElement {
 
     static get styles() {
         return [
-            RrlElement.styles,
+            BaseElement.styles,
             css`
                 :host {
                     padding: 0 10px;
@@ -205,7 +203,9 @@ class RrlSystemHeader extends RrlElement {
     login() {
         if (!this.isHorizontal)
             this.showMenu();
-        this.renderRoot.querySelector("sign-in-form").open().then(() => this.showUserAccount()).catch(() => '');
+        import( '../../components/forms/sign-in-form.mjs')
+            .then(() => this.renderRoot.querySelector("sign-in-form").open().then(() => this.showUserAccount()).catch(() => ''));
+        // import '../../components/forms/sign-up-form.mjs';
     }
 
     showUserAccount() {

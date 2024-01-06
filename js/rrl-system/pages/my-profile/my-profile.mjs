@@ -1,9 +1,9 @@
-import { RrlElement, html, css} from '../../../rrl-element.mjs'
+import { BaseElement, html, css} from '../../../base-element.mjs'
 
 import './my-profile-section-1.mjs';
 import '../../../../components/button/aside-button.mjs';
 
-class MyProfile extends RrlElement {
+class MyProfile extends BaseElement {
 
     static get styles() {
         return [

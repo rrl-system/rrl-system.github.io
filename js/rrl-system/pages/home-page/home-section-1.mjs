@@ -1,6 +1,6 @@
-import { RrlElement, html, css } from '../../../rrl-element.mjs'
+import { BaseElement, html, css } from '../../../base-element.mjs'
 
-class HomeSection1 extends RrlElement {
+class HomeSection1 extends BaseElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true },
@@ -9,7 +9,7 @@ class HomeSection1 extends RrlElement {
 
     static get styles() {
         return [
-            RrlElement.styles,
+            BaseElement.styles,
             css`
                 :host {
                     display: flex;

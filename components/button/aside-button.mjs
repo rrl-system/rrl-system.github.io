@@ -1,8 +1,8 @@
-import { RrlElement, html, css } from '../../js/rrl-element.mjs';
+import { BaseElement, html, css } from '../../js/base-element.mjs';
 
 import '../icon/icon.mjs'
 
-customElements.define('aside-button', class AsideButton extends RrlElement {
+customElements.define('aside-button', class AsideButton extends BaseElement {
     static get properties() {
         return {
             _useInfo: { type: Boolean, default: true },
@@ -20,27 +20,26 @@ customElements.define('aside-button', class AsideButton extends RrlElement {
                 margin: 1px;
                 user-select: none;
             }
-            .rrl-btn {
+            .btn {
                 display: flex;
                 align-items: center;
                 cursor: pointer;
             }
-            .rrl-btn:hover {
+            .btn:hover {
                fill: red;
             }
-            .rrl-btn:active {
+            .btn:active {
                 transition: .1s;
                 filter: brightness(85%);
             }
         `;
     }
-
     get #icon() {
-        return html`<rrl-icon name="${this.name}" size="${this.size}"></rrl-icon>`;
+        return html`<simple-icon name="${this.name}" size="${this.size}"></simple-icon>`;
     }
     render() {
         return html`
-            <div id="rrl-btn" class="rrl-btn"  tabindex="0">
+            <div class="btn"  tabindex="0">
                 ${this.#icon}
             </div>
         `;

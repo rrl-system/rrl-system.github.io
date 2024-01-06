@@ -1,11 +1,10 @@
-import { RrlElement, html, css, nothing } from '../../js/rrl-element.mjs';
+import { BaseElement, html, css, nothing } from '../../js/base-element.mjs';
 
 import '../icon/icon.mjs'
-import '../button/button.mjs'
 
 import styles from './input-css.mjs'
 
-class RrlEMail extends RrlElement {
+class RrlEMail extends BaseElement {
     static get properties() {
         return {
             type: { type: String, default: 'text'},
@@ -77,7 +76,7 @@ class RrlEMail extends RrlElement {
 
     get #icon() {
         return html`
-            <rrl-icon class="icon" icon="{}" name="${this.name}" fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-icon>
+            <simple-icon class="icon" icon="{}" name="${this.name}" fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></simple-icon>
         `
     }
 
@@ -87,7 +86,7 @@ class RrlEMail extends RrlElement {
 
     get #button() {
         return html`
-            <rrl-icon class="button" icon="{}" name=${this.buttonName || nothing} fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path="" @click=${this.updateLoginValue}></rrl-icon>
+            <simple-icon class="button" icon="{}" name=${this.buttonName || nothing} fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path="" @click=${this.updateLoginValue}></simple-icon>
         `
     }
 

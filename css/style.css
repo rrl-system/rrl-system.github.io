@@ -28,4 +28,5 @@ body {
     --checkbox-accent-color: var(--background-green);
     --link-hover-color: red;
     --link-active-color: red;
+    --form-color: gray;
 }

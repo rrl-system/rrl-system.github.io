@@ -1,8 +1,8 @@
-import { RrlElement, html, css } from '../../js/rrl-element.mjs';
+import { BaseElement, html, css } from '../../js/base-element.mjs';
 
 import '../icon/icon.mjs'
 
-customElements.define('close-button', class CloseButton extends RrlElement {
+customElements.define('close-button', class CloseButton extends BaseElement {
     static get properties() {
         return {
             _useInfo: { type: Boolean, default: true },
@@ -36,7 +36,7 @@ customElements.define('close-button', class CloseButton extends RrlElement {
     }
 
     get #icon() {
-        return html`<rrl-icon name="${this.name}" size="${this.size}"></rrl-icon>`;
+        return html`<simple-icon name="${this.name}" size="${this.size}"></simple-icon>`;
     }
     render() {
         return html`

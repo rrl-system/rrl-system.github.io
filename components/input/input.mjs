@@ -1,11 +1,11 @@
-import { RrlElement, html, css, nothing } from '../../js/rrl-element.mjs';
+import { BaseElement, html, css, nothing } from '../../js/base-element.mjs';
 
 import '../icon/icon.mjs'
-import '../button/button.mjs'
+import '../button/simple-button.mjs'
 
 import styles from './input-css.mjs'
 
-class RrlInput extends RrlElement {
+class RrlInput extends BaseElement {
     static get properties() {
         return {
             type: { type: String, default: 'text'},
@@ -38,7 +38,9 @@ class RrlInput extends RrlElement {
             icon: { type: Object, default: undefined },
             buttonName: { type: String, default: '' },
             placeholder: { type: String, default: '' },
-            value: { type: String, default: '' },
+            value: { type: String, default: ''},
+            isChanged: {type: Boolean, default: false, local: true},
+            isValidate: {type: Boolean, default: false, local: true},
         }
     }
 
@@ -78,16 +80,26 @@ class RrlInput extends RrlElement {
 
     get #icon() {
         return html`
-            <rrl-icon class="icon" icon="{}" name="${this.name}" fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-icon>
+            <simple-icon class="icon" icon="{}" name="${this.name}" fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></simple-icon>
         `
     }
 
+    // get value() {
+    //     return this._value;
+    // }
+
+    // set value(value) {
+    //     const oldValue = this.value;
+    //     this._value = value;
+    //     this.requestUpdate('value', oldValue);
+    // }
+
     get value() {
-        return this.renderRoot?.querySelector('#input')?.value ?? null;
+        return this.renderRoot?.querySelector('input')?.value ?? null;
     }
 
     set value(value) {
-        const input = this.renderRoot?.querySelector('#input');
+        const input = this.renderRoot?.querySelector('input');
         if (input) {
             input.value= value;
         }
@@ -95,7 +107,7 @@ class RrlInput extends RrlElement {
 
     get #button() {
         return html`
-            <rrl-icon class="button" icon="{}" name=${this.buttonName || nothing} fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path="" @click=${this.updateLoginValue}></rrl-icon>
+            <simple-icon class="button" icon="{}" name=${this.buttonName || nothing} fill="${this.fill}" size="${this.size}" scale="1" rotate="0" speed="0" blink="0" blval="1;0;0;1" path="" @click=${this.updateLoginValue}></simple-icon>
         `
     }
 
@@ -104,17 +116,27 @@ class RrlInput extends RrlElement {
             ${this.label ? this.#label : ''}
             <div class="input-group">
                 <input type=${this.type}
-                    id="input"
                     placeholder=${this.placeholder || nothing}
                     ${this.required ? 'required' : ''}
-                    class=""
-                    .value=${this.value || nothing} @change=${this.updateLoginValue}
+                    .value=${this.value || nothing} @keyup=${this.changeValue}
                 >
                 ${this.name ? this.#icon : ''}
                 ${this.buttonName ? this.#button : ''}
             </div>
         `;
         ///.value=${this.value || nothing}
+    }
+
+    get #input() {
+        return this.renderRoot?.querySelector('input') ?? null;
+    }
+
+    changeValue(e) {
+        const options = {
+            bubbles: true,
+            composed: true
+          };
+        this.dispatchEvent(new CustomEvent('value-changed', options));
     }
 };
 

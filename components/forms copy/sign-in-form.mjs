@@ -1,5 +1,5 @@
 
-import { RrlElement, html, css } from '../../js/rrl-element.mjs';
+import { BaseElement, html, css } from '../../js/base-element.mjs';
 
 import { formStyles } from './form-css.mjs'
 
@@ -12,7 +12,7 @@ import '../input/email.mjs';
 import '../input/password.mjs';
 import '../button/close-button.mjs';
 
-class SignInForm extends RrlElement {
+class SignInForm extends BaseElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true, category: 'settings' },
