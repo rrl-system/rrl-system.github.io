@@ -1,9 +1,9 @@
-import { RrlElement, html, css } from '../rrl-element.mjs'
+import { BaseElement, html, css } from '../base-element.mjs'
 
 
 import '../../components/button/aside-button.mjs';
 
-class RrlSystemLeftAside extends RrlElement {
+class RrlSystemLeftAside extends BaseElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true },
@@ -16,7 +16,7 @@ class RrlSystemLeftAside extends RrlElement {
 
     static get styles() {
         return [
-            RrlElement.styles,
+            BaseElement.styles,
             css`
                 :host {
                     display: flex;

@@ -9,7 +9,7 @@ import './icaro.js';
 
 const urlRRL = import.meta.url;
 
-export class RrlElement extends LitElement {
+export class BaseElement extends LitElement {
 
     static get styles() {
         return css`
@@ -56,10 +56,10 @@ export class RrlElement extends LitElement {
             if (prop?.default !== undefined) this[k] = prop.default;
         }
         const name = this.localName.replace('lit-', '');
-        this.$url = `${urlRRL.replace('rrl-element.mjs', '')}${name}.js`;
+        this.$url = `${urlRRL.replace('base-element.mjs', '')}${name}.js`;
 
         this.$ulid = this.$ulid || RRL.ulid();
-        if (this._useInfo) this.$urlInfo = `${urlRRL.replace('rrl-element.mjs', '')}/${name}/$info/$info.js`;
+        if (this._useInfo) this.$urlInfo = `${urlRRL.replace('base-element.mjs', '')}/${name}/$info/$info.js`;
     }
 
     connectedCallback() {
@@ -253,7 +253,7 @@ class CRRL {
         comp = comp || {};
         if (typeof comp === 'string') {
             comp = comp.replace('lit-', '');
-            let url = `${urlRRL.replace('js/rrl-element.mjs', '')}components/${comp}/${comp}.js`;
+            let url = `${urlRRL.replace('js/base-element.mjs', '')}components/${comp}/${comp}.js`;
             await import(url);
             const cmp = document.createElement(`lit-${comp}`);
             for (let p in props) cmp[p] = props[p];

@@ -1,8 +1,8 @@
-import { RrlElement, html, css} from '../../../rrl-element.mjs'
+import { BaseElement, html, css} from '../../../base-element.mjs'
 
 import './home-section-1.mjs';
 
-class HomePage extends RrlElement {
+class HomePage extends BaseElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true },

@@ -1,8 +1,8 @@
-import { RrlElement, html, css } from '../rrl-element.mjs'
+import { BaseElement, html, css } from '../base-element.mjs'
 
 import '../../components/button/social-button.mjs';
 
-class RrlSystemFooter extends RrlElement {
+class RrlSystemFooter extends BaseElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true },
@@ -15,7 +15,7 @@ class RrlSystemFooter extends RrlElement {
 
     static get styles() {
         return [
-            RrlElement.styles,
+            BaseElement.styles,
             css`
                 :host {
                     padding: 20px 0;

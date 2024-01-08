@@ -3,13 +3,13 @@ import { css } from 'https://unpkg.com/lit@2.0.0/index.js?module';
 const styles = css`
 
 .label {
-    color: var(--form-color);
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-top: 8px;
     font-weight: bold;
+    color: var(--form-color);
 }
 
 .input-group {
@@ -29,10 +29,9 @@ input[type="number"] {
     padding: 12px 20px 12px 40px;
     border: 1px solid rgb(204, 204, 204);
     border-radius: 10px;
-    box-sizing: border-box;
-    outline-color: var(--form-outline-color);
-    color: var(--form-color);
     font-size: 14px;
+    outline-color: var(--form-outline-color);
+    color: var(--form-input-color, gray);
 }
 
 [placeholder] {
@@ -49,9 +48,8 @@ input[type="number"] {
     display: inline-block;
     position: absolute;
     cursor: pointer;
-    right: 5px
+    right: 10px;
 }
-
 `;
 
 export default styles

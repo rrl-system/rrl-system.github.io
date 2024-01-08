@@ -3,7 +3,7 @@ import { BaseElement, html, css } from '../../js/base-element.mjs';
 import { formStyles } from './modal-dialog-css.mjs'
 import '../button/close-button.mjs';
 
-customElements.define('modal-dialog', class ModalDialog extends BaseElement {
+customElements.define('confirm-dialog', class ConfirmDialog extends BaseElement {
 
     static get properties() {
         return {
@@ -45,7 +45,8 @@ customElements.define('modal-dialog', class ModalDialog extends BaseElement {
 
                     <div class="dialog-footer no-select">
                         <div class="footer-buttons">
-                            <button type="button" id="ok-button" class="footer-button btn-ok" @click=${()=>this.ok()}>Понял</button>
+                            <button type="button" id="ok-button" class="footer-button btn-ok" @click=${()=>this.ok()}>Да</button>
+                            <button type="button" id="button-cancel" class="footer-button button-cancel" @click=${()=>this.close()}>Нет</button>
                         </div>
                     </div>
                 </div>
@@ -66,8 +67,8 @@ customElements.define('modal-dialog', class ModalDialog extends BaseElement {
     }
 
     ok() {
-        this.modalResult('Ok');
         this.opened = false;
+        this.modalResult('Ok');
     }
 
     close() {

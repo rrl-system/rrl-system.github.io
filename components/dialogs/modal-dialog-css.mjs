@@ -65,7 +65,17 @@ button {
 }
 
 button:hover {
-    opacity: 0.8;
+    transition: .3s;
+    filter: brightness(110%);
+}
+
+button:active {
+    transition: .3s;
+    filter: brightness(90%);
+}
+
+.btn-ok:hover {
+    background-color: var(--link-hover-color);
 }
 
 .footer-button {
