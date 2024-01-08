@@ -185,28 +185,7 @@ class MyProjectsSection1 extends BaseElement {
             `;
         }
 
-        handleDragOver(event) {
-            event.stopPropagation();
-            event.preventDefault();
-            event.target.style.background = "lightblue";
-        }
-
-        handleDragLeave(event) {
-            event.target.style.background = ""; // Возвращаем обычный стиль
-        }
-
-        handleDrop(event) {
-            event.stopPropagation();
-            event.preventDefault();
-
-            // Сбрасываем стили
-            event.target.style.background = "";
-
-            // Получаем файлы из перетаскиваемых
-            const files = event.dataTransfer.files;
-            Array.from(files).forEach(file => this.uploadFile(file));
-        }
-
+        
         async uploadFile(file) {
             const token = await this.getToken();
             const formData = new FormData();
