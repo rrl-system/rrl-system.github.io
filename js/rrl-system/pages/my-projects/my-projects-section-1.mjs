@@ -122,6 +122,7 @@ class MyProjectsSection1 extends BaseElement {
                     a:hover {
                         background-color: var(--button-hover-color);
                     }
+
                     footer {
                         grid-area: footer;
                         display: flex;
@@ -130,8 +131,18 @@ class MyProjectsSection1 extends BaseElement {
                         margin-right: 20px;
                         gap: 10px;
                     }
+
                     footer simple-button {
                         height: 40px;
+                    }
+
+                    #drop_zone {
+                        border: 2px dashed #009688; /* пунктирная рамка */
+                        border-radius: 5px; /* скругление углов */
+                        padding: 20px; /* внутренние отступы */
+                        text-align: center; /* выравнивание текста по центру */
+                        color: #009688; /* цвет текста */
+                        margin: 10px 0; /* отступы сверху и снизу */
                     }
                 `
             ]
@@ -149,6 +160,7 @@ class MyProjectsSection1 extends BaseElement {
             }
             else {
                 this.currentProject = this.dataSet[index]
+                this.fetchExistingFiles();
             }
         }
 
@@ -166,8 +178,10 @@ class MyProjectsSection1 extends BaseElement {
                         <h2>Project property</h2>
                         <rrl-input id="name" type="text" name="user" @value-changed=${this.validateInput} placeholder="Название" icon="{}" fill="gray" size="20" .value=${this.currentProject.name} color="gray"></rrl-input>
                         <rrl-input id="path" type="text" name="bars" @value-changed=${this.validateInput} placeholder="project" icon="{}" fill="gray" size="20" .value=${this.currentProject.path} color="gray"></rrl-input>
-                        <div id="drop_zone" ondrop="dropHandler(event);">
-                              <p>Drag one or more files to this <i>drop zone</i>.</p>
+                        <h2>Project files</h2>
+                        <div id="uploaded_files"></div>
+                        <div id="drop_zone" @dragover="${this.handleDragOver}" @dragleave="${this.handleDragLeave}" @drop="${this.handleDrop}">
+                            <p>Загрузка файла проекта</p>
                         </div>
                     </div>
                 </div>
@@ -177,6 +191,93 @@ class MyProjectsSection1 extends BaseElement {
                 </footer>
             `;
         }
+
+        handleDragOver(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            event.target.style.background = "lightblue";
+        }
+
+        handleDragLeave(event) {
+            event.target.style.background = ""; // Возвращаем обычный стиль
+        }
+
+        handleDrop(event) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            // Сбрасываем стили
+            event.target.style.background = "";
+        
+            // Получаем файлы из перетаскиваемых
+            const files = event.dataTransfer.files;
+            Array.from(files).forEach(file => this.uploadFile(file));
+        }
+
+        async uploadFile(file) {
+            const token = await this.getToken();
+            const formData = new FormData();
+            formData.append('file', file);
+
+            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
+                method: "POST",
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            })
+
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json;
+            })
+            .then(() => this.fetchExistingFiles())
+            .catch(err => {console.error(err.message)});
+        }
+
+        fetchExistingFiles() {
+            const token = this.getToken();
+        
+            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}/files`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json.files;
+            })
+            .then(files => {
+                this.displayFiles(files); // Обновляем отображаемые файлы
+            })
+            .catch(err => {console.error(err.message)});
+        }
+        
+
+        displayFiles(files) {
+            const uploadedFilesList = this.shadowRoot.getElementById('uploaded_files');
+            
+            if (!uploadedFilesList) {
+                console.error("Element to display uploaded files is not found!");
+                return;
+            }
+        
+            // Очищаем список перед отображением новых элементов
+            uploadedFilesList.innerHTML = '';
+        
+            // Добавляем все файлы в список
+            files.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.textContent = file.name;
+                uploadedFilesList.appendChild(fileItem);
+            });
+        }        
 
         validateInput(e) {
             if (e.target.value !== "") {
