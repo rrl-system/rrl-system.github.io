@@ -35,7 +35,7 @@ customElements.define('aside-button', class AsideButton extends BaseElement {
         `;
     }
     get #icon() {
-        return html`<simple-icon name="${this.name}" size="${this.size}"></simple-icon>`;
+        return html`<simple-icon icon-name="${this.name}" size="${this.size}"></simple-icon>`;
     }
     render() {
         return html`

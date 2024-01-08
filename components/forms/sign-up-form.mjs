@@ -5,9 +5,9 @@ import { formStyles } from './form-css.mjs'
 
 import '../dialogs/modal-dialog.mjs';
 
-import '../input/input.mjs';
-import '../input/email.mjs';
-import '../input/password.mjs';
+import '../inputs/simple-input.mjs';
+import '../inputs/email-input.mjs';
+import '../inputs/password-input.mjs';
 import '../button/close-button.mjs';
 
 class SignUpForm extends BaseElement {
@@ -64,10 +64,9 @@ class SignUpForm extends BaseElement {
 
                 <div class="form-body">
                     <div id="db-tab-section" class="form-tab-section selected">
-                        <rrl-input type="text" id="login" name="user" placeholder="Логин" label="Пользователь" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-input>
-                        <rrl-email type="mail" id="email" name="mail" placeholder="EMail" label="Почта" icon="{}" class="notoggled" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-email>
-                        <rrl-password id="password" type="password" label="Пароль" visibleIcon="eye-slash-regular" invisibleIcon="eye-regular" class="notoggled" icon="{}" name="lock" fill="gray" size="28" scale="0.9" rotate="0" speed="0" blink="0" blval="1;0;0;1" path=""></rrl-password>
-
+                        <simple-input id="login" icon-name="user" placeholder="Логин" label="Пользователь"></simple-input>
+                        <email-input id="email" icon-name="mail" placeholder="EMail" label="Почта" size="28"></email-input>
+                        <password-input id="password" label="Пароль" icon-name="password" visible-icon="eye-slash-regular" invisible-icon="eye-regular"></password-input>
                         <div class="sign-up-options">
                             <div class="checkbox-remember">
                                 <label for="remember"><b>Remember me</b></label>

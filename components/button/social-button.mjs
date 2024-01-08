@@ -42,7 +42,7 @@ customElements.define('social-button', class SocialButton extends BaseElement {
     render() {
         return html`
             <a href="${this.href}" style="background-color: ${this.backgroundColor};" target="_blank" title="${this.title}">
-                <simple-icon name="${this.name}" fill="${this.color}" size="${this.size}" scale="${this.scale}"></simple-icon>
+                <simple-icon icon-name="${this.name}" fill="${this.color}" size="${this.size}" scale="${this.scale}"></simple-icon>
             </a>
         `;
     }

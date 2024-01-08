@@ -1,7 +1,8 @@
 import { BaseElement, html, css } from '../../../base-element.mjs'
 
 import '../../../../components/dialogs/confirm-dialog.mjs'
-import '../../../../components/input/input.mjs'
+import '../../../../components/inputs/simple-input.mjs'
+import '../../../../components/inputs/upload-input.mjs'
 
 class MyProjectsSection1 extends BaseElement {
         static get properties() {
@@ -133,6 +134,11 @@ class MyProjectsSection1 extends BaseElement {
                     footer simple-button {
                         height: 40px;
                     }
+                    #drop_zone {
+                        border: 5px solid blue;
+                        width: 200px;
+                        height: 100px;
+                      }
                 `
             ]
         }
@@ -164,15 +170,13 @@ class MyProjectsSection1 extends BaseElement {
                 <div class="right-layout">
                     <div>
                         <h2>Project property</h2>
-                        <rrl-input id="name" type="text" name="user" @value-changed=${this.validateInput} placeholder="Название" icon="{}" fill="gray" size="20" .value=${this.currentProject.name} color="gray"></rrl-input>
-                        <rrl-input id="path" type="text" name="bars" @value-changed=${this.validateInput} placeholder="project" icon="{}" fill="gray" size="20" .value=${this.currentProject.path} color="gray"></rrl-input>
-                        <div id="drop_zone" ondrop="dropHandler(event);">
-                              <p>Drag one or more files to this <i>drop zone</i>.</p>
-                        </div>
+                        <simple-input id="name" icon-name="user" placeholder="Название" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
+                        <simple-input id="path" icon-name="bars" placeholder="Project" .value=${this.currentProject.path} @value-changed=${this.validateInput}></simple-input>
+                        <upload-input id="filename" .value=${this.currentProject.filename} @value-changed=${this.validateInput}></upload-input>
                     </div>
                 </div>
                 <footer>
-                    <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.saveProject: this.deleteProject}></simple-button>
+                    <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.uploadFile: this.deleteProject}></simple-button>
                     <simple-button label=${this.isModified ? "Отменить": "Добавить"} @click=${this.isModified ? this.cancelProject: this.addProject}></simple-button>
                 </footer>
             `;
@@ -188,6 +192,7 @@ class MyProjectsSection1 extends BaseElement {
                         this.oldValues.delete(e.target)
                     }
                 }
+                const currentProject = e.target.currentObject ?? this.currentProject
                 this.currentProject[e.target.id] = e.target.value
                 this.isModified = this.oldValues.size !== 0;
             }
@@ -258,6 +263,10 @@ class MyProjectsSection1 extends BaseElement {
 
         async saveProject() {
             const token = await this.getToken();
+            // const formData = new FormData();
+            // const upload = this.renderRoot?.querySelector('upload-input')
+            // formData.append("project", JSON.stringify(this.currentProject));
+            // formData.append("upload", upload.file);
             return fetch(`http://localhost:7000/api/project`, {
                 method: "PUT",
                 headers: {
@@ -265,6 +274,31 @@ class MyProjectsSection1 extends BaseElement {
                   'Content-Type': 'application/json;charset=utf-8'
                 },
                 body: JSON.stringify(this.currentProject)
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json;
+            })
+            .then(projectHeader => this.updateDataset(projectHeader))
+            .then(() => this.uploadFile())
+            // .then(() => this.modalDialogShow())
+            .catch(err => {console.error(err)});
+        }
+
+        async uploadFile() {
+            const token = await this.getToken();
+            const formData = new FormData();
+            const uploadInput = this.renderRoot?.querySelector('upload-input')
+            formData.append("file", uploadInput.file);
+            return fetch(`http://localhost:7000/api/upload`, {
+                method: "POST",
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                },
+                body: formData
             })
             .then(response => response.json())
             .then(json => {

@@ -96,7 +96,7 @@ class MyProfileSection1 extends BaseElement {
                     <div>
                         <h2>Innovative programming</h2>
                         <h1>Reinforcement<br>learning<br>systems</h1>
-                        <p>The future is already here. Аrtificial intelligence never sleeps and never gets bored</p>
+                        <p>The future is already here. Artificial intelligence never sleeps and never gets bored</p>
                         <a href="#my-pride">Learn more</a>
                     </div>
                 </div>

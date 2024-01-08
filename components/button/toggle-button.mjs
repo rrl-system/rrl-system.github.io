@@ -110,7 +110,7 @@ class ToggleButton extends BaseElement {
         this.fill = this.fill || this.color;
         this.size = this.size || this.height || this.width;
         if (this.icon) _icon = JSON.stringify(this.icon);
-        return html`<simple-icon class="${this.toggled ? this.toggledClass : this.notoggledClass}" icon=${_icon} name="${this.toggled ? this.toggledName : this.name}" fill="${this.fill}" size="${this.size}" scale="${this.scale}"
+        return html`<simple-icon class="${this.toggled ? this.toggledClass : this.notoggledClass}" icon=${_icon} icon-name="${this.toggled ? this.toggledName : this.name}" fill="${this.fill}" size="${this.size}" scale="${this.scale}"
             rotate="${this.rotate}" speed="${this.speed}" blink="${this.blink}" blval="${this.blval}" path="${this.path}"></simple-icon>`;
     }
     render() {

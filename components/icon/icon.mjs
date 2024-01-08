@@ -1,4 +1,4 @@
-import { BaseElement, css, svg } from '../../js/base-element.mjs';
+import { BaseElement, css, svg, nothing } from '../../js/base-element.mjs';
 
 import icons from './icons/icons.mjs';
 
@@ -7,7 +7,7 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
     static get properties() {
         return {
             _useInfo: {type: Boolean, default: true },
-            name: { type: String, default: '', isIcon: true },
+            iconName: { type: String, default: '', attribute: 'icon-name'},
             fill: { type: String, default: 'currentColor' },
             stroke: { type: String, default: 'currentColor' },
             strokeWidth: { type: Number, default: 0 },
@@ -20,7 +20,7 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
             rotate: { type: Number, default: 0 },
             speed: { type: Number, default: 0 },
             blink: { type: Number, default: 0 },
-            blval: { type: String, default: '1;0;0;1' },
+
             path: { type: String, default: '' },
             icon: { type: Object, default: undefined },
             args: { type: Object }
@@ -32,7 +32,7 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
         if (setPath) this.path = '';
         if (this.icon)
             for (let i in this.icon) this[i] = this.icon[i];
-        const name = this.name;
+        const name = this.iconName;
         let s = 24;
         if (!this.path && name && icons[name]) {
             this.path = icons[name].path;
@@ -48,7 +48,7 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
     update(changedProperties) {
         super.update(changedProperties);
         if (this._isFirstUpdated) {
-            if (changedProperties.has('name')) {
+            if (changedProperties.has('iconName')) {
                 setTimeout(() => {
                     this.firstUpdated(true);
                 });
@@ -93,24 +93,23 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                 preserveAspectRatio="xMidYMid meet" xml:space="preserve"
                 display="block"
-                viewBox="${this.viewbox}"
-                width="${this.width || this.size}"
-                height="${this.height || this.size}"
-                style="transform:rotate(${this.rotate}deg) scale(${this.scale});">
+                viewBox=${this.viewbox}
+                width=${this.width || this.size}
+                height=${this.height || this.size}
+                style="transform:rotate(${this.rotate}deg) scale(${this.scale}); width: 100%; height: 100%">
                 <g
-                    fill="${this.fill}"
-                    stroke="${this.stroke}"
-                    stroke-width="${this.strokeWidth}"
+                    fill=${this.fill || nothing}
+                    stroke=${this.stroke}
+                    stroke-width=${this.strokeWidth}
                     style="transform-origin: center center; transform-box: fill-box;">
                     <path d="${this.path}">
                         ${this.blink
                             ? svg`<animate id="animate"
                                 attributeName="opacity"
-                                values="${this.blval}"
                                 dur="${Math.abs(this.blink)}s"
                                 restart="whenNotActive"
                                 repeatCount="indefinite"/>`
-                            : svg``
+                            : ''
                         }
                         ${this.speed
                             ? svg`<animateTransform id="animateTransform" attributeType="XML"
@@ -122,13 +121,12 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
                                 dur="${Math.abs(this.speed)}s"
                                 restart="whenNotActive"
                                 repeatCount="indefinite"/>`
-                            : svg``
+                            : ''
                         }
                     </path>
                 />
-
-                               <defs>
-                  ${this.createHTMLNode(this.defs)}
+                <defs>
+                   ${this.createHTMLNode(this.defs)}
                 </defs>
             </svg>
         `
