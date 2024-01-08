@@ -80,7 +80,7 @@ class SignInForm extends RrlElement {
                             <a href="http://localhost/forgot" class="forgot-password" title="Forgot password?">Forgot password?</a>
                         </div>
 
-                        <button type="button" @click=${()=>this.sendSimpleUser()}>Log In</button>
+                        <button type="button" @click=${()=>this.sendSimpleUser()}>Login</button>
                         <div id="google"></div>
                     </div>
                 </div>

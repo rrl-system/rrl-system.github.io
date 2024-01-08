@@ -31,53 +31,77 @@ class MyProfileSection1 extends RrlElement {
                         display: flex;
                         flex-basis: 50%;
                         align-items: center;
-                    }
-
-                    img {
-                        width: 100%;
+                        flex-direction: column;
+                        align-items: flex-start;
                     }
 
                     .right-layout {
                         display: flex;
                         flex-basis: 50%;
-                        align-items: center;
-                    }
-
-                    h1 {
-                        font-size: 3.4375rem;
-                        font-weight: 700;
-                        text-transform: uppercase;
-                        margin: 20px 0 0;
-                    }
-
-                    h2 {
-                        font-weight: 300;
-                        line-height: 1.2;
-                        font-size: 1.25rem;
+                        align-items: flex-start;
                     }
 
                     p {
-                        font-size: 1.25rem;
-                        margin: 20px 207px 20px 0;
-                        overflow-wrap: break-word;
-                    }
-
-                    a {
-                        display: inline-block;
-                        text-transform: uppercase;
-                        color: var(--native-color);
-                        margin: 20px auto 0 0;
-                        background-color: var(--background-green);
-                        letter-spacing: 1px;
-                        text-decoration: none;
-                        white-space: nowrap;
-                        padding: 10px 30px;
-                        border-radius: 0;
-                        font-weight: 600;
+                        font-size: 1rem;
+                        margin-left: 1rem;
                     }
 
                     a:hover {
                         background-color: var(--button-hover-color);
+                    }
+                    
+                    .avatar-placeholder {
+                        width: 150px;
+                        height: 150px;
+                        border-radius: 50%;
+                        background-color: var(--native-color);
+                    }
+
+                    button {
+                        padding: 10px 25px;
+                        background-color: var(--background-green);
+                        color: var(--native-color);
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    }
+    
+                    button:hover {
+                        background-color: var(--button-hover-color);
+                    }
+
+                    button:first-child {
+                        margin-right: 20px;
+                    }
+
+                    label {
+                        font-size: 1.15rem;
+                        margin-bottom: 5px;
+                        flex-direction: column;
+                        display: block;
+                    }
+    
+                    img {
+                        max-width: 100px;
+                        max-height: 100px;
+                        border-radius: 50%;
+                        overflow: hidden;
+                        background-color: var(--native-color);
+                    }
+
+                    input {
+                        margin-bottom: 1.5rem;
+                        margin-right: 5.5rem;
+                        padding: 5px;
+                        width: 300px;
+                        flex-direction: column;
+                        display: block;
+                    }
+
+                    input[type="file"] {
+                        margin-bottom: 20px;
+                        lang: en-US;
                     }
                 `
             ]
@@ -85,22 +109,86 @@ class MyProfileSection1 extends RrlElement {
 
         constructor() {
             super();
+
+            this.name = '';
+            this.surname = '';
+            this.middlename = '';
+            this.email = '';
+            this.phone = '';
+            this.avatar = '';
         }
 
         render() {
             return html`
                 <div class="left-layout">
-                    <img src="/images/home/robot.png" alt="robot">
+                    <h1 for="avatar">Profile picture</h1>
+                    <input type="file" id="avatar" accept="image/*" @change="${(e) => this.handleAvatarChange(e)}">
+                    ${this.avatar
+                        ? html`<img src="${this.avatar}" alt="Avatar">`
+                        : html`<div class="avatar-placeholder"></div>`}
+                    <p>Size: 100x100px</p>
                 </div>
                 <div class="right-layout">
                     <div>
-                        <h2>Innovative programming</h2>
-                        <h1>Reinforcement<br>learning<br>systems</h1>
-                        <p>The future is already here. Аrtificial intelligence never sleeps and never gets bored</p>
-                        <a href="#my-pride">Learn more</a>
+                        <h1>Personal data</h1>
+                    
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" .value="${this.name}" @input="${(e) => this.name = e.target.value}">
+
+                        <label for="surname">Surname:</label>
+                        <input type="text" id="surname" .value="${this.surname}" @input="${(e) => this.surname = e.target.value}">
+
+                        <label for="middlename">Middle name:</label>
+                        <input type="text" id="middlename" .value="${this.middlename}" @input="${(e) => this.middlename = e.target.value}">
+
+                        <label for="email">EMail:</label>
+                        <input type="email" id="email" .value="${this.email}" @input="${(e) => this.email = e.target.value}">
+
+                        <label for="phone">Telephone:</label>
+                        <input type="tel" id="phone" .value="${this.phone}" @input="${(e) => this.phone = e.target.value}">   
+                    </div>
+                    
+                    <div>
+                        <h1>Change password</h1>
+
+                        <label for="old-password">Old Password:</label>
+                        <input type="password" id="old-password">
+
+                        <label for="new-password">New Password:</label>
+                        <input type="password" id="new-password">
+
+                        <label for="confirm-password">Confirm Password:</label>
+                        <input type="password" id="confirm-password">
+
+                        <div class="button-container">
+                            <button @click="${this.handleSave}">Save</button>
+                            <button @click="${this.handleCancel}">Cancel</button>
+                        </div>
                     </div>
                 </div>
             `;
+        }
+
+        handleAvatarChange(event) {
+            const fileInput = event.target;
+            const file = fileInput.files[0];
+    
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.avatar = e.target.result;
+                    this.requestUpdate(); // Обновить компонент, чтобы перерисовать изображение
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        handleSave() {
+            console.log('Saving data:', this.name, this.surname, this.middlename, this.email, this.phone, this.avatar);
+        }
+    
+        handleCancel() {
+            console.log('Canceling changes');
         }
 
         firstUpdated() {

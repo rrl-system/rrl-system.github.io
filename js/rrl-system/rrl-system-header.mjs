@@ -153,7 +153,7 @@ class RrlSystemHeader extends RrlElement {
     }
 
     userAccount() {
-        return this.successUserIn ?  html`<li><a href="#my-profile" ? active=${this.activePage=="my-profile"}>Profile</a></li>` :
+        return this.successUserIn ?  html`<li><a href="#my-profile" ? active=${this.activePage=="my-profile"}>My profile</a></li>` :
             html`<li><a @click=${this.login}>Log In</a></li>`
     }
     horizontalHeader() {

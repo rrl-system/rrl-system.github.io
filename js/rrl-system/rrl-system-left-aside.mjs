@@ -54,7 +54,7 @@ class RrlSystemLeftAside extends RrlElement {
             <nav>${this.buttons.map((button, index) =>
                 html`<aside-button name=${button.name} title=${button.title} @click=${button.click}></aside-button>`)}
             </nav>
-            <aside-button name="right-from-bracket-solid" title="Sing Out" @click=${this.signOut}></aside-button>
+            <aside-button name="right-from-bracket-solid" title="Sign Out" @click=${this.signOut}></aside-button>
         `;
     }
 

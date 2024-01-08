@@ -119,7 +119,7 @@ class MyProjectsSection1 extends RrlElement {
 
         render() {
             return html`
-                <header>Прокеты: ${this.currentProject.name}</header>
+                <header>Проекты: ${this.currentProject.name}</header>
                 <div class="left-layout">
                     ${this.dataSet.map((project, index) =>
                         html`<rrl-button label=${project.name} title=${project._id} height="40px" @click=${() => this.showProject(index, project._id)}></rrl-button>`)}

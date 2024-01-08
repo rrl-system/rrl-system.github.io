@@ -32,7 +32,7 @@ class MyProjects extends RrlElement {
         this.version = "1.0.0";
         this.asideMap = [
             {name: "user", title: "profile"},
-            {name: "right-from-bracket-solid", title: "Sing Out"},
+            {name: "right-from-bracket-solid", title: "Sign Out"},
         ]
     }
 
