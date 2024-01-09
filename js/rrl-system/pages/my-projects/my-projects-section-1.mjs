@@ -157,7 +157,6 @@ class MyProjectsSection1 extends BaseElement {
             }
             else {
                 this.currentProject = this.dataSet[index]
-                this.fetchExistingFiles();
             }
         }
 
@@ -179,90 +178,90 @@ class MyProjectsSection1 extends BaseElement {
                     </div>
                 </div>
                 <footer>
-                    <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.uploadFile: this.deleteProject}></simple-button>
+                    <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.saveProject: this.deleteProject}></simple-button>
                     <simple-button label=${this.isModified ? "Отменить": "Добавить"} @click=${this.isModified ? this.cancelProject: this.addProject}></simple-button>
                 </footer>
             `;
         }
 
-        
-        async uploadFile(file) {
-            const token = await this.getToken();
-            const formData = new FormData();
-            formData.append('file', file);
 
-            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
-                method: "POST",
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                },
-                body: formData
-            })
+        // async uploadFile(file) {
+        //     const token = await this.getToken();
+        //     const formData = new FormData();
+        //     formData.append('file', file);
 
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    throw Error(json.error)
-                }
-                return json;
-            })
-            .then(() => this.fetchExistingFiles())
-            .catch(err => {console.error(err.message)});
-        }
+        //     return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
+        //         method: "POST",
+        //         headers: {
+        //           'Authorization': `Bearer ${token}`
+        //         },
+        //         body: formData
+        //     })
 
-        fetchExistingFiles() {
-            const token = this.getToken();
+        //     .then(response => response.json())
+        //     .then(json => {
+        //         if (json.error) {
+        //             throw Error(json.error)
+        //         }
+        //         return json;
+        //     })
+        //     .then(() => this.fetchExistingFiles())
+        //     .catch(err => {console.error(err.message)});
+        // }
 
-            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}/files`, {
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                }
-            })
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    throw Error(json.error)
-                }
-                return json.files;
-            })
-            .then(files => {
-                this.displayFiles(files); // Обновляем отображаемые файлы
-            })
-            .catch(err => {console.error(err.message)});
-        }
+        // fetchExistingFiles() {
+        //     const token = this.getToken();
+
+        //     return fetch(`http://localhost:7000/api/project/${this.currentProject._id}/files`, {
+        //         headers: {
+        //           'Authorization': `Bearer ${token}`
+        //         }
+        //     })
+        //     .then(response => response.json())
+        //     .then(json => {
+        //         if (json.error) {
+        //             throw Error(json.error)
+        //         }
+        //         return json.files;
+        //     })
+        //     .then(files => {
+        //         this.displayFiles(files); // Обновляем отображаемые файлы
+        //     })
+        //     .catch(err => {console.error(err.message)});
+        // }
 
 
-        displayFiles(files) {
-            const uploadedFilesList = this.shadowRoot.getElementById('uploaded_files');
+        // displayFiles(files) {
+        //     const uploadedFilesList = this.shadowRoot.getElementById('uploaded_files');
 
-            if (!uploadedFilesList) {
-                console.error("Element to display uploaded files is not found!");
-                return;
-            }
+        //     if (!uploadedFilesList) {
+        //         console.error("Element to display uploaded files is not found!");
+        //         return;
+        //     }
 
-            // Очищаем список перед отображением новых элементов
-            uploadedFilesList.innerHTML = '';
+        //     // Очищаем список перед отображением новых элементов
+        //     uploadedFilesList.innerHTML = '';
 
-            // Добавляем все файлы в список
-            files.forEach(file => {
-                const fileItem = document.createElement('div');
-                fileItem.textContent = file.name;
-                uploadedFilesList.appendChild(fileItem);
-            });
-        }
+        //     // Добавляем все файлы в список
+        //     files.forEach(file => {
+        //         const fileItem = document.createElement('div');
+        //         fileItem.textContent = file.name;
+        //         uploadedFilesList.appendChild(fileItem);
+        //     });
+        // }
 
         validateInput(e) {
             if (e.target.value !== "") {
                 this.oldValues ??= new Map();
+                const currentProject = e.target.currentObject ?? this.currentProject
                 if (!this.oldValues.has(e.target))
-                    this.oldValues.set(e.target, this.currentProject[e.target.id])
+                    this.oldValues.set(e.target, currentProject[e.target.id])
                 else {
                     if (this.oldValues.get(e.target) === e.target.value) {
                         this.oldValues.delete(e.target)
                     }
                 }
-                const currentProject = e.target.currentObject ?? this.currentProject
-                this.currentProject[e.target.id] = e.target.value
+                currentProject[e.target.id] = e.target.value
                 this.isModified = this.oldValues.size !== 0;
             }
         }
@@ -332,11 +331,9 @@ class MyProjectsSection1 extends BaseElement {
 
         async saveProject() {
             const token = await this.getToken();
-            // const formData = new FormData();
-            // const upload = this.renderRoot?.querySelector('upload-input')
-            // formData.append("project", JSON.stringify(this.currentProject));
-            // formData.append("upload", upload.file);
-            return fetch(`http://localhost:7000/api/project`, {
+            const result = await this.uploadFile();
+            if (!result) return;
+            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
                 method: "PUT",
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -351,8 +348,7 @@ class MyProjectsSection1 extends BaseElement {
                 }
                 return json;
             })
-            .then(projectHeader => this.updateDataset(projectHeader))
-            .then(() => this.uploadFile())
+            .then(projectHeader => this.afterSave(projectHeader))
             // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err)});
         }
@@ -362,7 +358,7 @@ class MyProjectsSection1 extends BaseElement {
             const formData = new FormData();
             const uploadInput = this.renderRoot?.querySelector('upload-input')
             formData.append("file", uploadInput.file);
-            return fetch(`http://localhost:7000/api/upload`, {
+            return fetch(`http://localhost:7000/api/upload/${this.currentProject._id}`, {
                 method: "POST",
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -376,7 +372,7 @@ class MyProjectsSection1 extends BaseElement {
                 }
                 return json;
             })
-            .then(projectHeader => this.updateDataset(projectHeader))
+            // .then(projectHeader => this.updateDataset(projectHeader))
             // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err)});
         }
@@ -429,9 +425,10 @@ class MyProjectsSection1 extends BaseElement {
             return project
         }
 
-        async updateDataset(projectHeader) {
-            this.currentProject._id = projectHeader.id;
+        async afterSave(projectHeader) {
             this.currentProject._rev = projectHeader.rev;
+            const uploadInput = this.renderRoot?.querySelector('upload-input')
+            uploadInput.file = null;
             this.oldValues?.clear();
             this.isModified = false;
         }

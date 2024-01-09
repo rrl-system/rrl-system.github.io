@@ -61,16 +61,17 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
 
     dropHandler(e) {
         e.preventDefault();
+        e.stopPropagation();
         if (e.dataTransfer.items) {
           [...e.dataTransfer.items].forEach((item, i) => {
-            // If dropped items aren't files, reject them
             if (item.kind === "file") {
               this.isChosen = true;
 
               const file = item.getAsFile();
               this.file = file;
               this.value = file.name;
-              console.log(`… file[${i}].name = ${file.name}`);
+              this.valueChangeMessage();
+            //   console.log(`… file[${i}].name = ${file.name}`);
             }
           });
         } else {
@@ -87,7 +88,8 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
     changeFileInput(e) {
         this.isChosen = true;
         this.file = e.target.files[0];
-        this.value = this.file.name
+        this.value = this.file.name;
+        this.valueChangeMessage();
     }
 
     #dragAndDrop() {
@@ -101,20 +103,29 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
     }
 
     #chosenFile() {
-        console.log(this.value)
         return html`
-            <choose-input .value=${this.value} icon-name="file-regular" button-name="trash-xmark-regular" @file-changed=${this.fileChange} @value-changed=${this.valueChange}></choose-input>
+            <choose-input .value=${this.value} icon-name="file-regular" button-name="trash-xmark-regular" @file-changed=${this.fileChanged} @value-changed=${this.valueChanged}></choose-input>
         `
     }
 
-    fileChange() {
-        this.isChosen = false;
-        this.file = {};
-        this.value = '';
+    valueChanged(e) {
+        this.value = e.target.value;
+        this.valueChangeMessage();
     }
 
-    valueChange(e) {
-        this.value = e.target.value;
+    fileChanged() {
+        this.isChosen = false;
+        this.file = undefined;
+        this.value = undefined;
+        this.valueChangeMessage();
+    }
+
+    valueChangeMessage() {
+        const options = {
+            bubbles: true,
+            composed: true
+          };
+        this.dispatchEvent(new CustomEvent('value-changed', options));
     }
 
     render() {
