@@ -6,7 +6,6 @@ import './choose-input.mjs'
 customElements.define("upload-input", class UploadInput extends BaseElement {
     static get properties() {
         return {
-            isChosen: { type: Boolean, default: false},
             value: { type: Object, default: {}},
             file: { type: Object, default: {}},
         }
@@ -65,12 +64,14 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
         if (e.dataTransfer.items) {
           [...e.dataTransfer.items].forEach((item, i) => {
             if (item.kind === "file") {
-              this.isChosen = true;
-
               const file = item.getAsFile();
               this.file = file;
-              this.value = file.name;
-              this.valueChangeMessage();
+              this.value ??= {}
+              this.value.name = this.file.name;
+              this.value.size = this.file.size;
+              this.value.type = this.file.type;
+              this.value.lastModified = this.file.lastModified;
+              this.valueChangeMessage();;
             //   console.log(`… file[${i}].name = ${file.name}`);
             }
           });
@@ -86,9 +87,12 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
     }
 
     changeFileInput(e) {
-        this.isChosen = true;
         this.file = e.target.files[0];
-        this.value = this.file.name;
+        this.value ??= {}
+        this.value.name = this.file.name;
+        this.value.size = this.file.size;
+        this.value.type = this.file.type;
+        this.value.lastModified = this.file.lastModified;
         this.valueChangeMessage();
     }
 
@@ -104,17 +108,16 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
 
     #chosenFile() {
         return html`
-            <choose-input .value=${this.value} icon-name="file-regular" button-name="trash-xmark-regular" @file-changed=${this.fileChanged} @value-changed=${this.valueChanged}></choose-input>
+            <choose-input .value=${this.value.name} icon-name="file-regular" button-name="trash-xmark-regular" @file-changed=${this.fileChanged} @value-changed=${this.valueChanged}></choose-input>
         `
     }
 
     valueChanged(e) {
-        this.value = e.target.value;
+        this.value.name = e.target.value;
         this.valueChangeMessage();
     }
 
     fileChanged() {
-        this.isChosen = false;
         this.file = undefined;
         this.value = undefined;
         this.valueChangeMessage();
@@ -129,6 +132,6 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
     }
 
     render() {
-        return this.isChosen ? this.#chosenFile() : this.#dragAndDrop()
+        return this.value ? this.#chosenFile() : this.#dragAndDrop()
     }
 });

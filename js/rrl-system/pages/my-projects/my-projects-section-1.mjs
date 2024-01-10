@@ -382,6 +382,12 @@ class MyProjectsSection1 extends BaseElement {
             if (modalResult !== 'Ok')
                 return;
             const token = await this.getToken();
+            try {
+                await this.deleteProjectFiles(token)
+            } catch(err) {
+                console.error(err.message)
+                return
+            }
             return fetch(`http://localhost:7000/api/project/${this.currentProject._id}?rev=${this.currentProject._rev}`, {
                 method: "DELETE",
                 headers: {
@@ -400,11 +406,30 @@ class MyProjectsSection1 extends BaseElement {
             .catch(err => {console.error(err.message)});
         }
 
+        async deleteProjectFiles(token) {
+            return fetch(`http://localhost:7000/api/upload/${this.currentProject._id}`, {
+                method: "DELETE",
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json;
+            })
+        }
+
+
         async cancelProject() {
             const modalResult = await this.confirmDialogShow('Вы действительно хотите отменить все изменения?')
             if (modalResult !== 'Ok')
                 return
             this.oldValues.forEach( (value, key) => {
+                const currentProject = key.currentObject ?? this.currentProject
+                currentProject[key.id] = value;
                 key.value = value;
             });
             this.oldValues.clear();
