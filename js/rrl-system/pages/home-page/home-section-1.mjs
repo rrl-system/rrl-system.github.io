@@ -1,5 +1,7 @@
 import { BaseElement, html, css } from '../../../base-element.mjs'
 
+import '../../../../components/button/link-button.mjs'
+
 class HomeSection1 extends BaseElement {
     static get properties() {
         return {
@@ -70,6 +72,9 @@ class HomeSection1 extends BaseElement {
                 a:hover {
                     background-color: var(--button-hover-color);
                 }
+                link-button {
+                    background: red;
+                }
             `
         ]
     }
@@ -85,10 +90,10 @@ class HomeSection1 extends BaseElement {
             </div>
             <div class="right-layout">
                 <div>
-                    <h2>Innovative programming</h2>
+                    <h2>Innovative programming</h2>g
                     <h1>Reinforcement<br>learning<br>systems</h1>
                     <p>The future is already here. Аrtificial intelligence never sleeps and never gets bored</p>
-                    <a href="#my-pride">Learn more</a>
+                    <link-button href="#my-pride">Learn more</link-button>
                 </div>
             </div>
         `;

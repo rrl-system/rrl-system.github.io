@@ -41,7 +41,10 @@ class RrlSystemLeftAside extends BaseElement {
         this.version = "1.0.0";
         this.buttons = [
             {name: "user", title: "Profile", click: () => this.showPage("my-profile")},
-            {name: "download-file", title: "Download File", click: () => this.showPage("my-projects")},
+            {name: "square-list-sharp-solid", title: "Project", click: () => this.showPage("my-projects")},
+            {name: "chart-pie-simple-circle-dollar-solid", title: "tariff plan", click: () => this.showPage("traffic-plan")},
+
+
         ]
     }
 
