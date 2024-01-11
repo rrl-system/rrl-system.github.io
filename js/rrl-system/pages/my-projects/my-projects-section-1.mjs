@@ -12,6 +12,7 @@ class MyProjectsSection1 extends BaseElement {
                 dataSet: {type: Array, default: []},
                 currentProject: {type: String, default: ""},
                 isModified: {type: Boolean, default: ""},
+                isReady: {type: Boolean, default: true}
                 // isValidate: {type: Boolean, default: false, local: true},
             }
         }
@@ -148,7 +149,6 @@ class MyProjectsSection1 extends BaseElement {
 
         constructor() {
             super();
-            this.isReady = true;
         }
 
         async showProject(index, projectId) {

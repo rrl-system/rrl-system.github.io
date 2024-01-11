@@ -42,6 +42,7 @@ class RrlSystemLeftAside extends BaseElement {
         this.buttons = [
             {name: "user", title: "Profile", click: () => this.showPage("my-profile")},
             {name: "download-file", title: "Download File", click: () => this.showPage("my-projects")},
+            {name: "credit-card", title: "Tariff Plans", click: () => this.showPage("tariff-plans")},
         ]
     }
 
