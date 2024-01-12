@@ -40,13 +40,15 @@ class RrlSystemLeftAside extends BaseElement {
         super();
         this.version = "1.0.0";
         this.buttons = [
+            {name: "house-sharp-solid", title: "Home", click: () => this.showPage("")},
             {name: "user", title: "Profile", click: () => this.showPage("my-profile")},
             {name: "square-list-sharp-solid", title: "Project", click: () => this.showPage("my-projects")},
+            // {name: "square-list-sharp-solid", title: "Project", click: () => this.showPage("my-projects")},
             // {name: "chart-pie-simple-circle-dollar-solid", title: "tariff plan", click: () => this.showPage("traffic-plan")},
-
-
             // {name: "download-file", title: "Download File", click: () => this.showPage("my-projects")},
-            {name: "credit-card", title: "Tariff Plans", click: () => this.showPage("tariff-plans")},
+            // {name: "credit-card", title: "Tariff Plans", click: () => this.showPage("tariff-plans")},
+            {name: "chart-pie-simple-circle-dollar-solid", title: "Tariff Plans", click: () => this.showPage("tariff-plans")},
+            {name: "bell-sharp-solid", title: "Notifications", click: () => this.showPage("my-notifications")},
         ]
     }
 

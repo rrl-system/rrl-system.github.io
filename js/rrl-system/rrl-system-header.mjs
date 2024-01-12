@@ -211,7 +211,7 @@ class RrlSystemHeader extends BaseElement {
     showUserAccount() {
         this.offsetParent.successUserIn = true;
         this.successUserIn = true;
-        window.location.hash = '#my-profile';
+        window.location.hash = '';
     }
     matchMediaChange(e) {
         this.isHorizontal = e.matches;

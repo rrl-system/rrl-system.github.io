@@ -26,11 +26,12 @@ customElements.define('aside-button', class AsideButton extends BaseElement {
                 cursor: pointer;
             }
             .btn:hover {
-               fill: red;
+                transition: .1s;
+                color: red;
             }
             .btn:active {
                 transition: .1s;
-                filter: brightness(85%);
+                filter: brightness(70%);
             }
         `;
     }

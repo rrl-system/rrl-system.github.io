@@ -187,10 +187,32 @@ class MyProjectsSection1 extends BaseElement {
             `;
         }
 
+        async getNewFileHandle() {
+            const options = {
+              types: [
+                {
+                  description: 'Text Files',
+                  accept: {
+                    'text/plain': ['.txt'],
+                  },
+                },
+                {
+                  description: 'Neural Models',
+                  accept: {
+                    'application/octet-stream': ['.pkl'],
+                  },
+                },
+
+              ],
+            };
+            const handle = await window.showSaveFilePicker(options);
+            return handle;
+        }
+
         async downloadFile() {
             const token = await this.getToken();
             const projectId = this.currentProject._id;
-        
+            // const fileHandle = await window.getNewFileHandle();
             fetch(`http://localhost:7000/api/download/${projectId}`, {
                 method: 'GET',
                 headers: {
@@ -203,29 +225,76 @@ class MyProjectsSection1 extends BaseElement {
                 }
                 return response.blob();
             })
-            .then(blob => {
+            .then(async blob => {
                 if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-                    // Для IE
                     window.navigator.msSaveOrOpenBlob(blob, 'model.pkl');
                 } else {
-                    // Для других браузеров
-                    const downloadUrl = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = downloadUrl;
-                    a.download = 'model.pkl';
-                    document.body.appendChild(a);
-                    a.click();
-                    setTimeout(() => {
-                        window.URL.revokeObjectURL(downloadUrl);
-                        document.body.removeChild(a);
-                    }, 0);
+                    const options = {
+                        suggestedName: 'model',
+                        types: [
+                            {
+                                description: 'Neural Model',
+                                accept: {
+                                  'application/octet-stream': ['.pkl']
+                                }
+                            },
+                            {
+                              description: 'Text Files',
+                              accept: {
+                                'text/plain': ['.txt', '.text'],
+                                'text/html': ['.html', '.htm']
+                              }
+                            },
+                            {
+                              description: 'Images',
+                              accept: {
+                                'image/*': ['.png', '.gif', '.jpeg', '.jpg']
+                              }
+                            }
+                            ,
+                            {
+                              description: 'Images 2',
+                              accept: {
+                                'image/png': ['.png', '.gif', '.jpeg', '.jpg']
+                              }
+                            },
+                        ],
+                        excludeAcceptAllOption: true
+                    };
+                    // ,
+                    //         {
+                    //             description: 'Text Files',
+                    //             accept: {
+                    //                 'text/plain': ['.txt'],
+                    //             },
+                    //         },
+                    try {
+                        // Для других браузеров
+                        const fileHandle = await window.showSaveFilePicker(options);
+                        const writable = await fileHandle.createWritable();
+                        await writable.write(blob);
+                        await writable.close();
+                    } catch (err){
+                        console.error(err);
+                        // Для других браузеров
+                        const downloadUrl = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = downloadUrl;
+                        a.download = 'model.pkl';
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(() => {
+                            window.URL.revokeObjectURL(downloadUrl);
+                            document.body.removeChild(a);
+                        }, 0);
+                    }
                 }
             })
             .catch(error => {
                 console.error('Ошибка:', error);
             });
         }
-        
+
 
         validateInput(e) {
             if (e.target.value !== "") {
