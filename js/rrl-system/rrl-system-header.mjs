@@ -8,8 +8,8 @@ class RrlSystemHeader extends BaseElement {
             isShow: { type: Boolean, default: false },
             isHorizontal: { type: Boolean, default: true },
             version: { type: String, default: '1.0.0', save: true },
-            activePage: { type: String, default: '#my-pride', attribute: 'active-page'},
-            successUserIn: { type: Boolean, default: false}
+            activePage: { type: String, default: '', attribute: 'active-page', local: true },
+            successUserIn: { type: Boolean, default: false, local: true}
         }
     }
 
@@ -151,9 +151,10 @@ class RrlSystemHeader extends BaseElement {
     }
 
     userAccount() {
-        return this.successUserIn ?  html`<li><a href="#my-profile" ? active=${this.activePage=="my-profile"}>My profile</a></li>` :
+        return this.successUserIn ?  html`<li><a @click=${this.signOut}>Log Out</a></li>` :
             html`<li><a @click=${this.login}>Log In</a></li>`
     }
+
     horizontalHeader() {
         return html`
             <header class="">
@@ -208,11 +209,33 @@ class RrlSystemHeader extends BaseElement {
         // import '../../components/forms/sign-up-form.mjs';
     }
 
+    clearStorage(){
+        if (localStorage.getItem('rememberMe')) {
+            localStorage.removeItem('userInfo');
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('accessUserToken');
+            localStorage.removeItem('refreshUserToken');
+        }
+        else {
+            sessionStorage.removeItem('userInfo');
+            sessionStorage.removeItem('rememberMe');
+            sessionStorage.removeItem('accessUserToken');
+            sessionStorage.removeItem('refreshUserToken');
+        }
+    }
+
+    signOut() {
+        this.successUserIn = false;
+        this.clearStorage();
+        this.showMenu();
+        window.location.hash = '';
+    }
+
     showUserAccount() {
-        this.offsetParent.successUserIn = true;
         this.successUserIn = true;
         window.location.hash = '';
     }
+
     matchMediaChange(e) {
         this.isHorizontal = e.matches;
     }

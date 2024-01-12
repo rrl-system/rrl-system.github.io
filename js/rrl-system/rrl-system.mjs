@@ -10,7 +10,7 @@ class RrlSystem extends BaseElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true, category: 'settings' },
-            successUserIn: { type: Boolean, default: true, save: false, attribute: 'is-auth', reflect: true},
+            successUserIn: { type: Boolean, default: false, attribute: 'auth', reflect: true, local: true},
         }
     }
 
@@ -31,7 +31,7 @@ class RrlSystem extends BaseElement {
                     // justify-content: center;
                     position: relative;
                 }
-                :host([is-auth]) {
+                :host([auth]) {
                     grid-template-columns: 50px 3fr;
                 }
                 main {
@@ -56,6 +56,7 @@ class RrlSystem extends BaseElement {
     constructor() {
         super();
         this.version = "1.0.0";
+        this.successUserIn = this.isAuth();
         addEventListener("hashchange", () => {this.requestUpdate()});
         // this.lazyLoad = {};
         // this.lazyLoad[Symbol.iterator] = function* () {
@@ -110,10 +111,16 @@ class RrlSystem extends BaseElement {
         `;
     }
 
+    isAuth(){
+        return localStorage.getItem('rememberMe') ?
+            'accessUserToken' in localStorage :
+            'accessUserToken' in sessionStorage;
+    }
+
     firstUpdated() {
         super.firstUpdated();
         const lazyIterator = this.lazyLoad();
-        setInterval(() => lazyIterator.next(), 2000);
+        const lazyInterval = setInterval(() => lazyIterator.next().done ? clearInterval(lazyInterval) : '', 2000);
     }
 }
 
