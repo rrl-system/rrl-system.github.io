@@ -3,6 +3,7 @@ import { BaseElement, html, css } from '../../../base-element.mjs'
 import '../../../../components/dialogs/confirm-dialog.mjs'
 import '../../../../components/inputs/simple-input.mjs'
 import '../../../../components/inputs/upload-input.mjs'
+import '../../../../components/inputs/download-input.mjs'
 
 class MyProjectsSection1 extends BaseElement {
         static get properties() {
@@ -11,6 +12,7 @@ class MyProjectsSection1 extends BaseElement {
                 dataSet: {type: Array, default: []},
                 currentProject: {type: String, default: ""},
                 isModified: {type: Boolean, default: ""},
+                isReady: {type: Boolean, default: true}
                 // isValidate: {type: Boolean, default: false, local: true},
             }
         }
@@ -172,83 +174,58 @@ class MyProjectsSection1 extends BaseElement {
                 <div class="right-layout">
                     <div>
                         <h2>Project property</h2>
-                        <simple-input id="name" icon-name="user" placeholder="Название" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
+                        <simple-input id="name" icon-name="user" placeholder="Name" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
                         <simple-input id="path" icon-name="bars" placeholder="Project" .value=${this.currentProject.path} @value-changed=${this.validateInput}></simple-input>
                         <upload-input id="filename" .value=${this.currentProject.filename} @value-changed=${this.validateInput}></upload-input>
+                        ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
                     </div>
                 </div>
                 <footer>
-                    <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.saveProject: this.deleteProject}></simple-button>
+                    <simple-button ?disabled=${this.isReady} label=${this.isReady ? "Обработано": "Обработать"} @click=${this.handleProject}></simple-button>                   <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.saveProject: this.deleteProject}></simple-button>
                     <simple-button label=${this.isModified ? "Отменить": "Добавить"} @click=${this.isModified ? this.cancelProject: this.addProject}></simple-button>
                 </footer>
             `;
         }
 
-
-        // async uploadFile(file) {
-        //     const token = await this.getToken();
-        //     const formData = new FormData();
-        //     formData.append('file', file);
-
-        //     return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
-        //         method: "POST",
-        //         headers: {
-        //           'Authorization': `Bearer ${token}`
-        //         },
-        //         body: formData
-        //     })
-
-        //     .then(response => response.json())
-        //     .then(json => {
-        //         if (json.error) {
-        //             throw Error(json.error)
-        //         }
-        //         return json;
-        //     })
-        //     .then(() => this.fetchExistingFiles())
-        //     .catch(err => {console.error(err.message)});
-        // }
-
-        // fetchExistingFiles() {
-        //     const token = this.getToken();
-
-        //     return fetch(`http://localhost:7000/api/project/${this.currentProject._id}/files`, {
-        //         headers: {
-        //           'Authorization': `Bearer ${token}`
-        //         }
-        //     })
-        //     .then(response => response.json())
-        //     .then(json => {
-        //         if (json.error) {
-        //             throw Error(json.error)
-        //         }
-        //         return json.files;
-        //     })
-        //     .then(files => {
-        //         this.displayFiles(files); // Обновляем отображаемые файлы
-        //     })
-        //     .catch(err => {console.error(err.message)});
-        // }
-
-
-        // displayFiles(files) {
-        //     const uploadedFilesList = this.shadowRoot.getElementById('uploaded_files');
-
-        //     if (!uploadedFilesList) {
-        //         console.error("Element to display uploaded files is not found!");
-        //         return;
-        //     }
-
-        //     // Очищаем список перед отображением новых элементов
-        //     uploadedFilesList.innerHTML = '';
-
-        //     // Добавляем все файлы в список
-        //     files.forEach(file => {
-        //         const fileItem = document.createElement('div');
-        //         fileItem.textContent = file.name;
-        //         uploadedFilesList.appendChild(fileItem);
-        //     });
-        // }
+        async downloadFile() {
+            const token = await this.getToken();
+            const projectId = this.currentProject._id;
+        
+            fetch(`http://localhost:7000/api/download/${projectId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка при загрузке файла: ' + response.statusText);
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                    // Для IE
+                    window.navigator.msSaveOrOpenBlob(blob, 'model.pkl');
+                } else {
+                    // Для других браузеров
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = 'model.pkl';
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        window.URL.revokeObjectURL(downloadUrl);
+                        document.body.removeChild(a);
+                    }, 0);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+            });
+        }
+        
 
         validateInput(e) {
             if (e.target.value !== "") {
