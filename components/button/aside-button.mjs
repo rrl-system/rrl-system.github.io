@@ -6,8 +6,7 @@ customElements.define('aside-button', class AsideButton extends BaseElement {
     static get properties() {
         return {
             _useInfo: { type: Boolean, default: true },
-            name: { type: String, default: '', isIcon: true },
-            back: { type: String, default: '#fdfdfd' },
+            iconName: { type: String, default: '', attribute: 'icon-name'},
             size: { type: Number, default: 24 },
         }
     }
@@ -20,27 +19,35 @@ customElements.define('aside-button', class AsideButton extends BaseElement {
                 margin: 1px;
                 user-select: none;
             }
+            :host([active]) {
+                color: red;
+            }
             .btn {
                 display: flex;
                 align-items: center;
                 cursor: pointer;
             }
+            :host([active]) .btn:hover {
+                filter: brightness(120%);
+            }
+            :host([active]) .btn:active {
+                filter: brightness(80%);
+            }
             .btn:hover {
-               fill: red;
+                color: red;
             }
             .btn:active {
-                transition: .1s;
-                filter: brightness(85%);
+                filter: brightness(80%);
             }
         `;
     }
     get #icon() {
-        return html`<simple-icon icon-name="${this.name}" size="${this.size}"></simple-icon>`;
+        return html`<simple-icon icon-name=${this.iconName} size="${this.size}"></simple-icon>`;
     }
     render() {
         return html`
-            <div class="btn"  tabindex="0">
-                ${this.#icon}
+            <div class="btn"  tabindex="0" >
+                <simple-icon icon-name=${this.iconName} size=${this.size}></simple-icon>
             </div>
         `;
     }

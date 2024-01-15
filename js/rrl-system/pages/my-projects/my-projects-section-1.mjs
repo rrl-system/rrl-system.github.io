@@ -3,6 +3,7 @@ import { BaseElement, html, css } from '../../../base-element.mjs'
 import '../../../../components/dialogs/confirm-dialog.mjs'
 import '../../../../components/inputs/simple-input.mjs'
 import '../../../../components/inputs/upload-input.mjs'
+import '../../../../components/inputs/download-input.mjs'
 
 class MyProjectsSection1 extends BaseElement {
         static get properties() {
@@ -11,6 +12,7 @@ class MyProjectsSection1 extends BaseElement {
                 dataSet: {type: Array, default: []},
                 currentProject: {type: String, default: ""},
                 isModified: {type: Boolean, default: ""},
+                isReady: {type: Boolean, default: true}
                 // isValidate: {type: Boolean, default: false, local: true},
             }
         }
@@ -157,7 +159,6 @@ class MyProjectsSection1 extends BaseElement {
             }
             else {
                 this.currentProject = this.dataSet[index]
-                this.fetchExistingFiles();
             }
         }
 
@@ -176,93 +177,137 @@ class MyProjectsSection1 extends BaseElement {
                         <simple-input id="name" icon-name="user" placeholder="Project name" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
                         <simple-input id="path" icon-name="bars" placeholder="Project file" .value=${this.currentProject.path} @value-changed=${this.validateInput}></simple-input>
                         <upload-input id="filename" .value=${this.currentProject.filename} @value-changed=${this.validateInput}></upload-input>
+                        ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
                     </div>
                 </div>
                 <footer>
-                    <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.uploadFile: this.deleteProject}></simple-button>
+                    <simple-button ?disabled=${this.isReady} label=${this.isReady ? "Обработано": "Обработать"} @click=${this.handleProject}></simple-button>                   <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.saveProject: this.deleteProject}></simple-button>
                     <simple-button label=${this.isModified ? "Отменить": "Добавить"} @click=${this.isModified ? this.cancelProject: this.addProject}></simple-button>
                 </footer>
             `;
         }
 
-        
-        async uploadFile(file) {
-            const token = await this.getToken();
-            const formData = new FormData();
-            formData.append('file', file);
-
-            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
-                method: "POST",
-                headers: {
-                  'Authorization': `Bearer ${token}`
+        async getNewFileHandle() {
+            const options = {
+              types: [
+                {
+                  description: 'Text Files',
+                  accept: {
+                    'text/plain': ['.txt'],
+                  },
                 },
-                body: formData
-            })
+                {
+                  description: 'Neural Models',
+                  accept: {
+                    'application/octet-stream': ['.pkl'],
+                  },
+                },
 
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    throw Error(json.error)
-                }
-                return json;
-            })
-            .then(() => this.fetchExistingFiles())
-            .catch(err => {console.error(err.message)});
+              ],
+            };
+            const handle = await window.showSaveFilePicker(options);
+            return handle;
         }
 
-        fetchExistingFiles() {
-            const token = this.getToken();
-
-            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}/files`, {
+        async downloadFile() {
+            const token = await this.getToken();
+            const projectId = this.currentProject._id;
+            // const fileHandle = await window.getNewFileHandle();
+            fetch(`http://localhost:7000/api/download/${projectId}`, {
+                method: 'GET',
                 headers: {
-                  'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`
                 }
             })
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    throw Error(json.error)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка при загрузке файла: ' + response.statusText);
                 }
-                return json.files;
+                return response.blob();
             })
-            .then(files => {
-                this.displayFiles(files); // Обновляем отображаемые файлы
+            .then(async blob => {
+                if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                    window.navigator.msSaveOrOpenBlob(blob, 'model.pkl');
+                } else {
+                    const options = {
+                        suggestedName: 'model',
+                        types: [
+                            {
+                                description: 'Neural Model',
+                                accept: {
+                                  'application/octet-stream': ['.pkl']
+                                }
+                            },
+                            {
+                              description: 'Text Files',
+                              accept: {
+                                'text/plain': ['.txt', '.text'],
+                                'text/html': ['.html', '.htm']
+                              }
+                            },
+                            {
+                              description: 'Images',
+                              accept: {
+                                'image/*': ['.png', '.gif', '.jpeg', '.jpg']
+                              }
+                            }
+                            ,
+                            {
+                              description: 'Images 2',
+                              accept: {
+                                'image/png': ['.png', '.gif', '.jpeg', '.jpg']
+                              }
+                            },
+                        ],
+                        excludeAcceptAllOption: true
+                    };
+                    // ,
+                    //         {
+                    //             description: 'Text Files',
+                    //             accept: {
+                    //                 'text/plain': ['.txt'],
+                    //             },
+                    //         },
+                    try {
+                        // Для других браузеров
+                        const fileHandle = await window.showSaveFilePicker(options);
+                        const writable = await fileHandle.createWritable();
+                        await writable.write(blob);
+                        await writable.close();
+                    } catch (err){
+                        console.error(err);
+                        // Для других браузеров
+                        const downloadUrl = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = downloadUrl;
+                        a.download = 'model.pkl';
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(() => {
+                            window.URL.revokeObjectURL(downloadUrl);
+                            document.body.removeChild(a);
+                        }, 0);
+                    }
+                }
             })
-            .catch(err => {console.error(err.message)});
-        }
-
-
-        displayFiles(files) {
-            const uploadedFilesList = this.shadowRoot.getElementById('uploaded_files');
-
-            if (!uploadedFilesList) {
-                console.error("Element to display uploaded files is not found!");
-                return;
-            }
-
-            // Очищаем список перед отображением новых элементов
-            uploadedFilesList.innerHTML = '';
-
-            // Добавляем все файлы в список
-            files.forEach(file => {
-                const fileItem = document.createElement('div');
-                fileItem.textContent = file.name;
-                uploadedFilesList.appendChild(fileItem);
+            .catch(error => {
+                console.error('Ошибка:', error);
             });
         }
+
 
         validateInput(e) {
             if (e.target.value !== "") {
                 this.oldValues ??= new Map();
+                const currentProject = e.target.currentObject ?? this.currentProject
                 if (!this.oldValues.has(e.target))
-                    this.oldValues.set(e.target, this.currentProject[e.target.id])
+                    this.oldValues.set(e.target, currentProject[e.target.id])
                 else {
                     if (this.oldValues.get(e.target) === e.target.value) {
                         this.oldValues.delete(e.target)
                     }
                 }
-                const currentProject = e.target.currentObject ?? this.currentProject
-                this.currentProject[e.target.id] = e.target.value
+                currentProject[e.target.id] = e.target.value
                 this.isModified = this.oldValues.size !== 0;
             }
         }
@@ -332,11 +377,9 @@ class MyProjectsSection1 extends BaseElement {
 
         async saveProject() {
             const token = await this.getToken();
-            // const formData = new FormData();
-            // const upload = this.renderRoot?.querySelector('upload-input')
-            // formData.append("project", JSON.stringify(this.currentProject));
-            // formData.append("upload", upload.file);
-            return fetch(`http://localhost:7000/api/project`, {
+            const result = await this.uploadFile();
+            if (!result) return;
+            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
                 method: "PUT",
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -351,8 +394,7 @@ class MyProjectsSection1 extends BaseElement {
                 }
                 return json;
             })
-            .then(projectHeader => this.updateDataset(projectHeader))
-            .then(() => this.uploadFile())
+            .then(projectHeader => this.afterSave(projectHeader))
             // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err)});
         }
@@ -362,7 +404,7 @@ class MyProjectsSection1 extends BaseElement {
             const formData = new FormData();
             const uploadInput = this.renderRoot?.querySelector('upload-input')
             formData.append("file", uploadInput.file);
-            return fetch(`http://localhost:7000/api/upload`, {
+            return fetch(`http://localhost:7000/api/upload/${this.currentProject._id}`, {
                 method: "POST",
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -376,7 +418,7 @@ class MyProjectsSection1 extends BaseElement {
                 }
                 return json;
             })
-            .then(projectHeader => this.updateDataset(projectHeader))
+            // .then(projectHeader => this.updateDataset(projectHeader))
             // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err)});
         }
@@ -386,6 +428,12 @@ class MyProjectsSection1 extends BaseElement {
             if (modalResult !== 'Ok')
                 return;
             const token = await this.getToken();
+            try {
+                await this.deleteProjectFiles(token)
+            } catch(err) {
+                console.error(err.message)
+                return
+            }
             return fetch(`http://localhost:7000/api/project/${this.currentProject._id}?rev=${this.currentProject._rev}`, {
                 method: "DELETE",
                 headers: {
@@ -404,11 +452,30 @@ class MyProjectsSection1 extends BaseElement {
             .catch(err => {console.error(err.message)});
         }
 
+        async deleteProjectFiles(token) {
+            return fetch(`http://localhost:7000/api/upload/${this.currentProject._id}`, {
+                method: "DELETE",
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json;
+            })
+        }
+
+
         async cancelProject() {
             const modalResult = await this.confirmDialogShow('Вы действительно хотите отменить все изменения?')
             if (modalResult !== 'Ok')
                 return
             this.oldValues.forEach( (value, key) => {
+                const currentProject = key.currentObject ?? this.currentProject
+                currentProject[key.id] = value;
                 key.value = value;
             });
             this.oldValues.clear();
@@ -429,9 +496,10 @@ class MyProjectsSection1 extends BaseElement {
             return project
         }
 
-        async updateDataset(projectHeader) {
-            this.currentProject._id = projectHeader.id;
+        async afterSave(projectHeader) {
             this.currentProject._rev = projectHeader.rev;
+            const uploadInput = this.renderRoot?.querySelector('upload-input')
+            uploadInput.file = null;
             this.oldValues?.clear();
             this.isModified = false;
         }

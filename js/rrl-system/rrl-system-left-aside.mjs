@@ -7,6 +7,8 @@ class RrlSystemLeftAside extends BaseElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true },
+            successUserIn: { type: Boolean, default: false, local: true},
+            activePage: { type: String, default: '', local: true },
         }
     }
 
@@ -40,8 +42,15 @@ class RrlSystemLeftAside extends BaseElement {
         super();
         this.version = "1.0.0";
         this.buttons = [
-            {name: "user", title: "Profile", click: () => this.showPage("my-profile")},
-            {name: "download-file", title: "Download File", click: () => this.showPage("my-projects")},
+            {iconName: 'house-sharp-solid', title: 'Home', page: 'home-page', click: () => this.showPage('')},
+            {iconName: 'user', title: 'Profile', page: 'my-profile', click: () => this.showPage('my-profile')},
+            {iconName: 'square-list-sharp-solid', page: 'my-projects', title: 'Project', click: () => this.showPage('my-projects')},
+            // {name: 'square-list-sharp-solid', title: 'Project', click: () => this.showPage('my-projects')},
+            // {name: 'chart-pie-simple-circle-dollar-solid', title: 'tariff plan', click: () => this.showPage('traffic-plan')},
+            // {name: 'download-file', title: 'Download File', click: () => this.showPage('my-projects')},
+            // {name: 'credit-card', title: 'Tariff Plans', click: () => this.showPage('tariff-plans')},
+            {iconName: 'chart-pie-simple-circle-dollar-solid', page: 'tariff-plans', title: 'Tariff Plans', click: () => this.showPage('tariff-plans')},
+            {iconName: 'bell-sharp-solid', page: 'my-notifications', title: 'Notifications', click: () => this.showPage('my-notifications')},
         ]
     }
 
@@ -52,20 +61,36 @@ class RrlSystemLeftAside extends BaseElement {
     render() {
         return html`
             <nav>${this.buttons.map((button, index) =>
-                html`<aside-button name=${button.name} title=${button.title} @click=${button.click}></aside-button>`)}
+                html`<aside-button icon-name=${button.iconName} title=${button.title} @click=${button.click} ?active=${this.activePage === button.page}></aside-button>`)}
             </nav>
-            <aside-button name="right-from-bracket-solid" title="Sign Out" @click=${this.signOut}></aside-button>
+            <aside-button icon-name="right-from-bracket-solid" title="Sign Out" @click=${this.signOut}></aside-button>
         `;
     }
 
+    clearStorage(){
+        if (localStorage.getItem('rememberMe')) {
+            localStorage.removeItem('userInfo');
+            localStorage.removeItem('rememberMe');
+            localStorage.removeItem('accessUserToken');
+            localStorage.removeItem('refreshUserToken');
+        }
+        else {
+            sessionStorage.removeItem('userInfo');
+            sessionStorage.removeItem('rememberMe');
+            sessionStorage.removeItem('accessUserToken');
+            sessionStorage.removeItem('refreshUserToken');
+        }
+    }
+
     signOut() {
-        this.offsetParent.successUserIn = false;
+        this.successUserIn = false;
+        this.clearStorage();
+        window.location.hash = '';
     }
 
     firstUpdated() {
         super.firstUpdated();
     }
-
 }
 
 customElements.define("rrl-system-left-aside", RrlSystemLeftAside);
