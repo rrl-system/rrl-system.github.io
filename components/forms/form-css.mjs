@@ -65,6 +65,7 @@ export const formStyles = css`
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0, 0, 0); /* Fallback color */
     background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+    backdrop-filter: blur(5px);
 }
 
 /* Modal Form Box */

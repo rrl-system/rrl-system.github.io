@@ -35,7 +35,7 @@ customElements.define('modal-dialog', class ModalDialog extends BaseElement {
             <div id="dialog" class="modal-dialog ${this.opened ? 'show': ''} ${this.animateClose ? 'animate-close': ''}">
                 <div class="modal-dialog-content animate" id="modal-dialog">
                     <div class="dialog-header">
-                        <span id="dialog-title" class="dialog-title no-select">Сообщение</span>
+                        <span id="dialog-title" class="dialog-title no-select">Message</span>
                         <close-button class="close-button no-select" name="times" @click=${()=>this.close('CANCEL')}></close-button>
                     </div>
 
@@ -45,7 +45,7 @@ customElements.define('modal-dialog', class ModalDialog extends BaseElement {
 
                     <div class="dialog-footer no-select">
                         <div class="footer-buttons">
-                            <button type="button" id="ok-button" class="footer-button btn-ok" @click=${()=>this.ok()}>Понял</button>
+                            <button type="button" id="ok-button" class="footer-button btn-ok" @click=${()=>this.ok()}>OK</button>
                         </div>
                     </div>
                 </div>

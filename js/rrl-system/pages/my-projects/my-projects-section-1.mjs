@@ -25,7 +25,7 @@ class MyProjectsSection1 extends BaseElement {
                         grid-template-columns: 3fr 9fr;
                         grid-template-rows: 50px 1fr 50px;
                         grid-template-areas:
-                            "header1  header2"
+                            "header1 header2"
                             "sidebar content"
                             "footer  footer";
                         gap: 0 20px;
@@ -164,7 +164,7 @@ class MyProjectsSection1 extends BaseElement {
         render() {
             return html`
                 <confirm-dialog></confirm-dialog>
-                <header id="project-header"><p>Проект: ${this.currentProject.name}</p></header>
+                <header id="project-header"><p>Project ${this.currentProject.name}</p></header>
                 <header id="property-header">Project property</header>
                 <div class="left-layout">
                     ${this.dataSet.map((project, index) =>
@@ -173,8 +173,8 @@ class MyProjectsSection1 extends BaseElement {
                 <div class="right-layout">
                     <div>
                         <h2>Project property</h2>
-                        <simple-input id="name" icon-name="user" placeholder="Название" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
-                        <simple-input id="path" icon-name="bars" placeholder="Project" .value=${this.currentProject.path} @value-changed=${this.validateInput}></simple-input>
+                        <simple-input id="name" icon-name="user" placeholder="Project name" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
+                        <simple-input id="path" icon-name="bars" placeholder="Project file" .value=${this.currentProject.path} @value-changed=${this.validateInput}></simple-input>
                         <upload-input id="filename" .value=${this.currentProject.filename} @value-changed=${this.validateInput}></upload-input>
                     </div>
                 </div>

@@ -10,7 +10,7 @@ class RrlSystemFooter extends BaseElement {
     }
 
     get title() {
-        return 'Vladislav Antoshkin';
+        return 'Anastasia Mudrova';
     }
 
     static get styles() {

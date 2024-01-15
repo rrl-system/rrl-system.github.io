@@ -1,5 +1,13 @@
 import { BaseElement, html, css } from '../../../base-element.mjs'
 
+import '../../../../components/dialogs/confirm-dialog.mjs'
+import '../../../../components/inputs/simple-input.mjs'
+import '../../../../components/inputs/upload-input.mjs'
+import '../../../../components/inputs/email-input.mjs'
+import '../../../../components/inputs/password-input.mjs'
+
+
+
 class MyProfileSection1 extends BaseElement {
         static get properties() {
             return {
@@ -16,6 +24,7 @@ class MyProfileSection1 extends BaseElement {
                         padding-bottom: 50px;
                         gap: 20px;
                         background: linear-gradient(180deg, var(--header-background-color) 0%, var(--gradient-background-color) 100%);
+                        justify-content: space-around;                    
                     }
 
                     * {
@@ -28,22 +37,28 @@ class MyProfileSection1 extends BaseElement {
                     }
 
                     .left-layout {
+                        grid-area: sidebar;
                         display: flex;
-                        flex-basis: 50%;
-                        align-items: center;
                         flex-direction: column;
-                        align-items: flex-start;
+
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        background: rgba(255, 255, 255, 0.1);
                     }
 
                     .right-layout {
+                        grid-area: sidebar;
+                        background: rgba(255, 255, 255, 0.1);
+
                         display: flex;
                         flex-basis: 50%;
                         align-items: flex-start;
+                        justify-content: center;
                     }
 
                     p {
                         font-size: 1rem;
-                        margin-left: 1rem;
+                        margin-left: 2rem;
                     }
 
                     a:hover {
@@ -55,6 +70,7 @@ class MyProfileSection1 extends BaseElement {
                         height: 150px;
                         border-radius: 50%;
                         background-color: var(--native-color);
+                        margin-left: 1rem;
                     }
 
                     button {
@@ -72,10 +88,12 @@ class MyProfileSection1 extends BaseElement {
                     }
 
                     button:first-child {
+                        margin-left: 1.5rem;
                         margin-right: 20px;
                     }
 
                     label {
+                        margin-left: 1rem;
                         font-size: 1.15rem;
                         margin-bottom: 5px;
                         flex-direction: column;
@@ -83,25 +101,30 @@ class MyProfileSection1 extends BaseElement {
                     }
     
                     img {
-                        max-width: 100px;
-                        max-height: 100px;
+                        width: 100px;
+                        height: 100px;
                         border-radius: 50%;
                         overflow: hidden;
                         background-color: var(--native-color);
                     }
 
-                    input {
+                    input[type="file"] {
+                        margin-left: 1rem;
+                        margin-bottom: 20px;
+                        lang: en-US;
+                    }
+
+                    simple-input {
                         margin-bottom: 1.5rem;
+                        margin-left: 1rem;
                         margin-right: 5.5rem;
-                        padding: 5px;
                         width: 300px;
                         flex-direction: column;
                         display: block;
                     }
 
-                    input[type="file"] {
-                        margin-bottom: 20px;
-                        lang: en-US;
+                    h1 {
+                        margin: 1rem;
                     }
                 `
             ]
@@ -117,6 +140,7 @@ class MyProfileSection1 extends BaseElement {
             this.phone = '';
             this.avatar = '';
         }
+        //<simple-input id="name" icon-name="user" placeholder="Project name" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
 
         render() {
             return html`
@@ -125,43 +149,38 @@ class MyProfileSection1 extends BaseElement {
                     <input type="file" id="avatar" accept="image/*" @change="${(e) => this.handleAvatarChange(e)}">
                     ${this.avatar
                         ? html`<img src="${this.avatar}" alt="Avatar">`
-                        : html`<div class="avatar-placeholder"></div>`}
-                    <p>Size: 100x100px</p>
+                        : html`<div class="avatar-placeholder" title="Size 100x100px" icon-name="noavatar"></div>`}
                 </div>
                 <div class="right-layout">
                     <div>
                         <h1>Personal data</h1>
                     
                         <label for="name">Name:</label>
-                        <input type="text" id="name" .value="${this.name}" @input="${(e) => this.name = e.target.value}">
+                        <simple-input type="text" id="name" icon-name="user" .value="${this.name}" @input="${(e) => this.name = e.target.value}"></simple-input>
 
                         <label for="surname">Surname:</label>
-                        <input type="text" id="surname" .value="${this.surname}" @input="${(e) => this.surname = e.target.value}">
+                        <simple-input type="text" id="surname" icon-name="user" .value="${this.surname}" @input="${(e) => this.surname = e.target.value}"></simple-input>
 
                         <label for="middlename">Middle name:</label>
-                        <input type="text" id="middlename" .value="${this.middlename}" @input="${(e) => this.middlename = e.target.value}">
+                        <simple-input type="text" id="middlename" icon-name="user" .value="${this.middlename}" @input="${(e) => this.middlename = e.target.value}"></simple-input>
 
                         <label for="email">EMail:</label>
-                        <input type="email" id="email" .value="${this.email}" @input="${(e) => this.email = e.target.value}">
-
-                        <label for="phone">Telephone:</label>
-                        <input type="tel" id="phone" .value="${this.phone}" @input="${(e) => this.phone = e.target.value}">   
+                        <simple-input type="text" id="email" .value="${this.email}" @input="${(e) => this.email = e.target.value}"></simple-input>
                     </div>
-                    
                     <div>
                         <h1>Change password</h1>
 
                         <label for="old-password">Old Password:</label>
-                        <input type="password" id="old-password">
+                        <simple-input type="password" id="old-password"></simple-input>
 
                         <label for="new-password">New Password:</label>
-                        <input type="password" id="new-password">
+                        <simple-input type="password" id="new-password"></simple-input>
 
                         <label for="confirm-password">Confirm Password:</label>
-                        <input type="password" id="confirm-password">
+                        <simple-input type="password" id="confirm-password"></simple-input>
 
-                        <div class="button-container">
-                            <button @click="${this.handleSave}">Save</button>
+                        <div class="button-container">                            
+                            <button @click="${this.handleSave}">Save</button></button>                       
                             <button @click="${this.handleCancel}">Cancel</button>
                         </div>
                     </div>
