@@ -30,6 +30,9 @@ customElements.define("simple-input", class RrlInput extends BaseElement {
                     width: 100%;
                     color: var(--form-input-color, gray);
                 }
+                .label {
+                    color: var(--form-label-input-color, white);
+                }
             `
         ]
     }
