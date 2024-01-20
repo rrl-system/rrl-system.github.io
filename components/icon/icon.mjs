@@ -15,7 +15,7 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
             width: { type: Number, default: 0 },
             height: { type: Number, default: 0 },
             _s2: { type: Number, default: 0 },
-            viewbox: { type: String, default: '0 0 24 24' },
+            viewBox: { type: String, default: '0 0 24 24' },
             scale: { type: String, default: '1,1' },
             rotate: { type: Number, default: 0 },
             speed: { type: Number, default: 0 },
@@ -38,7 +38,7 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
             this.path = icons[name].path;
             this.text = icons[name].text;
             s = icons[name].size || 24;
-            this.viewbox = icons[name]['viewbox'] || `0 0 ${s} ${s}`;
+            this.viewBox = icons[name]['viewBox'] || `0 0 ${s} ${s}`;
             this.defs = icons[name]['defs'] || '';
         }
         this._s2 = s / 2;
@@ -82,7 +82,7 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
             return svg`
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                 preserveAspectRatio="xMidYMid meet" xml:space="preserve"
-                viewBox="${this.viewbox}"
+                viewBox="${this.viewBox}"
                 width="${this.width || this.size}"
                 height="${this.height || this.size}">
                 ${this.createHTMLNode(this.text)}
@@ -93,7 +93,7 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                 preserveAspectRatio="xMidYMid meet" xml:space="preserve"
                 display="block"
-                viewBox=${this.viewbox}
+                viewBox=${this.viewBox}
                 width=${this.width || this.size}
                 height=${this.height || this.size}
                 style="transform:rotate(${this.rotate}deg) scale(${this.scale}); width: 100%; height: 100%">

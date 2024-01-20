@@ -5,7 +5,7 @@ import '../button/simple-button.mjs'
 
 import styles from './input-css.mjs'
 
-customElements.define("simple-input", class RrlInput extends BaseElement {
+customElements.define("gender-input", class GenderInput extends BaseElement {
     static get properties() {
         return {
             type: { type: String, default: 'text'},
@@ -28,7 +28,34 @@ customElements.define("simple-input", class RrlInput extends BaseElement {
                 :host {
                     display: inline-block;
                     width: 100%;
-                    color: var(--form-input-color, gray);
+                    color: var(--form-label-input-color, white);
+                    margin-top: 8px;
+                }
+                fieldset {
+                    display: flex;
+                    justify-content: space-evenly;
+                    align-items: center;
+                }
+
+                label {
+                    display: inline-flex;
+                    line-height: 1rem;
+                    align-items: center;
+                    gap: 10px;
+                    cursor: pointer;
+                }
+                input {
+                    appearance: none;
+                    width: 1rem;
+                    aspect-ratio: 1;
+                    border: 2px solid white;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    margin: 0;
+                    transition: .3s easy-in;
+                }
+                input:checked {
+                    border-width: 4px;
                 }
             `
         ]
@@ -78,18 +105,17 @@ customElements.define("simple-input", class RrlInput extends BaseElement {
         `
     }
 
+    get #legend() {
+        return html`<legend>${this.label}</legend>`;
+    }
+
     render() {
         return html`
-            ${this.label ? this.#label : ''}
-            <div class="input-group">
-                <input type=${this.type}
-                    placeholder=${this.placeholder || nothing}
-                    ${this.required ? 'required' : ''}
-                    .value=${this.value || nothing} @keyup=${this.changeValue}
-                >
-                ${this.iconName ? this.#icon : ''}
-                ${this.buttonName ? this.#button : ''}
-            </div>
+            <fieldset class="fieldset">
+                ${this.label ? this.#legend : ''}
+                <label><input type="radio" name="gender" value="male" @input=${this.changeValue}>Male</label>
+                <label><input type="radio" name="gender" value="female" @input=${this.changeValue}>Female</label>
+            </fieldset>
         `;
     }
 
@@ -98,10 +124,11 @@ customElements.define("simple-input", class RrlInput extends BaseElement {
     }
 
     changeValue(e) {
+        this.value = e.target.value
         const options = {
             bubbles: true,
             composed: true
-          };
+        };
         this.dispatchEvent(new CustomEvent('value-changed', options));
     }
 });

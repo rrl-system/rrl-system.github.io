@@ -5,10 +5,10 @@ import '../button/simple-button.mjs'
 
 import styles from './input-css.mjs'
 
-customElements.define("simple-input", class RrlInput extends BaseElement {
+customElements.define("age-input", class AgeInput extends BaseElement {
     static get properties() {
         return {
-            type: { type: String, default: 'text'},
+            type: { type: String, default: 'date'},
             required: { type: Boolean, default: false},
             label: { type: String, default: '' },
             _useInfo: { type: Boolean, default: false },

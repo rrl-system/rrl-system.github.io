@@ -9,7 +9,18 @@ const styles = css`
     white-space: nowrap;
     margin-top: 8px;
     font-weight: bold;
-    color: var(--form-color);
+    color: var(--form-label-input-color, white);
+}
+
+label {
+    color: var(--form-label-input-color, white);
+}
+
+legend {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+    color: var(--form-label-input-color, white);
 }
 
 .input-group {
@@ -22,7 +33,8 @@ const styles = css`
 input[type="text"],
 input[type="password"],
 input[type="mail"],
-input[type="number"] {
+input[type="number"],
+input[type="date"] {
     display: inline-block;
     width: 100%;
     margin: 8px 0px;
