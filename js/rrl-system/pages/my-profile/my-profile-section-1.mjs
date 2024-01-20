@@ -97,7 +97,6 @@ class MyProfileSection1 extends BaseElement {
                         font-size: 1.15rem;
                         margin-bottom: 5px;
                         flex-direction: column;
-                        display: block;
                     }
     
                     img {
@@ -126,6 +125,17 @@ class MyProfileSection1 extends BaseElement {
                     h1 {
                         margin: 1rem;
                     }
+                    
+                    fieldset {
+                        margin-bottom: 1.5rem;
+                        border: none;
+                    }
+
+                    legend {
+                        font-size: 1.15rem;
+                        margin-bottom: 5px;
+                    }               
+
                 `
             ]
         }
@@ -139,6 +149,8 @@ class MyProfileSection1 extends BaseElement {
             this.email = '';
             this.phone = '';
             this.avatar = '';
+            this.female = '';
+            this.male = '';
         }
         //<simple-input id="name" icon-name="user" placeholder="Project name" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
 
@@ -161,29 +173,36 @@ class MyProfileSection1 extends BaseElement {
                         <label for="surname">Surname:</label>
                         <simple-input type="text" id="surname" icon-name="user" .value="${this.surname}" @input="${(e) => this.surname = e.target.value}"></simple-input>
 
-                        <label for="middlename">Middle name:</label>
-                        <simple-input type="text" id="middlename" icon-name="user" .value="${this.middlename}" @input="${(e) => this.middlename = e.target.value}"></simple-input>
-
                         <label for="email">EMail:</label>
-                        <simple-input type="text" id="email" .value="${this.email}" @input="${(e) => this.email = e.target.value}"></simple-input>
-                    </div>
-                    <div>
-                        <h1>Change password</h1>
+                        <simple-input type="text" id="email" icon-name="mail" .value="${this.email}" @input="${(e) => this.email = e.target.value}"></simple-input>
 
-                        <label for="old-password">Old Password:</label>
-                        <simple-input type="password" id="old-password"></simple-input>
+                        <fieldset class="fieldset">
+                            <legend>Gender:</legend>
+                      
+                            <div>
+                                <input type="radio" id="male" name="gender" value="male" />
+                                <label for="male">Male</label>
+                            </div>
+                        
+                            <div>
+                                <input type="radio" id="female" name="gender" value="female" />
+                                <label for="female">Female</label>
+                            </div>
+                      </fieldset>
 
-                        <label for="new-password">New Password:</label>
-                        <simple-input type="password" id="new-password"></simple-input>
-
-                        <label for="confirm-password">Confirm Password:</label>
-                        <simple-input type="password" id="confirm-password"></simple-input>
+                      <div>
+                        <label for="email">Date of Birth: </label>
+                        <simple-input type="date" id="date" .value="${this.email}" @input="${(e) => this.email = e.target.value}"/>
+                      </div>
+                        
+                        
 
                         <div class="button-container">                            
                             <button @click="${this.handleSave}">Save</button></button>                       
                             <button @click="${this.handleCancel}">Cancel</button>
                         </div>
                     </div>
+
                 </div>
             `;
         }
