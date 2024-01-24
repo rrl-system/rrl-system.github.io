@@ -46,6 +46,35 @@ input[type="date"] {
     color: var(--form-input-color, gray);
 }
 
+select {
+    display: inline-block;
+    width: 100%;
+    margin: 8px 0px;
+    padding: 12px 20px 12px 40px;
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 10px;
+    font-size: 14px;
+    outline-color: var(--form-outline-color);
+    color: var(--form-input-color, gray);
+}
+
+select > option {
+    font-size: 1.2rem;
+    color: var(--form-input-color, gray);
+}
+
+option:hover {
+    background-color: gray;
+}
+
+select > option:nth-child(1),
+select > option:checked
+ {
+    background-color: gray;
+    color: white;
+}
+
+
 [placeholder] {
     text-overflow: ellipsis;
 }

@@ -63,72 +63,30 @@ customElements.define("gender-input", class GenderInput extends BaseElement {
 
     firstUpdated(setPath = false) {
         super.firstUpdated();
-        this.oldValue ??= this.value;
-    }
-
-    get #label() {
-        return html`
-            <span class="label">${this.label}</span>
-        `
-    }
-
-    get #icon() {
-        return html`
-            <simple-icon class="icon" icon-name=${this.iconName}></simple-icon>
-        `
-    }
-
-    // get value() {
-    //     return this._value;
-    // }
-
-    // set value(value) {
-    //     const oldValue = this.value;
-    //     this._value = value;
-    //     this.requestUpdate('value', oldValue);
-    // }
-
-    get value() {
-        return this.renderRoot?.querySelector('input')?.value ?? null;
-    }
-
-    set value(value) {
-        const input = this.renderRoot?.querySelector('input');
-        if (input) {
-            input.value= value;
-        }
-    }
-
-    get #button() {
-        return html`
-            <simple-icon class="button" icon-name=${this.buttonName || nothing} @click=${this.updateLoginValue}></simple-icon>
-        `
     }
 
     get #legend() {
         return html`<legend>${this.label}</legend>`;
     }
 
+    setChecked(gender) {
+        const input = this.renderRoot.getElementById(gender);
+        if (!input) {
+            return false
+        }
+        return input.checked = this.value === gender;
+    }
     render() {
         return html`
             <fieldset class="fieldset">
                 ${this.label ? this.#legend : ''}
-                <label><input type="radio" name="gender" value="male" @input=${this.changeValue}>Male</label>
-                <label><input type="radio" name="gender" value="female" @input=${this.changeValue}>Female</label>
+                <label><input type="radio" name="gender" ?checked=${this.setChecked("male")} id="male" value="male" @input=${this.changeValue}>Male</label>
+                <label><input type="radio" name="gender" ?checked=${this.setChecked("female")} id="female" value="female" @input=${this.changeValue}>Female</label>
             </fieldset>
         `;
     }
 
-    get #input() {
-        return this.renderRoot?.querySelector('input') ?? null;
-    }
-
     changeValue(e) {
         this.value = e.target.value
-        const options = {
-            bubbles: true,
-            composed: true
-        };
-        this.dispatchEvent(new CustomEvent('value-changed', options));
     }
 });

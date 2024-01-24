@@ -4,18 +4,17 @@ import '../../../../components/dialogs/confirm-dialog.mjs'
 import '../../../../components/inputs/simple-input.mjs'
 import '../../../../components/inputs/upload-input.mjs'
 import '../../../../components/inputs/download-input.mjs'
+import '../../../../components/inputs/birthday-input.mjs'
 import '../../../../components/inputs/gender-input.mjs'
-import '../../../../components/inputs/age-input.mjs'
+import '../../../../components/inputs/avatar-input.mjs'
 
 class MyProfileSection1 extends BaseElement {
         static get properties() {
             return {
                 version: { type: String, default: '1.0.0', save: true },
-                dataSet: {type: Array, default: []},
-                currentProject: {type: String, default: ""},
-                isModified: {type: Boolean, default: ""},
+                dataSet: {type: Object, default: {}},
+                isModified: {type: Boolean, default: false},
                 isReady: {type: Boolean, default: true}
-                // isValidate: {type: Boolean, default: false, local: true},
             }
         }
 
@@ -66,11 +65,19 @@ class MyProfileSection1 extends BaseElement {
                         grid-area: sidebar;
                         display: flex;
                         flex-direction: column;
-
+                        justify-content: center;
                         align-items: center;
                         overflow-y: auto;
                         overflow-x: hidden;
                         background: rgba(255, 255, 255, 0.1);
+                    }
+                    .avatar {
+                        width: 100%
+                    }
+
+                    avatar-input {
+                        width: 80%;
+                        margin: auto;
                     }
 
                     .left-layout simple-button {
@@ -170,28 +177,43 @@ class MyProfileSection1 extends BaseElement {
                 <header id="project-header"><p>Profile</p></header>
                 <header id="property-header">Personal data</header>
                 <div class="left-layout">
-                    <input type="file" id="avatar" accept="image/*" @change="${(e) => this.handleAvatarChange(e)}">
-                    ${this.avatar
-                        ? html`<img src="${this.avatar}" alt="Avatar">`
-                        : html`<div class="avatar-placeholder" title="Size 100x100px" icon-name="noavatar"></div>`}
+                    <div class="avatar">
+                        <avatar-input .value=${this.dataSet?.personalInfo?.avatar}></avatar-input>
+                    </div>
                 </div>
                 <div class="right-layout">
                     <div>
-                        <simple-input label="First Name:" id="name" icon-name="user" .value=${this.name} @input="${(e) => alert('11')}"></simple-input>
-                        <simple-input label="Last Name:" id="surname" icon-name="user-group-solid" .value=${this.surname} @input="${(e) => this.surname = e.target.value}"></simple-input>
-                        <simple-input label="NickName:" id="NickName" icon-name="user-alien-solid" .value=${this.surname} @input="${(e) => this.surname = e.target.value}"></simple-input>
-                        <simple-input label="Email:" id="email" icon-name="envelope1" .value="${this.email}" @input="${(e) => this.email = e.target.value}"></simple-input>
-                        <gender-input label="Gender:" id="gender" icon-name="gender" .value="${this.email}" @input="${(e) => this.email = e.target.value}"></gender-input>
-                        <age-input label="Data of Birth:" id="age" icon-name="cake-candles-solid"></age-input>
+                        <simple-input label="First Name:" id="firstName" icon-name="user" .value=${this.dataSet?.personalInfo?.firstName} @input=${this.validateInput}></simple-input>
+                        <simple-input label="Last Name:" id="lastName" icon-name="user-group-solid" .value=${this.dataSet?.personalInfo?.lastName} @input=${this.validateInput}></simple-input>
+                        <simple-input label="NickName:" id="nickName" icon-name="user-alien-solid" .value=${this.dataSet?.personalInfo?.nickName} @input=${this.validateInput}></simple-input>
+                        <simple-input label="Email:" id="email" icon-name="envelope1" .value="${this.dataSet?.personalInfo?.email}" @input=${this.validateInput}></simple-input>
+                        <gender-input label="Gender:" id="gender" icon-name="gender" .value="${this.dataSet?.personalInfo?.gender}" @input=${this.validateInput}></gender-input>
+                        <birthday-input label="Data of Birth:" id="birthday" .value="${this.dataSet?.personalInfo?.birthday}" @input=${this.validateInput}></birthday-input>
                     </div>
                 </div>
                 <footer>
-                    <simple-button ?disabled=${this.isReady} label=${this.isReady ? "Обработано": "Обработать"} @click=${this.handleProject}></simple-button>                   <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.saveProject: this.deleteProject}></simple-button>
-                    <simple-button label=${this.isModified ? "Отменить": "Добавить"} @click=${this.isModified ? this.cancelProject: this.addProject}></simple-button>
+                    ${ this.isModified ? html`
+                            <simple-button label="Сохранить" @click=${this.saveProfile}></simple-button>
+                            <simple-button label="Отменить" @click=${this.cancelProfile}></simple-button>
+                        ` : ''
+                    }
                 </footer>
             `;
         }
 
+        validateInput(e) {
+            this.oldValues ??= new Map();
+            const userProfile =this.dataSet.personalInfo
+            if (!this.oldValues.has(e.target))
+                this.oldValues.set(e.target, userProfile[e.target.id])
+            else {
+                if (this.oldValues.get(e.target) === e.target.value) {
+                    this.oldValues.delete(e.target)
+                }
+            }
+            userProfile[e.target.id] = e.target.value
+            this.isModified = this.oldValues.size !== 0;
+        }
         async getNewFileHandle() {
             const options = {
               types: [
@@ -300,36 +322,22 @@ class MyProfileSection1 extends BaseElement {
             });
         }
 
-
-        validateInput(e) {
-            if (e.target.value !== "") {
-                this.oldValues ??= new Map();
-                const currentProject = e.target.currentObject ?? this.currentProject
-                if (!this.oldValues.has(e.target))
-                    this.oldValues.set(e.target, currentProject[e.target.id])
-                else {
-                    if (this.oldValues.get(e.target) === e.target.value) {
-                        this.oldValues.delete(e.target)
-                    }
-                }
-                currentProject[e.target.id] = e.target.value
-                this.isModified = this.oldValues.size !== 0;
-            }
-        }
-
         async getToken() {
             return localStorage.getItem('rememberMe') ?
                 localStorage.getItem('accessUserToken') :
                 sessionStorage.getItem('accessUserToken')
+        }
+        async getUserInfo() {
+            return sessionStorage.getItem('userProfile') ? JSON.parse(sessionStorage.getItem('userProfile')) : await this.getUserProfile()
         }
 
         async confirmDialogShow(message) {
             return await this.renderRoot.querySelector('confirm-dialog').show(message);
         }
 
-        async getProjectList() {
+        async getUserProfile() {
             const token = await this.getToken();
-            return fetch('http://localhost:7000/api/projects', {
+            return fetch('http://localhost:7000/api/user-profile', {
                 headers: {
                   'Authorization': `Bearer ${token}`
                 }
@@ -340,57 +348,29 @@ class MyProfileSection1 extends BaseElement {
                 if (json.error) {
                     throw Error(json.error)
                 }
-                return json.rows;
+                return json;
             })
-            .then(projects => this.saveDataSet(projects))
-            // .then(() => this.modalDialogShow())
+            .then(userProfile => this.saveDataSet(userProfile))
             .catch(err => {console.error(err.message)});
         }
 
-        async saveDataSet(projects) {
-            if (projects.length === 0)
-                return;
-            this.dataSet = projects.map(project =>
-                project.doc
-            ).sort( (a, b) => b._id.localeCompare(a._id) )
-            this.currentProject = this.dataSet[0];
+        async saveDataSet(userProfile) {
+            this.dataSet = userProfile;
+            sessionStorage.setItem('userProfile', JSON.stringify(userProfile));
+            return this.dataSet;
         }
 
-        async addProject() {
+        async saveProfile() {
             const token = await this.getToken();
-            const project = {name: "Новый проект"}
-            return fetch(`http://localhost:7000/api/project`, {
-                method: "POST",
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json;charset=utf-8'
-                },
-                body: JSON.stringify(project)
-            })
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    throw Error(json.error)
-                }
-                return json.id;
-            })
-            .then(projectId => this.getProject(projectId))
-            .then(project => this.addToDataset(project))
-            // .then(() => this.modalDialogShow())
-            .catch(err => {console.error(err.message)});
-        }
-
-        async saveProject() {
-            const token = await this.getToken();
-            const result = await this.uploadFile();
-            if (!result) return;
-            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
+            //const result = await this.uploadFile();
+            //if (!result) return;
+            return fetch(`http://localhost:7000/api/user-profile`, {
                 method: "PUT",
                 headers: {
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify(this.currentProject)
+                body: JSON.stringify(this.dataSet)
             })
             .then(response => response.json())
             .then(json => {
@@ -399,7 +379,7 @@ class MyProfileSection1 extends BaseElement {
                 }
                 return json;
             })
-            .then(projectHeader => this.afterSave(projectHeader))
+            .then(profileHeader => this.afterSave(profileHeader))
             // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err)});
         }
@@ -428,112 +408,30 @@ class MyProfileSection1 extends BaseElement {
             .catch(err => {console.error(err)});
         }
 
-        async deleteProject() {
-            const modalResult = await this.confirmDialogShow('Вы действительно хотите удалить этот проект?')
-            if (modalResult !== 'Ok')
-                return;
-            const token = await this.getToken();
-            try {
-                await this.deleteProjectFiles(token)
-            } catch(err) {
-                console.error(err.message)
-                return
-            }
-            return fetch(`http://localhost:7000/api/project/${this.currentProject._id}?rev=${this.currentProject._rev}`, {
-                method: "DELETE",
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                }
-            })
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    throw Error(json.error)
-                }
-                return json;
-            })
-            .then(project => this.deleteFromDS(project))
-            // .then(() =>c.modalDialogShowShow())
-            .catch(err => {console.error(err.message)});
+        async afterSave(profileHeader) {
+            this.dataSet._rev = profileHeader.rev;
+            sessionStorage.setItem('userProfile', JSON.stringify(this.dataSet));
+            //const uploadInput = this.renderRoot?.querySelector('upload-input')
+            //uploadInput.file = null;
+            this.oldValues?.clear();
+            this.isModified = false;
         }
 
-        async deleteProjectFiles(token) {
-            return fetch(`http://localhost:7000/api/upload/${this.currentProject._id}`, {
-                method: "DELETE",
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                }
-            })
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    throw Error(json.error)
-                }
-                return json;
-            })
-        }
-
-
-        async cancelProject() {
+        async cancelProfile() {
             const modalResult = await this.confirmDialogShow('Вы действительно хотите отменить все изменения?')
             if (modalResult !== 'Ok')
                 return
             this.oldValues.forEach( (value, key) => {
-                const currentProject = key.currentObject ?? this.currentProject
-                currentProject[key.id] = value;
-                key.value = value;
+                const currentObject = key.currentObject ?? this.dataSet.personalInfo
+                currentObject[key.id] = value;
             });
             this.oldValues.clear();
             this.isModified = false;
         }
 
-        async deleteFromDS(project) {
-            const currentIndex = this.dataSet.indexOf(this.currentProject)
-            this.currentProject = this.dataSet.length === 1 ? {} :
-                currentIndex === 0 ? this.dataSet[currentIndex + 1] : this.dataSet[currentIndex - 1]
-            this.dataSet.splice(currentIndex, 1)
-            return project
-        }
-
-        async addToDataset(project) {
-            this.dataSet.unshift(project);
-            this.currentProject = this.dataSet[0]
-            return project
-        }
-
-        async afterSave(projectHeader) {
-            this.currentProject._rev = projectHeader.rev;
-            const uploadInput = this.renderRoot?.querySelector('upload-input')
-            uploadInput.file = null;
-            this.oldValues?.clear();
-            this.isModified = false;
-        }
-
-        async getProject(projectId) {
-            const token = await this.getToken();
-            return fetch(`http://localhost:7000/api/project/${projectId}`, {
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                }
-            })
-            .then(response => response.json())
-            .then(json => {
-                if (json.error) {
-                    throw Error(json.error)
-                }
-                return json;
-            })
-            .then(project => {
-                console.log(project)
-                return project
-            })
-            // .then(() =>c.modalDialogShowShow())
-            .catch(err => {console.error(err.message)});
-        }
-
         async firstUpdated() {
             super.firstUpdated();
-            await this.getProjectList();
+            this.dataSet = await this.getUserInfo();
         }
 }
 

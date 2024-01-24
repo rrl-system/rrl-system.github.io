@@ -3,7 +3,7 @@ import { BaseElement, html, css, nothing } from '../../js/base-element.mjs';
 import '../icon/icon.mjs'
 import './choose-input.mjs'
 
-customElements.define("upload-input", class UploadInput extends BaseElement {
+customElements.define("avatar-input", class AvatarInput extends BaseElement {
     static get properties() {
         return {
             value: { type: Object, default: {}},
@@ -24,18 +24,23 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
                     justify-content: center;
                     align-items: center;
                     gap: 10px;
-                    padding-top: 10px;
                     width: 100%;
                     height: 100%;
-                    outline: auto;
                     overflow: hidden;
                 }
+                
+                img {
+                    max-width: 100%;
+                    height: auto;
+                    max-height:100%
+                }
+
                 #fileInput {
                     display: none;
                 }
                 simple-icon {
-                    height: 50px;
-                    width: 50px;
+                    height: 100%;
+                    width: 100%;
                 }
                 span {
                     font-weight: bold;
@@ -96,12 +101,21 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
         this.valueChangeMessage();
     }
 
+    #showImage() {
+        const src = URL.createObjectURL(this.file);
+        return html`
+            <img src=${URL.createObjectURL(this.file)} @load=${URL.revokeObjectURL(src)}>
+        `
+    }
+
+    #showDefaultImage() {
+        return html`<simple-icon icon-name="noavatar" @click=${this.clickButton}></simple-icon>`
+    }
     #dragAndDrop() {
         return html`
-            <div @drop=${this.dropHandler} @dragover=${this.dragOverHandler}>
-                <input type="file" id="fileInput" multiple @change=${this.changeFileInput}/>
-                <simple-icon icon-name="cloud-arrow-up-solid"></simple-icon>
-                <p>Drag and drop file or <span @click=${this.clickButton}>Browse</span>.</p>
+            <div title="Drag & Drop or Click Me" @drop=${this.dropHandler} @dragover=${this.dragOverHandler}>
+                <input type="file" id="fileInput" accept="image/*" @change=${this.changeFileInput}/>
+                ${ this.value ? this.#showImage() : this.#showDefaultImage()}
             </div>
         `
     }
@@ -132,6 +146,6 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
     }
 
     render() {
-        return this.value ? this.#chosenFile() : this.#dragAndDrop()
+        return this.#dragAndDrop()
     }
 });

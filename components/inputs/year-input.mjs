@@ -5,10 +5,10 @@ import '../button/simple-button.mjs'
 
 import styles from './input-css.mjs'
 
-customElements.define("simple-input", class RrlInput extends BaseElement {
+customElements.define("year-input", class YearInput extends BaseElement {
     static get properties() {
         return {
-            type: { type: String, default: 'text'},
+            type: { type: String, default: 'date'},
             required: { type: Boolean, default: false},
             label: { type: String, default: '' },
             _useInfo: { type: Boolean, default: false },
@@ -32,6 +32,16 @@ customElements.define("simple-input", class RrlInput extends BaseElement {
                 }
             `
         ]
+    }
+
+    constructor() {
+        super();
+        const date = new Date();
+        this.year = date.getFullYear();
+        this.years = ['Year'];
+        for (let i = this.year; i >= this.year - 80; i--) {
+            this.years.push(i)
+        }
     }
 
     firstUpdated(setPath = false) {
@@ -62,11 +72,11 @@ customElements.define("simple-input", class RrlInput extends BaseElement {
     // }
 
     get value() {
-        return this.renderRoot?.querySelector('input')?.value ?? null;
+        return this.renderRoot?.querySelector('select')?.value ?? null;
     }
 
     set value(value) {
-        const input = this.renderRoot?.querySelector('input');
+        const input = this.renderRoot?.querySelector('select');
         if (input) {
             input.value= value;
         }
@@ -82,13 +92,10 @@ customElements.define("simple-input", class RrlInput extends BaseElement {
         return html`
             ${this.label ? this.#label : ''}
             <div class="input-group">
-                <input type=${this.type}
-                    placeholder=${this.placeholder || nothing}
-                    ${this.required ? 'required' : ''}
-                    .value=${this.value || nothing} @input=${this.changeValue}
-                >
+                <select>
+                    ${this.years.map(year => html`<option ?selected=${year==="Year"} value=${year ==="Year" ? nothing : year}>${year}</option>`)}
+                </select>
                 ${this.iconName ? this.#icon : ''}
-                ${this.buttonName ? this.#button : ''}
             </div>
         `;
     }
@@ -98,6 +105,10 @@ customElements.define("simple-input", class RrlInput extends BaseElement {
     }
 
     changeValue(e) {
-        this.value = e.target.value;
+        const options = {
+            bubbles: true,
+            composed: true
+          };
+        this.dispatchEvent(new CustomEvent('value-changed', options));
     }
 });

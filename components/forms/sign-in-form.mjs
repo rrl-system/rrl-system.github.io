@@ -6,6 +6,7 @@ import { formStyles } from './form-css.mjs'
 //import { default as wsClient, sendMessage, setDialog, repairDialog, setForm} from '../../js/ws-client.mjs'
 
 import '../dialogs/modal-dialog.mjs';
+import './sign-up-form.mjs';
 
 import '../inputs/simple-input.mjs';
 import '../inputs/password-input.mjs';
@@ -41,7 +42,7 @@ customElements.define("sign-in-form", class SignInForm extends BaseElement {
                     justify-content: right;
                 }
 
-                
+
             `
         ]
     }
@@ -58,6 +59,7 @@ customElements.define("sign-in-form", class SignInForm extends BaseElement {
             <modal-dialog></modal-dialog>
             <cancel-dialog></cancel-dialog>
             <close-dialog></close-dialog>
+            <sign-up-form></sign-up-form>
             <form class="form animate" method="post" id="form">
                 <div class="form-header">
                     <div class="form-tabs no-select">
@@ -253,12 +255,7 @@ customElements.define("sign-in-form", class SignInForm extends BaseElement {
     }
 
     saveUserInfo(userInfo) {
-        if (localStorage.getItem('rememberMe')) {
-            localStorage.setItem('userInfo', userInfo)
-        }
-        else {
-            sessionStorage.setItem('userInfo', userInfo)
-        }
+        sessionStorage.setItem('loginInfo', userInfo)
     }
 
     RememberMe(){
