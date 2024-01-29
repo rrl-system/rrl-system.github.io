@@ -8,6 +8,9 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
         return {
             value: { type: Object, default: {}},
             file: { type: Object, default: {}},
+            src: { type: String, default: ''},
+            isFirstUpdated: { type: Boolean, default: false},
+            currentObject: { type: Object, default: undefined},
         }
     }
 
@@ -28,13 +31,11 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
                     height: 100%;
                     overflow: hidden;
                 }
-                
-                img {
-                    max-width: 100%;
-                    height: auto;
-                    max-height:100%
-                }
 
+                img {
+                    height: 100%;
+                    width: 100%;
+                }
                 #fileInput {
                     display: none;
                 }
@@ -57,6 +58,7 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
 
     firstUpdated(setPath = false) {
         super.firstUpdated();
+        this.isFirstUpdated = true;
     }
 
     clickButton() {
@@ -69,15 +71,8 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
         if (e.dataTransfer.items) {
           [...e.dataTransfer.items].forEach((item, i) => {
             if (item.kind === "file") {
-              const file = item.getAsFile();
-              this.file = file;
-              this.value ??= {}
-              this.value.name = this.file.name;
-              this.value.size = this.file.size;
-              this.value.type = this.file.type;
-              this.value.lastModified = this.file.lastModified;
-              this.valueChangeMessage();;
-            //   console.log(`… file[${i}].name = ${file.name}`);
+              this.value = item.getAsFile();
+              this.valueChange();
             }
           });
         } else {
@@ -87,65 +82,48 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
         }
       }
 
+    valueChange() {
+       const event = new Event('input', {
+            bubbles: true,
+       });
+       this.dispatchEvent(event);
+    }
+
     dragOverHandler(e) {
         e.preventDefault();
     }
 
     changeFileInput(e) {
-        this.file = e.target.files[0];
-        this.value ??= {}
-        this.value.name = this.file.name;
-        this.value.size = this.file.size;
-        this.value.type = this.file.type;
-        this.value.lastModified = this.file.lastModified;
-        this.valueChangeMessage();
+        this.value = e.target.files[0];
+        this.valueChange();
     }
 
     #showImage() {
-        const src = URL.createObjectURL(this.file);
+        if (this.src) {
+            window.URL.revokeObjectURL(this.src)
+        }
+        this.src = window.URL.createObjectURL(this.value);
+        // let reader = new FileReader();
+        // reader.readAsDataURL(this.value);
         return html`
-            <img src=${URL.createObjectURL(this.file)} @load=${URL.revokeObjectURL(src)}>
+            <img src=${this.src} @click=${this.clickButton}>
         `
     }
 
     #showDefaultImage() {
         return html`<simple-icon icon-name="noavatar" @click=${this.clickButton}></simple-icon>`
     }
-    #dragAndDrop() {
-        return html`
-            <div title="Drag & Drop or Click Me" @drop=${this.dropHandler} @dragover=${this.dragOverHandler}>
-                <input type="file" id="fileInput" accept="image/*" @change=${this.changeFileInput}/>
-                ${ this.value ? this.#showImage() : this.#showDefaultImage()}
-            </div>
-        `
-    }
-
-    #chosenFile() {
-        return html`
-            <choose-input .value=${this.value.name} icon-name="file-regular" button-name="trash-xmark-regular" @file-changed=${this.fileChanged} @value-changed=${this.valueChanged}></choose-input>
-        `
-    }
 
     valueChanged(e) {
         this.value.name = e.target.value;
-        this.valueChangeMessage();
-    }
-
-    fileChanged() {
-        this.file = undefined;
-        this.value = undefined;
-        this.valueChangeMessage();
-    }
-
-    valueChangeMessage() {
-        const options = {
-            bubbles: true,
-            composed: true
-          };
-        this.dispatchEvent(new CustomEvent('value-changed', options));
     }
 
     render() {
-        return this.#dragAndDrop()
+        return html`
+            <div title="Drag & Drop or Click Me" @drop=${this.dropHandler} @dragover=${this.dragOverHandler}>
+                <input type="file" id="fileInput" accept="image/*" @change=${this.changeFileInput}/>
+                ${this.value?.size ? this.#showImage() : this.isFirstUpdated ? this.#showDefaultImage(): ''}
+            </div>
+        `
     }
 });

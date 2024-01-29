@@ -23,6 +23,14 @@ customElements.define('link-button', class LinkButton extends BaseElement {
                     padding: 10px 30px;
                     cursor: pointer;
                 }
+                :host(:hover) {
+                    background: orange;
+                }
+                :host(:hover) a::after,
+                :host(:hover) a::before,
+                {
+                    filter: brightness(2);
+                }
                 :host(::before) {
                     content: '';
                     position: absolute; /* Фиксируем на одном месте */
@@ -46,18 +54,42 @@ customElements.define('link-button', class LinkButton extends BaseElement {
                 //     /* Параметры фона */
                 //     background-color: var(--background-green);
                 // }
-                a::before {
-                    display: inline-block;
-                    content: '';
-                    background-color: tomato;
-                    position: absolute;
-                    z-index: -1;
-                    left: 0; right: 0; /* Вся ширин */
-                    top: 0; bottom: 0; /* Вся высота */
+                a {
+                    color: white;
+                    &::after {
+                        display: inline-block;
+                        content: '';
+                        background-color: red;
+                        position: absolute;
+                        z-index: -1;
+                        left: 0; right: 0; /* Вся ширин */
+                        top: 0; bottom: 0; /* Вся высота */
+                    }
+                    &:hover {
+                        &::after {
+                            filter: brightness(200%);
+                        }
+                    }
+                  
                 }
-                a:hover::before {
-                    filter: brightness(200%);
-                }
+                // a::after {
+                //     display: inline-block;
+                //     content: '';
+                //     background-color: red;
+                //     position: absolute;
+                //     z-index: -1;
+                //     left: 0; right: 0; /* Вся ширин */
+                //     top: 0; bottom: 0; /* Вся высота */
+                // }
+                // a:hover::after {
+                //     filter: brightness(200%);
+                // }
+                // a:hover {
+                //     &::after {
+                //         filter: brightness(200%);
+                //     }
+                // }
+
 
             `
         ];
@@ -73,10 +105,9 @@ customElements.define('link-button', class LinkButton extends BaseElement {
                 :host {
                     background: yellow;
                 }
-                :host(:hover) {
-                    background: linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5));
-                    // filter: brightness(10);
-                }
+                // :host(:hover) {
+                //     background: linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5));
+                // }
                 // :host(:before) {
                 //     content: '';
                 //     position: absolute; /* Фиксируем на одном месте */

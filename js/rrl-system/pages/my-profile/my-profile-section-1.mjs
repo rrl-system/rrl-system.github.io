@@ -14,7 +14,9 @@ class MyProfileSection1 extends BaseElement {
                 version: { type: String, default: '1.0.0', save: true },
                 dataSet: {type: Object, default: {}},
                 isModified: {type: Boolean, default: false},
-                isReady: {type: Boolean, default: true}
+                isReady: {type: Boolean, default: true},
+                avatar: {type: Object, default: {}},
+                isFirstUpdated: {type: Boolean, default: false}
             }
         }
 
@@ -78,11 +80,9 @@ class MyProfileSection1 extends BaseElement {
                     avatar-input {
                         width: 80%;
                         margin: auto;
-                    }
-
-                    .left-layout simple-button {
-                        width: 100%;
-                        height: 40px;
+                        aspect-ratio: 1 / 1;
+                        overflow: hidden;
+                        border-radius: 50%;
                     }
 
                     img {
@@ -158,6 +158,7 @@ class MyProfileSection1 extends BaseElement {
 
         constructor() {
             super();
+
         }
 
         async showProject(index, projectId) {
@@ -178,7 +179,7 @@ class MyProfileSection1 extends BaseElement {
                 <header id="property-header">Personal data</header>
                 <div class="left-layout">
                     <div class="avatar">
-                        <avatar-input .value=${this.dataSet?.personalInfo?.avatar}></avatar-input>
+                        ${this.isFirstUpdated ? html`<avatar-input id="avatar" .currentObject=${this} .value=${this.avatar} @input=${this.validateAvatar}></avatar-input>` : ''}
                     </div>
                 </div>
                 <div class="right-layout">
@@ -201,6 +202,20 @@ class MyProfileSection1 extends BaseElement {
             `;
         }
 
+        validateAvatar(e) {
+            this.oldValues ??= new Map();
+            const userProfile = this
+            if (!this.oldValues.has(e.target))
+                this.oldValues.set(e.target, userProfile[e.target.id])
+            else {
+                if (this.oldValues.get(e.target) === e.target.value) {
+                    this.oldValues.delete(e.target)
+                }
+            }
+            userProfile[e.target.id] = e.target.value
+            this.isModified = this.oldValues.size !== 0;
+        }
+
         validateInput(e) {
             this.oldValues ??= new Map();
             const userProfile =this.dataSet.personalInfo
@@ -214,6 +229,7 @@ class MyProfileSection1 extends BaseElement {
             userProfile[e.target.id] = e.target.value
             this.isModified = this.oldValues.size !== 0;
         }
+
         async getNewFileHandle() {
             const options = {
               types: [
@@ -304,7 +320,7 @@ class MyProfileSection1 extends BaseElement {
                     } catch (err){
                         console.error(err);
                         // Для других браузеров
-                        const downloadUrl = window.URL.createObjectURL(blob);
+                        const downloadUrl =  window.URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.href = downloadUrl;
                         a.download = 'model.pkl';
@@ -362,8 +378,8 @@ class MyProfileSection1 extends BaseElement {
 
         async saveProfile() {
             const token = await this.getToken();
-            //const result = await this.uploadFile();
-            //if (!result) return;
+            const result = await this.uploadFile();
+            if (!result) return;
             return fetch(`http://localhost:7000/api/user-profile`, {
                 method: "PUT",
                 headers: {
@@ -385,11 +401,14 @@ class MyProfileSection1 extends BaseElement {
         }
 
         async uploadFile() {
+            const uploadInput = this.renderRoot?.querySelector('avatar-input')
+            if (uploadInput.value.constructor.name !== 'File') {
+                return true;
+            }
             const token = await this.getToken();
             const formData = new FormData();
-            const uploadInput = this.renderRoot?.querySelector('upload-input')
-            formData.append("file", uploadInput.file);
-            return fetch(`http://localhost:7000/api/upload/${this.currentProject._id}`, {
+            formData.append("file", uploadInput.value);
+            return fetch(`http://localhost:7000/api/upload/avatar`, {
                 method: "POST",
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -432,6 +451,28 @@ class MyProfileSection1 extends BaseElement {
         async firstUpdated() {
             super.firstUpdated();
             this.dataSet = await this.getUserInfo();
+            this.avatar = await this.downloadAvatar();
+            this.isFirstUpdated = true;
+        }
+
+         async downloadAvatar() {
+            const token = await this.getToken();
+            return fetch(`http://localhost:7000/api/upload/avatar`, {
+                method: "GET",
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                }
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                // if (json.error) {
+                //     throw Error(json.error)
+                // }
+                return blob;
+            })
+            // .then(projectHeader => this.updateDataset(projectHeader))
+            // .then(() => this.modalDialogShow())
+            .catch(err => {console.error(err)});
         }
 }
 

@@ -231,8 +231,30 @@ class RrlSystemHeader extends BaseElement {
         window.location.hash = '';
     }
 
+    getToken() {
+        if (localStorage.getItem('rememberMe')) {
+            return localStorage.getItem('accessUserToken')
+        }
+        else {
+            return sessionStorage.getItem('accessUserToken')
+        }
+    }
+
+    createEventSource() {
+        console.log(`Bearer ${this.getToken()}`)
+        this.eventSource = new EventSource(`http://localhost:7000/api/sse?token=${this.getToken()}`)
+        this.eventSource.onmessage = (event) => {
+            console.log(event);
+        };
+        this.eventSource.addEventListener('result', event => {
+            // const frameworkId = event.data;
+            console.log(event);
+        })
+    }
+
     showUserAccount() {
         this.successUserIn = true;
+        this.createEventSource();
         window.location.hash = '';
     }
 
