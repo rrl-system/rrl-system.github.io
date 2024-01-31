@@ -51,6 +51,7 @@ class RrlSystemLeftAside extends BaseElement {
             // {name: 'credit-card', title: 'Tariff Plans', click: () => this.showPage('tariff-plans')},
             {iconName: 'chart-pie-simple-circle-dollar-solid', page: 'tariff-plans', title: 'Tariff Plans', click: () => this.showPage('tariff-plans')},
             {iconName: 'bell-sharp-solid', page: 'my-notifications', title: 'Notifications', click: () => this.showPage('my-notifications')},
+            {iconName: 'settings-solid', page: 'settings', title: 'Settings', click: () => this.showPage('settings')},
         ]
     }
 
