@@ -1,9 +1,9 @@
 import { BaseElement, html, css} from '../../../base-element.mjs'
 
-import './settings-section-1.mjs';
+import './my-settings-section-1.mjs';
 import '../../../../components/button/switch-button.mjs';
 
-class Settings extends BaseElement {
+class MySettings extends BaseElement {
 
     static get styles() {
         return [
@@ -39,7 +39,7 @@ class Settings extends BaseElement {
 
     render() {
         return html`
-            <settings-section-1></settings-section-1>
+            <my-settings-section-1></my-settings-section-1>
         `;
     }
 
@@ -75,4 +75,4 @@ class Settings extends BaseElement {
     }
 }
 
-customElements.define("settings", Settings);
+customElements.define("my-settings", MySettings);

@@ -4,7 +4,7 @@ import { BaseElement, html, css } from '../../../base-element.mjs'
 import '../../../../components/button/switch-button.mjs'
 import '../../../../components/dialogs/confirm-dialog.mjs'
 
-class SettingsSection1 extends BaseElement {
+class MySettingsSection1 extends BaseElement {
     static get properties() {
         return {
             version: { type: String, default: '1.0.0', save: true },
@@ -85,9 +85,10 @@ class SettingsSection1 extends BaseElement {
             <confirm-dialog></confirm-dialog>
             <div>
                 <h1>Select</h1>
+                <switch-button></switch-button>
             </div>
         `;
     }
 }
 
-customElements.define("settings-section-1", SettingsSection1);
+customElements.define("settings-section-1", MySettingsSection1);
