@@ -25,7 +25,7 @@ customElements.define('switch-button', class SwitchButton extends BaseElement {
       .toggle-slider {
         width: 30px;
         height: 30px;
-        background-color: #2196F3;
+        background-color: #04D500;
         border-radius: 50%;
         position: absolute;
         top: 0;
