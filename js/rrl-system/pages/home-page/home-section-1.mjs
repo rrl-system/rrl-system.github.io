@@ -72,9 +72,9 @@ class HomeSection1 extends BaseElement {
                 a:hover {
                     background-color: var(--button-hover-color);
                 }
-                link-button {
-                    background: red;
-                }
+                // link-button {
+                //     background: red;
+                // }
             `
         ]
     }
@@ -90,9 +90,9 @@ class HomeSection1 extends BaseElement {
             </div>
             <div class="right-layout">
                 <div>
-                    <h2>Innovative programming</h2>g
+                    <h2>Innovative programming</h2>
                     <h1>Reinforcement<br>learning<br>systems</h1>
-                    <p>The future is already here. Аrtificial intelligence never sleeps and never gets bored</p>
+                    <p>The future is already here. Artificial intelligence never sleeps and never gets bored</p>
                     <link-button href="#my-pride">Learn more</link-button>
                 </div>
             </div>

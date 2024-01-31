@@ -4,8 +4,9 @@ import '../../../../components/dialogs/confirm-dialog.mjs'
 import '../../../../components/inputs/simple-input.mjs'
 import '../../../../components/inputs/upload-input.mjs'
 import '../../../../components/inputs/download-input.mjs'
+import '../../../../components/notifications/my-notification.mjs'
 
-class MyProjectsSection1 extends BaseElement {
+class MyNotificationsSection1 extends BaseElement {
         static get properties() {
             return {
                 version: { type: String, default: '1.0.0', save: true },
@@ -24,12 +25,12 @@ class MyProjectsSection1 extends BaseElement {
                     :host {
                         display: grid;
                         width: 100%;
-                        grid-template-columns: 3fr 9fr;
+                        grid-template-columns: 1fr;
                         grid-template-rows: 50px 1fr 50px;
                         grid-template-areas:
-                            "header1 header2"
-                            "sidebar content"
-                            "footer  footer";
+                            "header"
+                            "sidebar"
+                            "footer";
                         gap: 0 20px;
                         background: linear-gradient(180deg, var(--header-background-color) 0%, var(--gradient-background-color) 100%);
                     }
@@ -41,7 +42,7 @@ class MyProjectsSection1 extends BaseElement {
                     }
 
                     #project-header{
-                        grid-area: header1;
+                        grid-area: header;
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;
@@ -57,7 +58,7 @@ class MyProjectsSection1 extends BaseElement {
                     }
 
                     #property-header{
-                        grid-area: header2;
+                        grid-area: header;
                     }
 
                     .left-layout {
@@ -142,7 +143,23 @@ class MyProjectsSection1 extends BaseElement {
                         border: 5px solid blue;
                         width: 200px;
                         height: 100px;
-                      }
+                    }
+                    /* width */
+                    ::-webkit-scrollbar {
+                      width: 10px;
+                    }
+
+                    /* Track */
+                    ::-webkit-scrollbar-track {
+                      box-shadow: inset 0 0 5px grey;
+                      border-radius: 5px;
+                    }
+
+                    /* Handle */
+                    ::-webkit-scrollbar-thumb {
+                      background: red;
+                      border-radius: 5px;
+                    }
                 `
             ]
         }
@@ -168,18 +185,22 @@ class MyProjectsSection1 extends BaseElement {
                 <header id="project-header"><p>Project ${this.currentProject.name}</p></header>
                 <header id="property-header">Project property</header>
                 <div class="left-layout">
-                    ${this.dataSet.map((project, index) =>
-                        html`<simple-button label=${project.name} title=${project._id} @click=${() => this.showProject(index, project._id)}></simple-button>`)}
+                    ${this.dataSet.map((notification, index, notifications) => {
+                        if (index !== 0) {
+                            if ((new Date(notifications[index - 1].timestamp)).toDateString() !==
+                                (new Date(notification.timestamp)).toDateString()) {
+                                notification.isFirst = true;
+                            }
+                        }
+                        else {
+                            notification.isFirst = true;
+                        }
+                        return html`
+                            <my-notification .notification=${notification}></my-notification>
+                        `
+                        })}
                 </div>
-                <div class="right-layout">
-                    <div>
-                        <h2>Project property</h2>
-                        <simple-input id="name" icon-name="user" placeholder="Project name" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
-                        <simple-input id="path" icon-name="bars" placeholder="Project file" .value=${this.currentProject.path} @value-changed=${this.validateInput}></simple-input>
-                        <upload-input id="filename" .value=${this.currentProject.filename} @value-changed=${this.validateInput}></upload-input>
-                        ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
-                    </div>
-                </div>
+
                 <footer>
                     <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.saveProject: this.deleteProject}></simple-button>
                     <simple-button label=${this.isModified ? "Отменить": "Добавить"} @click=${this.isModified ? this.cancelProject: this.addProject}></simple-button>
@@ -322,9 +343,9 @@ class MyProjectsSection1 extends BaseElement {
             return await this.renderRoot.querySelector('confirm-dialog').show(message);
         }
 
-        async getProjectList() {
+        async getNotificationList() {
             const token = await this.getToken();
-            return fetch('http://localhost:7000/api/projects', {
+            return fetch('http://localhost:7000/api/notifications', {
                 headers: {
                   'Authorization': `Bearer ${token}`
                 }
@@ -337,16 +358,16 @@ class MyProjectsSection1 extends BaseElement {
                 }
                 return json.rows;
             })
-            .then(projects => this.saveDataSet(projects))
+            .then(notifications => this.saveDataSet(notifications))
             // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err.message)});
         }
 
-        async saveDataSet(projects) {
-            if (projects.length === 0)
+        async saveDataSet(notifications) {
+            if (notifications.length === 0)
                 return;
-            this.dataSet = projects.map(project =>
-                project.doc
+            this.dataSet = notifications.map( notification =>
+                notification.doc
             ).sort( (a, b) => b._id.localeCompare(a._id) )
             this.currentProject = this.dataSet[0];
         }
@@ -528,8 +549,8 @@ class MyProjectsSection1 extends BaseElement {
 
         async firstUpdated() {
             super.firstUpdated();
-            await this.getProjectList();
+            await this.getNotificationList();
         }
 }
 
-customElements.define("my-projects-section-1", MyProjectsSection1);
+customElements.define("my-notifications-section-1", MyNotificationsSection1);
