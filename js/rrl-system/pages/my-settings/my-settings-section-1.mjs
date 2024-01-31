@@ -91,4 +91,4 @@ class MySettingsSection1 extends BaseElement {
     }
 }
 
-customElements.define("settings-section-1", MySettingsSection1);
+customElements.define("my-settings-section-1", MySettingsSection1);
