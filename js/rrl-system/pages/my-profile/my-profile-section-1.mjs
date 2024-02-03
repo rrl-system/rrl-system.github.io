@@ -90,6 +90,8 @@ class MyProfileSection1 extends BaseElement {
                     }
 
                     .right-layout {
+                        overflow-y: auto;
+                        overflow-x: hidden;
                         grid-area: content;
                         display: flex;
                         justify-content: center;
@@ -103,6 +105,23 @@ class MyProfileSection1 extends BaseElement {
                         font-weight: 700;
                         text-transform: uppercase;
                         margin: 20px 0 0;
+                    }
+
+                    /* width */
+                    ::-webkit-scrollbar {
+                      width: 10px;
+                    }
+
+                    /* Track */
+                    ::-webkit-scrollbar-track {
+                      box-shadow: inset 0 0 5px grey;
+                      border-radius: 5px;
+                    }
+
+                    /* Handle */
+                    ::-webkit-scrollbar-thumb {
+                      background: red;
+                      border-radius: 5px;
                     }
 
                     h2 {

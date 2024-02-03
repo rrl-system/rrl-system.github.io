@@ -1,4 +1,4 @@
-import { BaseElement, html, css } from '../base-element.mjs'
+import { BaseElement, html, css, nothing } from '../base-element.mjs'
 
 
 import '../../components/button/aside-button.mjs';
@@ -9,6 +9,8 @@ class RrlSystemLeftAside extends BaseElement {
             version: { type: String, default: '1.0.0', save: true },
             successUserIn: { type: Boolean, default: false, local: true},
             activePage: { type: String, default: '', local: true },
+            notificationMaxOffset: { type: String, default: '', local: true },
+            notificationCurrentOffset: { type: String, default: '', local: true },
         }
     }
 
@@ -50,19 +52,23 @@ class RrlSystemLeftAside extends BaseElement {
             // {name: 'download-file', title: 'Download File', click: () => this.showPage('my-projects')},
             // {name: 'credit-card', title: 'Tariff Plans', click: () => this.showPage('tariff-plans')},
             {iconName: 'chart-pie-simple-circle-dollar-solid', page: 'tariff-plans', title: 'Tariff Plans', click: () => this.showPage('tariff-plans')},
-            {iconName: 'bell-sharp-solid', page: 'my-notifications', title: 'Notifications', click: () => this.showPage('my-notifications')},
+            {iconName: 'bell-sharp-solid', page: 'my-notifications', title: 'Notifications', blink: 1, click: () => this.showPage('my-notifications')},
             {iconName: 'settings-solid', page: 'my-settings', title: 'Settings', click: () => this.showPage('my-settings')},
         ]
+        console.log(this.notificationMaxOffset);
+        console.log(this.notificationCurrentOffset);
     }
+
 
     showPage(page) {
         location.hash = page;
     }
 
     render() {
+        console.log('aside',this.notificationCurrentOffset)
         return html`
             <nav>${this.buttons.map((button, index) =>
-                html`<aside-button icon-name=${button.iconName} title=${button.title} @click=${button.click} ?active=${this.activePage === button.page}></aside-button>`)}
+                html`<aside-button blink=${button.blink && this.notificationMaxOffset && +this.notificationMaxOffset > +this.notificationCurrentOffset || nothing} icon-name=${button.iconName} title=${button.title} @click=${button.click} ?active=${this.activePage === button.page}></aside-button>`)}
             </nav>
             <aside-button icon-name="right-from-bracket-solid" title="Sign Out" @click=${this.signOut}></aside-button>
         `;

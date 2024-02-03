@@ -13,8 +13,9 @@ class MyNotificationsSection1 extends BaseElement {
                 dataSet: {type: Array, default: []},
                 currentProject: {type: String, default: ""},
                 isModified: {type: Boolean, default: ""},
-                isReady: {type: Boolean, default: true}
+                isReady: {type: Boolean, default: true},
                 // isValidate: {type: Boolean, default: false, local: true},
+                notificationCurrentOffset: { type: String, default: '', local: true },
             }
         }
 
@@ -168,6 +169,39 @@ class MyNotificationsSection1 extends BaseElement {
             super();
         }
 
+        update(changedProps) {
+            super.update(changedProps);
+            if (!changedProps) return;
+            console.log(changedProps)
+            if (changedProps.has('notificationCurrentOffset') && this.notificationCurrentOffset) {
+                BASE.debounce('notificationCurrentOffset', () => this.sendOffset(), 1000)
+            }
+        }
+
+        async sendOffset() {
+                const token = await this.getToken();
+                const obj = {
+                    offset: this.notificationCurrentOffset
+                }
+                return fetch(`http://localhost:7000/api/notification-offset`, {
+                    method: "PUT",
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(obj)
+                })
+                .then(response => response.json())
+                .then(json => {
+                    if (json.error) {
+                        throw Error(json.error)
+                    }
+                    return json;
+                })
+                // .then(() => this.modalDialogShow())
+                .catch(err => {console.error(err)});
+
+        }
         async showProject(index, projectId) {
             if (this.isModified) {
                 const modalResult = await this.confirmDialogShow('Проект был изменен. Сохранить сделанные изменения?')
@@ -366,9 +400,8 @@ class MyNotificationsSection1 extends BaseElement {
         async saveDataSet(notifications) {
             if (notifications.length === 0)
                 return;
-            this.dataSet = notifications.map( notification =>
-                notification.doc
-            ).sort( (a, b) => b._id.localeCompare(a._id) )
+            this.dataSet = notifications.map( notification => notification.doc)
+                .sort( (a, b) => b.timestamp - a.timestamp )
             this.currentProject = this.dataSet[0];
         }
 

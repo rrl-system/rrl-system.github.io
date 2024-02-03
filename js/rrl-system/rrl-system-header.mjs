@@ -9,10 +9,13 @@ class RrlSystemHeader extends BaseElement {
             isHorizontal: { type: Boolean, default: true },
             version: { type: String, default: '1.0.0', save: true },
             activePage: { type: String, default: '', attribute: 'active-page', local: true },
-            successUserIn: { type: Boolean, default: false, local: true}
+            successUserIn: { type: Boolean, default: false, local: true},
+            notificationMaxOffset: { type: String, default: '', local: true },
+            notificationCurrentOffset: { type: String, default: '', local: true },
         }
     }
 
+    
     get title() {
         return 'RRL System';
     }
@@ -194,13 +197,6 @@ class RrlSystemHeader extends BaseElement {
         return this.isHorizontal ? this.horizontalHeader() : this.verticalHeader();
     }
 
-    firstUpdated() {
-        super.firstUpdated();
-        const md = window.matchMedia( "(min-width: 920px)" );
-        this.isHorizontal = md.matches;
-        md.addEventListener('change', this.matchMediaChange.bind(this), false);
-    }
-
     login() {
         if (!this.isHorizontal)
             this.showMenu();
@@ -246,15 +242,40 @@ class RrlSystemHeader extends BaseElement {
         this.eventSource.onmessage = (event) => {
             console.log(event);
         };
-        this.eventSource.addEventListener('result', event => {
-            // const frameworkId = event.data;
+        this.eventSource.addEventListener('maxoffset', event => {
+            this.notificationMaxOffset = event.data
             console.log(event);
         })
+    }
+
+    async getNotificationOffset(projectId) {
+        const token = await this.getToken();
+        return fetch(`http://localhost:7000/api/notification-offset`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => response.json())
+        .then(json => {
+            if (json.error) {
+                throw Error(json.error)
+            }
+            return json;
+        })
+        .then(project => {
+            console.log(project)
+            this.notificationMaxOffset = project?.maxOffset;
+            this.notificationCurrentOffset = project?.currentOffset;
+            return project
+        })
+        // .then(() =>c.modalDialogShowShow())
+        .catch(err => {console.error(err.message)});
     }
 
     showUserAccount() {
         this.successUserIn = true;
         this.createEventSource();
+        this.getNotificationOffset();
         window.location.hash = '';
     }
 
@@ -264,6 +285,13 @@ class RrlSystemHeader extends BaseElement {
 
     showMenu() {
         this.isShow = !this.isShow;
+    }
+
+    firstUpdated() {
+        super.firstUpdated();
+        const md = window.matchMedia( "(min-width: 920px)" );
+        this.isHorizontal = md.matches;
+        md.addEventListener('change', () => this.matchMediaChange, false);
     }
 }
 

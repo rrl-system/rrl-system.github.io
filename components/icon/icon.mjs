@@ -2,7 +2,7 @@ import { BaseElement, css, svg, nothing } from '../../js/base-element.mjs';
 
 import icons from './icons/icons.mjs';
 
-customElements.define('simple-icon', class RrlIcon extends BaseElement {
+customElements.define('simple-icon', class SimpleIcon extends BaseElement {
 
     static get properties() {
         return {
@@ -55,8 +55,8 @@ customElements.define('simple-icon', class RrlIcon extends BaseElement {
             }
             if (changedProperties.has('blink') || changedProperties.has('speed')) {
                 if (this.$id('animate')) {
-                    this.$id('animate').beginElement();
-                    this.$id('animateTransform').beginElement();
+                    this.$id('animate')?.beginElement();
+                    this.$id('animateTransform')?.beginElement();
                 }
             }
         }

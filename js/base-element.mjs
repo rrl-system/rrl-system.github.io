@@ -7,7 +7,7 @@ export { unsafeHTML } from 'https://unpkg.com/lit@2.0.0/directives/unsafe-html.j
 import { ulid, decodeTime } from './utils.js';
 import './icaro.js';
 
-const urlRRL = import.meta.url;
+const urlBASE = import.meta.url;
 
 export class BaseElement extends LitElement {
 
@@ -56,10 +56,10 @@ export class BaseElement extends LitElement {
             if (prop?.default !== undefined) this[k] = prop.default;
         }
         const name = this.localName.replace('lit-', '');
-        this.$url = `${urlRRL.replace('base-element.mjs', '')}${name}.js`;
+        this.$url = `${urlBASE.replace('base-element.mjs', '')}${name}.js`;
 
-        this.$ulid = this.$ulid || RRL.ulid();
-        if (this._useInfo) this.$urlInfo = `${urlRRL.replace('base-element.mjs', '')}/${name}/$info/$info.js`;
+        this.$ulid = this.$ulid || BASE.ulid();
+        if (this._useInfo) this.$urlInfo = `${urlBASE.replace('base-element.mjs', '')}/${name}/$info/$info.js`;
     }
 
     connectedCallback() {
@@ -84,10 +84,10 @@ export class BaseElement extends LitElement {
 
         }
         if (this.$$ && this.__globals) {
-            RRL.$$.listen(this.fnGlobals);
+            BASE.$$.listen(this.fnGlobals);
             this.__globals.forEach(i => {
-                if (RRL.$$[i] === undefined) RRL.$$[i] = this[i];
-                else this[i] = RRL.$$[i];
+                if (BASE.$$[i] === undefined) BASE.$$[i] = this[i];
+                else this[i] = BASE.$$[i];
             });
 
         }
@@ -97,7 +97,7 @@ export class BaseElement extends LitElement {
     disconnectedCallback() {
         if (this.$$?.update) this.$$.update.unlisten(this.fnUpdate);
         if (this.$$ && this.__locals) this.$$.unlisten(this.fnLocals);
-        if (RRL.$$ && this.__globals) RRL.$$.unlisten(this.fnGlobals);
+        if (BASE.$$ && this.__globals) BASE.$$.unlisten(this.fnGlobals);
         super.disconnectedCallback();
     }
     _initBus() {
@@ -107,19 +107,19 @@ export class BaseElement extends LitElement {
                 this.$partid = this._partid;
             if (this.$$?.update)
                 this.$$.update.unlisten(this.fnUpdate);
-            if (!RRL._$$[this._partid]) {
-                RRL._$$[this._partid] = { _$$: {}, _$$: {} };
-                RRL._$$[this._partid]._$$ = icaro({});
-                RRL._$$[this._partid]._$$.update = icaro({ value: 0 });
+            if (!BASE._$$[this._partid]) {
+                BASE._$$[this._partid] = { _$$: {}, _$$: {} };
+                BASE._$$[this._partid]._$$ = icaro({});
+                BASE._$$[this._partid]._$$.update = icaro({ value: 0 });
             }
         }
     }
 
     fnUpdate = (e) => {
         this.requestUpdate();
-        // if (RRL._$update) {
+        // if (BASE._$update) {
         //     ++this.$$.__update;
-        //     RRL.debounce('_$update', () => {
+        //     BASE.debounce('_$update', () => {
         //         console.log('_$update', 'requestUpdate', this.$$.__update, 'changed', this.$$.__changed);
         //         this.$$.__update = 0;
         //         this.$$.__changed = 0;
@@ -136,7 +136,7 @@ export class BaseElement extends LitElement {
         }
     }
     get partid() { return this._PARTID || this.$partid || this.$root?.partid || this._partid || undefined }
-    get $$() { return RRL._$$?.[this.partid]?.['_$$'] ? RRL._$$[this.partid]['_$$'] : undefined }
+    get $$() { return BASE._$$?.[this.partid]?.['_$$'] ? BASE._$$[this.partid]['_$$'] : undefined }
     get $root() { return this.getRootNode().host; }
     get _saveFileName() { return ((this.id || this.partid || this.localName.replace('lit-', '')) + '.saves') }
     $(v) { return this.$$[v].value }
@@ -186,34 +186,34 @@ export class BaseElement extends LitElement {
                 if (this.$$ && this.__locals && this.__locals.includes(prop))
                     this.$$[prop] = this[prop];
                 if (this.$$ && this.__globals && this.__globals.includes(prop))
-                    RRL.$$[prop] = this[prop];
-                // if (RRL._changed) console.log('_changed', this.localName, prop, { old: changedProps.get(prop) }, { new: this[prop] });
-                // if (RRL._$update) ++this.$$.__changed;
+                    BASE.$$[prop] = this[prop];
+                // if (BASE._changed) console.log('_changed', this.localName, prop, { old: changedProps.get(prop) }, { new: this[prop] });
+                // if (BASE._$update) ++this.$$.__changed;
             }
             if (this.__notifications && this.__notifications.has(prop)) {
                 const event = this.__notifications.get(prop);
                 this.fire(event, { value: this[prop] });
-                //if (RRL._notify) console.log('_notify ', this.localName, event, { old: changedProps.get(prop) }, { new: this[prop] });
+                //if (BASE._notify) console.log('_notify ', this.localName, event, { old: changedProps.get(prop) }, { new: this[prop] });
             }
         }
     }
 
-    $update(property, value) { RRL.$update.call(this, property, value) }
+    $update(property, value) { BASE.$update.call(this, property, value) }
     $listen(event, fn) {
         if (!event) return;
-        RRL.$$[event] = RRL.$$[event] || icaro({ count: 0 });
-        RRL.$$[event].listen(fn || this.fnListen);
+        BASE.$$[event] = BASE.$$[event] || icaro({ count: 0 });
+        BASE.$$[event].listen(fn || this.fnListen);
     }
     $unlisten(event, fn) {
-        if (!event || !RRL.$$[event]) return;
-        RRL.$$[event].unlisten(fn || this.fnListen);
-        RRL.$$[event] = undefined;
+        if (!event || !BASE.$$[event]) return;
+        BASE.$$[event].unlisten(fn || this.fnListen);
+        BASE.$$[event] = undefined;
     }
     $fire(event, value) {
         if (!event) return;
-        RRL.$$[event] = RRL.$$[event] || icaro({ count: 0 });
-        RRL.$$[event].value = value;
-        ++RRL.$$[event].count;
+        BASE.$$[event] = BASE.$$[event] || icaro({ count: 0 });
+        BASE.$$[event].value = value;
+        ++BASE.$$[event].count;
     }
 
     fnListen = (e) => console.log('...fire ', this.localName, e?.type, e?.detail);
@@ -228,11 +228,12 @@ __$$.$$.update = icaro({ value: 0 });
 const _$temp = {};
 _$temp.throttles = new Map();
 _$temp.debounces = new Map();
-class CRRL {
+
+class BaseClass {
     constructor() {
         this.ulid = ulid;
         this.icaro = icaro;
-        this.$url = urlRRL;
+        this.$url = urlBASE;
         this._notify = false;
         this._changed = false;
         this._icaro = false;
@@ -253,7 +254,7 @@ class CRRL {
         comp = comp || {};
         if (typeof comp === 'string') {
             comp = comp.replace('lit-', '');
-            let url = `${urlRRL.replace('js/base-element.mjs', '')}components/${comp}/${comp}.js`;
+            let url = `${urlBASE.replace('js/base-element.mjs', '')}components/${comp}/${comp}.js`;
             await import(url);
             const cmp = document.createElement(`lit-${comp}`);
             for (let p in props) cmp[p] = props[p];
@@ -305,7 +306,8 @@ class CRRL {
         return new Date(decodeTime(ulid));
     }
 }
-globalThis.RRL = new CRRL();
+
+globalThis.BASE = new BaseClass();
 
 Object.defineProperty(Array.prototype, 'has', { enumerable: false, value: Array.prototype.includes })
 Object.defineProperty(Array.prototype, 'clear', { enumerable: false, value: function() { this.splice(0) } })
@@ -314,11 +316,11 @@ Object.defineProperty(Array.prototype, 'last', { enumerable: false, get() { retu
 Object.defineProperty(Array.prototype, 'add', { enumerable: false, value: function(...item) { for (let i of item) { if (this.includes(i)) continue; this.push(i) } } })
 Object.defineProperty(Array.prototype, 'remove', { enumerable: false, value: function(...items) { for (const item of items) { const idx = this.indexOf(item); if (idx < 0) continue; this.splice(idx, 1) } } })
 
-document.addEventListener('mousedown', (e) => RRL.mousePos = new DOMRect(e.pageX, e.pageY));
-if (!window.RRLRect) {
-    window.RRLRect = function(element) {
+document.addEventListener('mousedown', (e) => BASE.mousePos = new DOMRect(e.pageX, e.pageY));
+if (!window.BASERect) {
+    window.BASERect = function(element) {
         if (element && element.host) element = element.host;
-        const pos = element ? element.getBoundingClientRect() : RRL.mousePos;
+        const pos = element ? element.getBoundingClientRect() : BASE.mousePos;
         return pos ? {
             ok: true, x: pos.x, y: pos.y,
             top: pos.top, bottom: pos.bottom, left: pos.left, right: pos.right,

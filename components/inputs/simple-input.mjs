@@ -5,7 +5,7 @@ import '../button/simple-button.mjs'
 
 import styles from './input-css.mjs'
 
-customElements.define("simple-input", class RrlInput extends BaseElement {
+customElements.define("simple-input", class SimpleInput extends BaseElement {
     static get properties() {
         return {
             type: { type: String, default: 'text'},

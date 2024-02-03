@@ -173,11 +173,12 @@ class MyProjectsSection1 extends BaseElement {
                 </div>
                 <div class="right-layout">
                     <div>
-                        <h2>Project property</h2>
-                        <simple-input id="name" icon-name="user" placeholder="Project name" .value=${this.currentProject.name} @value-changed=${this.validateInput}></simple-input>
-                        <simple-input id="path" icon-name="bars" placeholder="Project file" .value=${this.currentProject.path} @value-changed=${this.validateInput}></simple-input>
-                        <upload-input id="filename" .value=${this.currentProject.filename} @value-changed=${this.validateInput}></upload-input>
+                        <simple-input id="name" icon-name="user" label="Project name:" .value=${this.currentProject.name} @input=${this.validateInput}></simple-input>
+                        <upload-input id="filename" .value=${this.currentProject.filename} @input=${this.validateInput}></upload-input>
+                        <simple-input id="epochs" icon-name="bars" label="Count of Epochs:" .value=${this.currentProject.epochs} @input=${this.validateInput}></simple-input>
                         ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
+                        ${!this.isModified ? html`<simple-button label="Обучить" @click=${this.LearnModel}></simple-button>` : ""}
+                        ${this.isLearning ? html`<simple-button label="Обучить" @click=${this.getResults}></simple-button>` : ""}
                     </div>
                 </div>
                 <footer>
@@ -375,6 +376,32 @@ class MyProjectsSection1 extends BaseElement {
             .catch(err => {console.error(err.message)});
         }
 
+        async LearnModel() {
+            const token = await this.getToken();
+            const result = await this.uploadFile();
+            if (!result) return;
+            return fetch(`http://localhost:7000/api/learn-model/${this.currentProject._id}?epochs=${this.currentProject.epochs}}`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json;
+            })
+            .then(projectHeader => this.afterLearn(projectHeader))
+            // .then(() => this.modalDialogShow())
+            .catch(err => {console.error(err)});
+        }
+
+        afterLearn(projectHeader) {
+            this.currentProject.isLearning = true;
+            this.isLearning = true;
+        }
         async saveProject() {
             const token = await this.getToken();
             const result = await this.uploadFile();

@@ -43,24 +43,27 @@ class ToggleButton extends BaseElement {
                 margin: 1px;
                 user-select: none;
             }
-            .rrl-btn {
+            .btn {
                 display: flex;
                 align-items: center;
                 cursor: pointer;
+                &:hover {
+                    transition: .3s;
+                    filter: brightness(85%);
+                    background-color: var(--nav-item-hover-background-color);
+                    color: var(--nav-item-hover-color);
+                }
+                &:active {
+                    transition: .1s;
+                    filter: brightness(70%);
+                }
+                &:focus {
+                    outline:none;
+                }
+
+
             }
-            .rrl-btn:hover {
-                transition: .3s;
-                filter: brightness(85%);
-                background-color: var(--nav-item-hover-background-color);
-                color: var(--nav-item-hover-color);
-            }
-            .rrl-btn:active {
-                transition: .1s;
-                filter: brightness(70%);
-            }
-            .rrl-btn:focus {
-                outline:none;
-            }
+
             .left90 {
                 transition: .3s;
                 transform: rotate(-90deg);
@@ -115,7 +118,7 @@ class ToggleButton extends BaseElement {
     }
     render() {
         return html`
-            <div id="rrl-btn" class="rrl-btn"  tabindex="0" style="
+            <div id="btn" class="btn"  tabindex="0" style="
                     text-align: ${this.textAlign};
                     width: ${this.width || this.size}px;
                     height: ${this.height || this.size}px;

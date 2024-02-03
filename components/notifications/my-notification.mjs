@@ -51,16 +51,17 @@ customElements.define("my-notification", class MyNotification extends BaseElemen
                 .time {
                     text-align: right;
                     position: absolute;
-                    right: 0;
-                    margin-top: 10px;
+                    right: 0px;
+                    margin-top: 12px;
+                    font-size: 0.8rem;
                 }
-
             `
         ]
     }
 
     firstUpdated(setPath = false) {
         super.firstUpdated();
+        this.addObserver();
     }
 
     get #label() {
@@ -73,6 +74,34 @@ customElements.define("my-notification", class MyNotification extends BaseElemen
         return html`
             <simple-icon class="icon" icon-name="comment-dollar-solid"></simple-icon>
         `
+    }
+
+    addObserver() {
+        const callback = (entries, observer) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    this.observer.unobserve(entry.target);
+
+                    const notificationOffset = +this.notification._id.split(':')[1];
+                    console.log(notificationOffset)
+                    console.log(notificationOffset > +this.$root.notificationCurrentOffset)
+                    if (notificationOffset > +this.$root.notificationCurrentOffset ) {
+                        this.$root.notificationCurrentOffset = notificationOffset;
+                    }
+
+                    console.log(this.notification)
+                    console.log(this.$root.notificationCurrentOffset)
+                }
+            })
+        }
+
+        const options = {
+            rootMargin: '0px 0px 75px 0px',
+            threshold: 0,
+        }
+
+        this.observer = new IntersectionObserver(callback, options)
+        this.observer.observe(this);
     }
 
     // get value() {
