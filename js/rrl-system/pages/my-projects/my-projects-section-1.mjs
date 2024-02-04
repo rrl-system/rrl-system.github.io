@@ -4,6 +4,7 @@ import '../../../../components/dialogs/confirm-dialog.mjs'
 import '../../../../components/inputs/simple-input.mjs'
 import '../../../../components/inputs/upload-input.mjs'
 import '../../../../components/inputs/download-input.mjs'
+import '../../../../components/button/project-button.mjs'
 
 class MyProjectsSection1 extends BaseElement {
         static get properties() {
@@ -71,7 +72,7 @@ class MyProjectsSection1 extends BaseElement {
                         background: rgba(255, 255, 255, 0.1);
                     }
 
-                    .left-layout simple-button {
+                    .left-layout project-button {
                         width: 100%;
                         height: 40px;
                     }
@@ -169,7 +170,15 @@ class MyProjectsSection1 extends BaseElement {
                 <header id="property-header">Project property</header>
                 <div class="left-layout">
                     ${this.dataSet.map((project, index) =>
-                        html`<simple-button label=${project.name} title=${project._id} @click=${() => this.showProject(index, project._id)}></simple-button>`)}
+                        html `<project-button
+                                    label="${project.name}"
+                                    title="${project._id}"
+                                    projectAvatar="https://funik.ru/wp-content/uploads/2018/10/17478da42271207e1d86.jpg"
+                                    statusIcon="green"
+                                    statusColor="green"
+                                    @click="${() => this.showProject(index, project._id)}">
+                              </project-button>
+                    `)}
                 </div>
                 <div class="right-layout">
                     <div>
