@@ -213,9 +213,10 @@ customElements.define("sign-in-form", class SignInForm extends BaseElement {
             headers: {
               'Content-Type': 'application/json;charset=utf-8'
             },
+            credentials: "include",
             body: JSON.stringify(user)
         })
-        .then(response => response.json())
+        .then( response => response.json() )
         .then(json => {
             if (json.error) {
                 throw Error(json.error)
@@ -224,9 +225,28 @@ customElements.define("sign-in-form", class SignInForm extends BaseElement {
             return json.token
         })
         .then(token => this.getSimpleUserInfo(token))
+        // .then( token => this.refreshToken())
         .catch(err => {console.error(err.message)});
     }
 
+    // refreshToken() {
+    //     return fetch('http://localhost:7000/api/refresh-token', {
+    //         method: 'GET',
+    //         headers: {
+    //           'Content-Type': 'application/json;charset=utf-8'
+    //         },
+    //         credentials: "include",
+    //     })
+    //     .then(response => response.json())
+    //     .then(json => {
+    //         if (json.error) {
+    //             throw Error(json.error)
+    //         }
+    //         return json.token
+    //     })
+    //     .then(token => this.saveToken(token))
+    //     .catch(err => {console.error(err.message)});
+    // }
     async saveToken(token) {
         if (localStorage.getItem('rememberMe')) {
             localStorage.setItem('accessUserToken', token)

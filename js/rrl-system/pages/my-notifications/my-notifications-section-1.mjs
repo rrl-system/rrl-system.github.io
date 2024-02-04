@@ -385,7 +385,21 @@ class MyNotificationsSection1 extends BaseElement {
                 }
 
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 419){
+                    return this.refreshToken().then( token =>
+                        fetch('http://localhost:7000/api/notifications', {
+                            headers: {
+                            'Authorization': `Bearer ${token}`
+                            }
+
+                        }).then(response => response.json())
+                    )
+                }
+                else {
+                    return response.json()
+                }
+            })
             .then(json => {
                 if (json.error) {
                     throw Error(json.error)
@@ -403,6 +417,34 @@ class MyNotificationsSection1 extends BaseElement {
             this.dataSet = notifications.map( notification => notification.doc)
                 .sort( (a, b) => b.timestamp - a.timestamp )
             this.currentProject = this.dataSet[0];
+        }
+
+        refreshToken() {
+            return fetch('http://localhost:7000/api/refresh-token', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json;charset=utf-8'
+                },
+                credentials: "include",
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json.token
+            })
+            .then(token => this.saveToken(token))
+            .catch(err => {console.error(err.message)});
+        }
+        async saveToken(token) {
+            if (localStorage.getItem('rememberMe')) {
+                localStorage.setItem('accessUserToken', token)
+            }
+            else {
+                sessionStorage.setItem('accessUserToken', token)
+            }
+            return token;
         }
 
         async addProject() {

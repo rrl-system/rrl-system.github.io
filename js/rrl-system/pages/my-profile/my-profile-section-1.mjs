@@ -378,7 +378,21 @@ class MyProfileSection1 extends BaseElement {
                 }
 
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 419){
+                    return this.refreshToken().then( token =>
+                        fetch('http://localhost:7000/api/user-profile', {
+                            headers: {
+                            'Authorization': `Bearer ${token}`
+                            }
+
+                        }).then(response => response.json())
+                    )
+                }
+                else {
+                    return response.json()
+                }
+            })
             .then(json => {
                 if (json.error) {
                     throw Error(json.error)
@@ -394,7 +408,33 @@ class MyProfileSection1 extends BaseElement {
             sessionStorage.setItem('userProfile', JSON.stringify(userProfile));
             return this.dataSet;
         }
-
+        refreshToken() {
+            return fetch('http://localhost:7000/api/refresh-token', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json;charset=utf-8'
+                },
+                credentials: "include",
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json.token
+            })
+            .then(token => this.saveToken(token))
+            .catch(err => {console.error(err.message)});
+        }
+        async saveToken(token) {
+            if (localStorage.getItem('rememberMe')) {
+                localStorage.setItem('accessUserToken', token)
+            }
+            else {
+                sessionStorage.setItem('accessUserToken', token)
+            }
+            return token;
+        }
         async saveProfile() {
             const token = await this.getToken();
             const result = await this.uploadFile();

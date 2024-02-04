@@ -126,10 +126,7 @@ class SignUpForm extends BaseElement {
             },
             body: JSON.stringify(token)
         })
-        .then(response => {
-            console.log(response.status)
-            return response.json()
-        })
+        .then(response =>response.json())
         .then(json => {
             if (json.error) {
                 throw Error(json.error)
