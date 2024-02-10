@@ -57,6 +57,10 @@ class RrlSystem extends BaseElement {
         super();
         this.version = "1.0.0";
         this.successUserIn = this.isAuth();
+        addEventListener("project-status", (e) => {
+            console.log(e)
+        });
+
         addEventListener("hashchange", () => {this.requestUpdate()});
         // this.lazyLoad = {};
         // this.lazyLoad[Symbol.iterator] = function* () {

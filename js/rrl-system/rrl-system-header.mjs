@@ -12,10 +12,11 @@ class RrlSystemHeader extends BaseElement {
             successUserIn: { type: Boolean, default: false, local: true},
             notificationMaxOffset: { type: String, default: '', local: true },
             notificationCurrentOffset: { type: String, default: '', local: true },
+            projectStatus: { type: Object, default: null, local: true },
         }
     }
 
-    
+
     get title() {
         return 'RRL System';
     }
@@ -131,6 +132,10 @@ class RrlSystemHeader extends BaseElement {
     constructor() {
         super();
         this.version = "1.0.0";
+        if (this.getToken()) {
+            this.createEventSource();
+        }
+
     }
 
     logo() {
@@ -245,6 +250,13 @@ class RrlSystemHeader extends BaseElement {
         this.eventSource.addEventListener('maxoffset', event => {
             this.notificationMaxOffset = event.data
             console.log(event);
+        })
+        this.eventSource.addEventListener('project-status', event => {
+            console.log(event.data)
+            this.projectStatus = JSON.parse(event.data)
+            // this.fire('project-status', { notification: '11111' })
+            // console.log(this.activePage)
+            console.log(this.projectStatus);
         })
     }
 

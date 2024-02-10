@@ -5,16 +5,19 @@ import '../../../../components/inputs/simple-input.mjs'
 import '../../../../components/inputs/upload-input.mjs'
 import '../../../../components/inputs/download-input.mjs'
 import '../../../../components/button/project-button.mjs'
+import '../../../../components/inputs/avatar-input.mjs'
 
 class MyProjectsSection1 extends BaseElement {
         static get properties() {
             return {
                 version: { type: String, default: '1.0.0', save: true },
                 dataSet: {type: Array, default: []},
+                statusDataSet: {type: Map, default: null },
                 currentProject: {type: String, default: ""},
                 isModified: {type: Boolean, default: ""},
-                isReady: {type: Boolean, default: true}
+                isReady: {type: Boolean, default: true},
                 // isValidate: {type: Boolean, default: false, local: true},
+                projectStatus: { type: Object, default: null, local: true },
             }
         }
 
@@ -143,13 +146,30 @@ class MyProjectsSection1 extends BaseElement {
                         border: 5px solid blue;
                         width: 200px;
                         height: 100px;
-                      }
+                    }
+                    avatar-input {
+                        height: 50px;
+                        margin: auto;
+                        aspect-ratio: 1 / 1;
+                        overflow: hidden;
+                        border-radius: 50%;
+                    }
                 `
             ]
         }
 
         constructor() {
             super();
+            this.statusDataSet = new Map()
+        }
+
+        update(changedProps) {
+            super.update(changedProps);
+            if (!changedProps) return;
+            if (changedProps.has('projectStatus') && this.projectStatus) {
+                this.statusDataSet.set(this.projectStatus._id, this.projectStatus)
+                this.requestUpdate()
+            }
         }
 
         async showProject(index, projectId) {
@@ -164,6 +184,10 @@ class MyProjectsSection1 extends BaseElement {
         }
 
         render() {
+            //
+
+            // status=${this.statusDataSet.get(project._id)?.status}
+            // project=${project}"https://funik.ru/wp-content/uploads/2018/10/17478da42271207e1d86.jpg"
             return html`
                 <confirm-dialog></confirm-dialog>
                 <header id="project-header"><p>Project ${this.currentProject.name}</p></header>
@@ -171,18 +195,19 @@ class MyProjectsSection1 extends BaseElement {
                 <div class="left-layout">
                     ${this.dataSet.map((project, index) =>
                         html `<project-button
-                                    label="${project.name}"
-                                    title="${project._id}"
-                                    projectAvatar="https://funik.ru/wp-content/uploads/2018/10/17478da42271207e1d86.jpg"
-                                    statusIcon="green"
-                                    statusColor="green"
-                                    @click="${() => this.showProject(index, project._id)}">
+                                    label=${project.name}
+                                    title=${project._id}
+                                    project=${project}
+                                    .status=${this.statusDataSet.get(project._id)}
+                                    @click=${() => this.showProject(index, project._id)}
+                                >
                               </project-button>
                     `)}
                 </div>
                 <div class="right-layout">
                     <div>
                         <simple-input id="name" icon-name="user" label="Project name:" .value=${this.currentProject.name} @input=${this.validateInput}></simple-input>
+                        <avatar-input id="avatar" .value=${this.statusDataSet.get(this.currentProject?._id)?.status} @input=${this.validateAvatar}></avatar-input>
                         <upload-input id="filename" .value=${this.currentProject.filename} @input=${this.validateInput}></upload-input>
                         <simple-input id="epochs" icon-name="bars" label="Count of Epochs:" .value=${this.currentProject.epochs} @input=${this.validateInput}></simple-input>
                         ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
@@ -195,6 +220,9 @@ class MyProjectsSection1 extends BaseElement {
                     <simple-button label=${this.isModified ? "Отменить": "Добавить"} @click=${this.isModified ? this.cancelProject: this.addProject}></simple-button>
                 </footer>
             `;
+        }
+        validateAvatar() {
+            console.log(1)
         }
 
         async getNewFileHandle() {
@@ -362,6 +390,7 @@ class MyProjectsSection1 extends BaseElement {
                 return json.rows;
             })
             .then(projects => this.saveDataSet(projects))
+            .then( () => this.getProjectStatusList() )
             // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err.message)});
         }
@@ -374,6 +403,51 @@ class MyProjectsSection1 extends BaseElement {
             ).sort( (a, b) => b._id.localeCompare(a._id) )
             this.currentProject = this.dataSet[0];
         }
+
+        async getProjectStatusList() {
+            const token = await this.getToken();
+            return fetch('http://localhost:7000/api/projects-status', {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+
+            })
+            .then(response => {
+                if (response.status === 419){
+                    return this.refreshToken().then( token =>
+                        fetch('http://localhost:7000/api/projects-status', {
+                            headers: {
+                            'Authorization': `Bearer ${token}`
+                            }
+
+                        }).then(response => response.json())
+                    )
+                }
+                else {
+                    return response.json()
+                }
+            })
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json;
+            })
+            .then(projects => this.saveChildDataSet(projects))
+            // .then(() => this.modalDialogShow())
+            .catch(err => {console.error(err.message)});
+        }
+
+        async saveChildDataSet(statuses) {
+            if (statuses.length === 0)
+                return;
+            this.statusDataSet = new Map();
+            statuses.forEach(status => {
+                this.statusDataSet.set(status._id, status)
+            })
+            this.requestUpdate()
+        }
+
         refreshToken() {
             return fetch('http://localhost:7000/api/refresh-token', {
                 method: 'GET',
