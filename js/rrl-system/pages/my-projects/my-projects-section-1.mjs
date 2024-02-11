@@ -503,7 +503,7 @@ class MyProjectsSection1 extends BaseElement {
             const token = await this.getToken();
             const result = await this.uploadFile();
             if (!result) return;
-            return fetch(`http://localhost:7000/api/learn-model/${this.currentProject._id}?epochs=${this.currentProject.epochs}}`, {
+            return fetch(`http://localhost:7000/api/learn-model/${this.currentProject._id}?epochs=${this.currentProject.epochs}`, {
                 headers: {
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json'
