@@ -1,6 +1,6 @@
 import { BaseElement, html, css } from '../base-element.mjs'
 
-import '../../components/button/toggle-button.mjs';
+import '../../components/buttons/toggle-button.mjs';
 
 class RrlSystemHeader extends BaseElement {
     static get properties() {

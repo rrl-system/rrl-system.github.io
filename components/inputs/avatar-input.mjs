@@ -111,7 +111,7 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
     }
 
     #showDefaultImage() {
-        return html`<simple-icon icon-name="noavatar" @click=${this.clickButton}></simple-icon>`
+        return html`<simple-icon icon-name="no-avatar" @click=${this.clickButton}></simple-icon>`
     }
 
     valueChanged(e) {

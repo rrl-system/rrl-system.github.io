@@ -1,4 +1,4 @@
-import { BaseElement, html, css, cache } from '../../../base-element.mjs'
+import { BaseElement, html, css } from '../../../base-element.mjs'
 
 import '../../../../components/dialogs/confirm-dialog.mjs'
 import '../../../../components/inputs/simple-input.mjs'
@@ -6,23 +6,22 @@ import '../../../../components/inputs/upload-input.mjs'
 import '../../../../components/inputs/download-input.mjs'
 import '../../../../components/buttons/project-button.mjs'
 import '../../../../components/inputs/avatar-input.mjs'
-import './my-projects-section-1-page-1.mjs'
-import './my-projects-section-1-page-2.mjs'
 
-class MyProjectsSection1 extends BaseElement {
+class MyProjectsSection1Page1 extends BaseElement {
         static get properties() {
             return {
                 version: { type: String, default: '1.0.0', save: true },
                 dataSet: {type: Array, default: []},
-                statusDataSet: {type: Map, default: null },
-                oldValues: {type: Map, default: null },
-                currentProject: {type: Object, default: null},
-                isModified: {type: Boolean, default: "", local: true},
+                statusDataSet: {type: Map, default: null, attrubute: "status-data-set" },
+                isModified: {type: Boolean, default: false},
                 isReady: {type: Boolean, default: true},
                 // isValidate: {type: Boolean, default: false, local: true},
                 projectStatus: { type: Object, default: null, local: true },
                 obj: { type: Object, default: null },
-                currentPage: {type: BigInt, default: 0},
+                currentPage: {type: BigInt, default: 0, attrubute: 'current-page'},
+                project: {type: Object, default: null},
+                isModified: {type: Boolean, default: "", local: true},
+                oldValues: {type: Map, default: null, attrubute: "old-values" },
             }
         }
 
@@ -31,16 +30,11 @@ class MyProjectsSection1 extends BaseElement {
                 BaseElement.styles,
                 css`
                     :host {
-                        display: grid;
-                        width: 100%;
-                        grid-template-columns: 3fr 9fr;
-                        grid-template-rows: 50px 1fr 50px;
-                        grid-template-areas:
-                            "header1 header2"
-                            "sidebar content"
-                            "footer  footer";
-                        gap: 0 20px;
-                        background: linear-gradient(180deg, var(--header-background-color) 0%, var(--gradient-background-color) 100%);
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        overflow: hidden;
+                        gap: 10px;
                     }
 
                     header{
@@ -171,116 +165,22 @@ class MyProjectsSection1 extends BaseElement {
                         justify-content: center;
                         width: 40px;
                     }
-                    simple-icon[visible] {
-                        display: none;
-                    }
-
-                    // simple-icon {
-                    //     visibility: hidden;
-                    // }
-
-                    // simple-icon:hover {
-                    //     visibility: visible;
-                    // }
-                    project-button[selected] {
-                        background: rgba(255, 255, 255, 0.1)
-                    }
-                    project-button:hover {
-                        background: rgba(255, 255, 255, 0.1)
-                    }
                 `
             ]
         }
 
-        constructor() {
-            super();
-            this.statusDataSet = new Map()
-            this.pageNames = ['Project property', 'Project results']
-            this.oldValues = new Map();
-        }
-
-        update(changedProps) {
-            super.update(changedProps);
-            if (!changedProps) return;
-            if (changedProps.has('projectStatus') && this.projectStatus) {
-                this.statusDataSet.set(this.projectStatus._id, this.projectStatus)
-                this.requestUpdate()
-            }
-        }
-
-        async showProject(index, projectId) {
-            if (this.isModified) {
-                const modalResult = await this.confirmDialogShow('Проект был изменен. Сохранить сделанные изменения?')
-                if (modalResult === 'Ok')
-                    this.saveProject().then(() => this.currentProject = this.dataSet[index]);
-            }
-            else {
-                this.setCurrentProject(this.dataSet[index])
-            }
-        }
-
-        #page() {
-            return cache(this.currentPage === 0 ? this.#page1() : this.#page2());
-        }
-
-        #page1() {
-            return html`
-                <my-projects-section-1-page-1 .oldValues=${this.oldValues} .project=${this.currentProject}></my-projects-section-1-page-1>
-            `;
-        }
-
-        #page2() {
-            return html`
-                <my-projects-section-1-page-2 .project=${this.currentProject}></my-projects-section-1-page-2>
-            `;
-        }
-
-        get #pageName() {
-            return this.pageNames[this.currentPage];
-        }
         render() {
-            //
-            // status=${this.statusDataSet.get(project._id)?.status}
-            // project=${project}"https://funik.ru/wp-content/uploads/2018/10/17478da42271207e1d86.jpg"
-
             return html`
-                <confirm-dialog></confirm-dialog>
-                <header id="project-header"><p>Project ${this.currentProject?.name}</p></header>
-                <header id="property-header">${this.#pageName}</header>
-                <div class="left-layout">
-                    ${this.dataSet.map((project, index) =>
-                        html `<project-button
-                                    label=${project.name}
-                                    title=${project._id}
-                                    project=${project}
-                                    .status=${this.statusDataSet.get(project._id)}
-                                    ?selected=${this.currentProject === project}
-                                    @click=${() => this.showProject(index, project._id)}
-                                >
-                              </project-button>
-                    `)}
+                <div>
+                    ${this.project?.name}
+                    <simple-input id="name" icon-name="user" label="Project name:" .value=${this.project?.name} @input=${this.validateInput}></simple-input>
+                    <avatar-input id="avatar" .value=${this.statusDataSet?.get(this.project?._id)?.status} @input=${this.validateAvatar}></avatar-input>
+                    <upload-input id="filename" .value=${this.project?.filename} @input=${this.validateInput}></upload-input>
+                    <simple-input id="epochs" icon-name="bars" label="Count of Epochs:" .value=${this.project?.epochs} @input=${this.validateInput}></simple-input>
+                    ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
+                    ${!this.isModified ? html`<simple-button label="Обучить" @click=${this.LearnModel}></simple-button>` : ""}
                 </div>
-                <div class="right-layout">
-                    <div class="left-aside">
-                       <simple-icon icon-name="square-arrow-left-sharp-solid" @click=${this.prevPage} ?visible=${this.currentPage === 0} title=${this.pageNames[this.currentPage - 1]}></simple-icon>
-                    </div>
-                    ${this.#page()}
-                    <div class="right-aside">
-                        <simple-icon icon-name="square-arrow-right-sharp-solid" @click=${this.nextPage} ?visible=${this.currentPage === this.pageNames.length - 1} title=${this.pageNames[this.currentPage + 1]}></simple-icon>
-                    </div>
-                </div>
-                <footer>
-                    <simple-button label=${this.isModified ? "Сохранить": "Удалить"} @click=${this.isModified ? this.saveProject: this.deleteProject}></simple-button>
-                    <simple-button label=${this.isModified ? "Отменить": "Добавить"} @click=${this.isModified ? this.cancelProject: this.addProject}></simple-button>
-                </footer>
             `;
-        }
-
-        nextPage() {
-           this.currentPage++;
-        }
-        prevPage() {
-           this.currentPage--;
         }
 
         async getNewFileHandle() {
@@ -392,7 +292,6 @@ class MyProjectsSection1 extends BaseElement {
         }
 
         validateAvatar(e) {
-            this.oldValues ??= new Map();
             const userProfile = this
             if (!this.oldValues.has(e.target))
                 this.oldValues.set(e.target, userProfile[e.target.id])
@@ -407,8 +306,7 @@ class MyProjectsSection1 extends BaseElement {
 
         validateInput(e) {
             if (e.target.value !== "") {
-                this.oldValues ??= new Map();
-                const currentProject = e.target.currentObject ?? this.currentProject
+                const currentProject = e.target.currentObject ?? this.project
                 if (!this.oldValues.has(e.target))
                     this.oldValues.set(e.target, currentProject[e.target.id])
                 else {
@@ -473,24 +371,8 @@ class MyProjectsSection1 extends BaseElement {
             this.dataSet = projects.map(project =>
                 project.doc
             ).sort( (a, b) => b._id.localeCompare(a._id) )
-            this.currentProject = this.getCurrentProject();
+            this.currentProject = this.dataSet[0];
             this.requestUpdate()
-        }
-
-        getCurrentProject(){
-            const project = sessionStorage.getItem('currentProject')
-            if (project) {
-                return this.dataSet.find(p => p._id === project)
-            }
-            else {
-                sessionStorage.setItem('currentProject', this.dataSet[0]._id)
-                return this.dataSet[0]
-            }
-        }
-
-        setCurrentProject(value) {
-            sessionStorage.setItem('currentProject', value._id)
-            this.currentProject = value;
         }
 
         async getProjectStatusList() {
@@ -889,8 +771,7 @@ class MyProjectsSection1 extends BaseElement {
 
         async firstUpdated() {
             super.firstUpdated();
-            await this.getProjectList();
         }
 }
 
-customElements.define("my-projects-section-1", MyProjectsSection1);
+customElements.define("my-projects-section-1-page-1", MyProjectsSection1Page1);

@@ -1,6 +1,6 @@
 import { BaseElement, html, css } from '../../../base-element.mjs'
 
-import '../../../../components/button/link-button.mjs'
+import '../../../../components/buttons/link-button.mjs'
 
 class HomeSection1 extends BaseElement {
     static get properties() {

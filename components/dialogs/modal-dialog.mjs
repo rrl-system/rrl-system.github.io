@@ -1,7 +1,7 @@
 import { BaseElement, html, css } from '../../js/base-element.mjs';
 
 import { formStyles } from './modal-dialog-css.mjs'
-import '../button/close-button.mjs';
+import '../buttons/close-button.mjs';
 
 customElements.define('modal-dialog', class ModalDialog extends BaseElement {
 

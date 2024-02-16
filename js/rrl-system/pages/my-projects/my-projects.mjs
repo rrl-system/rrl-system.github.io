@@ -1,7 +1,7 @@
 import { BaseElement, html, css} from '../../../base-element.mjs'
 
 import './my-projects-section-1.mjs';
-import '../../../../components/button/aside-button.mjs';
+import '../../../../components/buttons/aside-button.mjs';
 
 class MyProjects extends BaseElement {
     static get styles() {

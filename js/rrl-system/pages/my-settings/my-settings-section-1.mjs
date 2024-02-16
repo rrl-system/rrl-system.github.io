@@ -1,7 +1,7 @@
 
 import { BaseElement, html, css } from '../../../base-element.mjs'
 
-import '../../../../components/button/switch-button.mjs'
+import '../../../../components/buttons/switch-button.mjs'
 import '../../../../components/dialogs/confirm-dialog.mjs'
 
 class MySettingsSection1 extends BaseElement {
@@ -78,7 +78,7 @@ class MySettingsSection1 extends BaseElement {
 
             `
         ]
-    }    
+    }
 
     render() {
         return html`

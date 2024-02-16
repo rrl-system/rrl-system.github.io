@@ -8,7 +8,7 @@ import '../dialogs/modal-dialog.mjs';
 import '../inputs/simple-input.mjs';
 import '../inputs/email-input.mjs';
 import '../inputs/password-input.mjs';
-import '../button/close-button.mjs';
+import '../buttons/close-button.mjs';
 
 class SignUpForm extends BaseElement {
     static get properties() {

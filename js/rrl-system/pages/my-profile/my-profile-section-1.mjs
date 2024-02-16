@@ -7,6 +7,7 @@ import '../../../../components/inputs/download-input.mjs'
 import '../../../../components/inputs/birthday-input.mjs'
 import '../../../../components/inputs/gender-input.mjs'
 import '../../../../components/inputs/avatar-input.mjs'
+import '../../../../components/buttons/statistic-button.mjs'
 
 class MyProfileSection1 extends BaseElement {
         static get properties() {
@@ -16,6 +17,7 @@ class MyProfileSection1 extends BaseElement {
                 isModified: {type: Boolean, default: false},
                 isReady: {type: Boolean, default: true},
                 avatar: {type: Object, default: {}},
+                projectCount: {type: BigInt, default: 0},
                 isFirstUpdated: {type: Boolean, default: false}
             }
         }
@@ -72,6 +74,7 @@ class MyProfileSection1 extends BaseElement {
                         overflow-y: auto;
                         overflow-x: hidden;
                         background: rgba(255, 255, 255, 0.1);
+                        gap: 10px;
                     }
                     .avatar {
                         width: 100%
@@ -170,7 +173,32 @@ class MyProfileSection1 extends BaseElement {
                         border: 5px solid blue;
                         width: 200px;
                         height: 100px;
-                      }
+                    }
+                    .label {
+                        display: block;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        margin-top: 8px;
+                        font-weight: bold;
+                        color: var(--form-label-input-color, white);
+                    }
+                    .right-container {
+                        width: 600px;
+                    }
+                    .statistic {
+                        display: flex;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                        align-items: center;
+                        gap: 10px;
+
+
+                    }
+                    .name-group {
+                        display: flex;
+                        gap: 20px;
+                    }
                 `
             ]
         }
@@ -191,6 +219,15 @@ class MyProfileSection1 extends BaseElement {
             }
         }
 
+        get #userName() {
+            if (localStorage.getItem('rememberMe')) {
+                return localStorage.getItem('loginInfo')
+            }
+            else {
+                return sessionStorage.getItem('loginInfo')
+            }
+        }
+
         render() {
             return html`
                 <confirm-dialog></confirm-dialog>
@@ -200,11 +237,21 @@ class MyProfileSection1 extends BaseElement {
                     <div class="avatar">
                         ${this.isFirstUpdated ? html`<avatar-input id="avatar" .currentObject=${this} .value=${this.avatar} @input=${this.validateAvatar}></avatar-input>` : ''}
                     </div>
+                    <div class="label">
+                        ${JSON.parse(this.#userName).login}
+                    </div>
+                    <div class="statistic">
+                        <statistic-button label="Projects" @click=${this.certificatesClick} max=${this.projectCount} duration="5000"></statistic-button>
+                        <statistic-button label="Sales" @click=${this.certificatesClick} max=${this.projectCount} duration="5000"></statistic-button>
+                        <statistic-button label="Wallet" @click=${this.certificatesClick} max=${this.projectCount} duration="5000"></statistic-button>
+                    </div>
                 </div>
                 <div class="right-layout">
-                    <div>
-                        <simple-input label="First Name:" id="firstName" icon-name="user" .value=${this.dataSet?.personalInfo?.firstName} @input=${this.validateInput}></simple-input>
-                        <simple-input label="Last Name:" id="lastName" icon-name="user-group-solid" .value=${this.dataSet?.personalInfo?.lastName} @input=${this.validateInput}></simple-input>
+                    <div class="right-container">
+                        <div class="name-group">
+                            <simple-input label="First Name:" id="firstName" icon-name="user" .value=${this.dataSet?.personalInfo?.firstName} @input=${this.validateInput}></simple-input>
+                            <simple-input label="Last Name:" id="lastName" icon-name="user-group-solid" .value=${this.dataSet?.personalInfo?.lastName} @input=${this.validateInput}></simple-input>
+                        </div>
                         <simple-input label="NickName:" id="nickName" icon-name="user-alien-solid" .value=${this.dataSet?.personalInfo?.nickName} @input=${this.validateInput}></simple-input>
                         <simple-input label="Email:" id="email" icon-name="envelope1" .value="${this.dataSet?.personalInfo?.email}" @input=${this.validateInput}></simple-input>
                         <gender-input label="Gender:" id="gender" icon-name="gender" .value="${this.dataSet?.personalInfo?.gender}" @input=${this.validateInput}></gender-input>
@@ -437,7 +484,7 @@ class MyProfileSection1 extends BaseElement {
         }
         async saveProfile() {
             const token = await this.getToken();
-            const result = await this.uploadFile();
+            const result = await this.uploadAvatarFile();
             if (!result) return;
             return fetch(`http://localhost:7000/api/user-profile`, {
                 method: "PUT",
@@ -459,7 +506,7 @@ class MyProfileSection1 extends BaseElement {
             .catch(err => {console.error(err)});
         }
 
-        async uploadFile() {
+        async uploadAvatarFile() {
             const uploadInput = this.renderRoot?.querySelector('avatar-input')
             if (uploadInput.value.constructor.name !== 'File') {
                 return true;
@@ -511,10 +558,36 @@ class MyProfileSection1 extends BaseElement {
             super.firstUpdated();
             this.dataSet = await this.getUserInfo();
             this.avatar = await this.downloadAvatar();
+            this.projectCount = await this.getProjectCount();
             this.isFirstUpdated = true;
         }
 
-         async downloadAvatar() {
+        async getProjectCount() {
+            const token = await this.getToken();
+            return fetch('http://localhost:7000/api/projects/count', {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+
+            })
+            .then(response => {
+                return response.json()
+            })
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json;
+            })
+            .then(projectCount => this.saveProjectCount(projectCount))
+            .catch(err => {console.error(err.message)});
+        }
+
+        async saveProjectCount(projectCount) {
+            return this.projectCount = projectCount.doc_count;
+        }
+
+        async downloadAvatar() {
             const token = await this.getToken();
             return fetch(`http://localhost:7000/api/upload/avatar`, {
                 method: "GET",

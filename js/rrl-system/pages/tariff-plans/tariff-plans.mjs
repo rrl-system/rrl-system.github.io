@@ -1,7 +1,7 @@
 import { BaseElement, html, css} from '../../../base-element.mjs'
 
 import './tariff-plans-section-1.mjs';
-import '../../../../components/button/aside-button.mjs';
+import '../../../../components/buttons/aside-button.mjs';
 
 class TariffPlans extends BaseElement {
     static get styles() {

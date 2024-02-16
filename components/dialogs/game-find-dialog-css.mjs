@@ -1,4 +1,4 @@
-import { css } from 'https://unpkg.com/lit@2.0.0/index.js?module';
+import { css } from '../../js/base-element.mjs';
 
 export const formStyles = css`
 

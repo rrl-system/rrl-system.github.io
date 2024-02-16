@@ -1,6 +1,6 @@
 import { BaseElement, html, css } from '../base-element.mjs'
 
-import '../../components/button/social-button.mjs';
+import '../../components/buttons/social-button.mjs';
 
 class RrlSystemFooter extends BaseElement {
     static get properties() {

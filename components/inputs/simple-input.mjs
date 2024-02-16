@@ -1,7 +1,7 @@
 import { BaseElement, html, css, nothing } from '../../js/base-element.mjs';
 
 import '../icon/icon.mjs'
-import '../button/simple-button.mjs'
+import '../buttons/simple-button.mjs'
 
 import styles from './input-css.mjs'
 
@@ -61,16 +61,16 @@ customElements.define("simple-input", class SimpleInput extends BaseElement {
     //     this.requestUpdate('value', oldValue);
     // }
 
-    get value() {
-        return this.renderRoot?.querySelector('input')?.value ?? null;
-    }
+    // get value() {
+    //     return this.renderRoot?.querySelector('input')?.value ?? null;
+    // }
 
-    set value(value) {
-        const input = this.renderRoot?.querySelector('input');
-        if (input) {
-            input.value= value;
-        }
-    }
+    // set value(value) {
+    //     const input = this.renderRoot?.querySelector('input');
+    //     if (input) {
+    //         input.value= value;
+    //     }
+    // }
 
     get #button() {
         return html`

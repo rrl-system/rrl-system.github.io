@@ -1,7 +1,7 @@
 import { BaseElement, html, css, nothing } from '../base-element.mjs'
 
 
-import '../../components/button/aside-button.mjs';
+import '../../components/buttons/aside-button.mjs';
 
 class RrlSystemLeftAside extends BaseElement {
     static get properties() {

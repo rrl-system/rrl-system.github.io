@@ -1,7 +1,7 @@
 import { BaseElement, html, css} from '../../../base-element.mjs'
 
 import './my-settings-section-1.mjs';
-import '../../../../components/button/switch-button.mjs';
+import '../../../../components/buttons/switch-button.mjs';
 
 class MySettings extends BaseElement {
 

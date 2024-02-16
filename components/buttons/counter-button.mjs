@@ -43,6 +43,9 @@ class CounterButton extends BaseElement {
                 if (entry.isIntersecting) {
                     this.observer.unobserve(entry.target);
                     this.timer = setInterval(() => {
+                        if (this.max === 0 ) {
+                            return
+                        }
                         this.counter++;
                         if (this.counter === this.max) {
                             clearInterval(this.timer);
@@ -68,7 +71,7 @@ class CounterButton extends BaseElement {
 
     render() {
         return html`
-            ${this.counter++}
+            ${this.counter}
         `;
     }
 };

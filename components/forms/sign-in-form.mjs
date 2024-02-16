@@ -10,7 +10,7 @@ import './sign-up-form.mjs';
 
 import '../inputs/simple-input.mjs';
 import '../inputs/password-input.mjs';
-import '../button/close-button.mjs';
+import '../buttons/close-button.mjs';
 
 customElements.define("sign-in-form", class SignInForm extends BaseElement {
     static get properties() {
