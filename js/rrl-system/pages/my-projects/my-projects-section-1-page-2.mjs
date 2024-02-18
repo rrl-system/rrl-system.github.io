@@ -6,6 +6,7 @@ import '../../../../components/inputs/upload-input.mjs'
 import '../../../../components/inputs/download-input.mjs'
 import '../../../../components/buttons/project-button.mjs'
 import '../../../../components/inputs/avatar-input.mjs'
+import '../../../../components/charts/prediction-chart.mjs'
 
 class MyProjectsSection1Page2 extends BaseElement {
         static get properties() {
@@ -182,15 +183,17 @@ class MyProjectsSection1Page2 extends BaseElement {
 
 
         render() {
+            const chartData = [
+                {"date": "2024-02-18", "Series 1": 84, "Series 2": 16},
+                {"date": "2024-02-17", "Series 1": 20, "Series 2": 30},
+                {"date": "2024-02-16", "Series 1": 14, "Series 2": 93},
+                {"date": "2024-02-15", "Series 1": 33, "Series 2": 87},
+                {"date": "2024-02-14", "Series 1": 95, "Series 2": 83}
+            ];
+
             return html`
                 <div>
-                    ${this.project?.name}
-                    <simple-input id="name" icon-name="user" label="Project name:" .value=${this.project?.name} @input=${this.validateInput}></simple-input>
-                    <avatar-input id="avatar" .value=${this.statusDataSet?.get(this.project?._id)?.status} @input=${this.validateAvatar}></avatar-input>
-                    <upload-input id="filename" .value=${this.project?.filename} @input=${this.validateInput}></upload-input>
-                    <simple-input id="epochs" icon-name="bars" label="Count of Epochs:" .value=${this.project?.epochs} @input=${this.validateInput}></simple-input>
-                    ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
-                    ${!this.isModified ? html`<simple-button label="Обучить" @click=${this.LearnModel}></simple-button>` : ""}
+                    <prediction-chart .data=${chartData}></prediction-chart>
                 </div>
             `;
         }
