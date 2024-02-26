@@ -88,18 +88,19 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
 
     changeFileInput(e) {
         this.file = e.target.files[0];
-        this.value ??= {}
-        this.value.name = this.file.name;
-        this.value.size = this.file.size;
-        this.value.type = this.file.type;
-        this.value.lastModified = this.file.lastModified;
+        this.value = e.target.files[0];
+        // this.value ??= {}
+        // this.value.name = this.file.name;
+        // this.value.size = this.file.size;
+        // this.value.type = this.file.type;
+        // this.value.lastModified = this.file.lastModified;
         this.valueChangeMessage();
     }
 
     #dragAndDrop() {
         return html`
             <div @drop=${this.dropHandler} @dragover=${this.dragOverHandler}>
-                <input type="file" id="fileInput" multiple @change=${this.changeFileInput}/>
+                <input type="file" id="fileInput" multiple @input=${this.changeFileInput}/>
                 <simple-icon icon-name="cloud-arrow-up-solid"></simple-icon>
                 <p>Drag and drop file or <span @click=${this.clickButton}>Browse</span>.</p>
             </div>
@@ -108,12 +109,12 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
 
     #chosenFile() {
         return html`
-            <choose-input .value=${this.value.name} icon-name="file-regular" button-name="trash-xmark-regular" @file-changed=${this.fileChanged} @value-changed=${this.valueChanged}></choose-input>
+            <choose-input .value=${this.value} icon-name="file-regular" button-name="trash-xmark-regular" @file-changed=${this.fileChanged} @input=${this.valueChanged}></choose-input>
         `
     }
 
     valueChanged(e) {
-        this.value.name = e.target.value;
+        this.value = e.target.value;
         this.valueChangeMessage();
     }
 
@@ -128,7 +129,7 @@ customElements.define("upload-input", class UploadInput extends BaseElement {
             bubbles: true,
             composed: true
           };
-        this.dispatchEvent(new CustomEvent('value-changed', options));
+        this.dispatchEvent(new CustomEvent('input', options));
     }
 
     render() {

@@ -711,10 +711,22 @@ class MyProjectsSection1 extends BaseElement {
         }
         async saveProject() {
             const token = await this.getToken();
-            let result = await this.uploadFile();
-            if (!result) return;
-            result = await this.uploadAvatarFile();
-            if (!result) return;
+            if (this.currentProject.file instanceof File) {
+                let result = await this.uploadFile();
+                if (!result) return;
+                const file = {
+                    'name': this.currentProject.file.name,
+                    'lastModified': this.currentProject.file.lastModified,
+                    'lastModifiedDate': this.currentProject.file.lastModifiedDate,
+                    'size': this.currentProject.file.size,
+                    'type': this.currentProject.file.type,
+                }
+                this.currentProject.file = file;
+            }
+            // result = await this.uploadAvatarFile();
+            // if (!result) return;
+            const clonedObj = { ...this.currentProject.filename };
+            console.log(clonedObj)
             return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
                 method: "PUT",
                 headers: {
@@ -738,8 +750,8 @@ class MyProjectsSection1 extends BaseElement {
         async uploadFile() {
             const token = await this.getToken();
             const formData = new FormData();
-            const uploadInput = this.renderRoot?.querySelector('upload-input')
-            formData.append("file", uploadInput.file);
+            formData.append("file", this.currentProject.file);
+
             return fetch(`http://localhost:7000/api/upload/project/${this.currentProject._id}`, {
                 method: "POST",
                 headers: {
@@ -760,9 +772,12 @@ class MyProjectsSection1 extends BaseElement {
         }
 
         async uploadAvatarFile() {
+            const uploadInput = this.renderRoot?.querySelector('avatar-input')
+            if (!uploadInput?.file) {
+                return 1
+            }
             const token = await this.getToken();
             const formData = new FormData();
-            const uploadInput = this.renderRoot?.querySelector('avatar-input')
             formData.append("file", uploadInput.value);
             return fetch(`http://localhost:7000/api/upload/project-avatar/${this.currentProject._id}`, {
                 method: "POST",
@@ -859,8 +874,8 @@ class MyProjectsSection1 extends BaseElement {
 
         async afterSave(projectHeader) {
             this.currentProject._rev = projectHeader.rev;
-            const uploadInput = this.renderRoot?.querySelector('upload-input')
-            uploadInput.file = null;
+            // const uploadInput = this.renderRoot?.querySelector('upload-input')
+            // uploadInput.file = null;
             this.oldValues?.clear();
             this.isModified = false;
         }

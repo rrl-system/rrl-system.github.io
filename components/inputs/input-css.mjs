@@ -37,11 +37,12 @@ input[type="number"],
 input[type="date"] {
     display: inline-block;
     width: 100%;
-    margin: 8px 0px;
-    padding: 12px 20px 12px 40px;
+    margin: 8px 2px;
+    padding: 12px 40px 12px 40px;
     border: 1px solid rgb(204, 204, 204);
     border-radius: 10px;
     font-size: 14px;
+    text-overflow: ellipsis;
     outline-color: var(--form-outline-color);
     color: var(--form-input-color, gray);
 }

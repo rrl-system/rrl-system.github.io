@@ -175,7 +175,7 @@ class MyProjectsSection1Page1 extends BaseElement {
                     ${this.project?.name}
                     <simple-input id="name" icon-name="user" label="Project name:" .value=${this.project?.name} @input=${this.validateInput}></simple-input>
                     <avatar-input id="avatar" .value=${this.statusDataSet?.get(this.project?._id)?.status} @input=${this.validateAvatar}></avatar-input>
-                    <upload-input id="filename" .value=${this.project?.filename} @input=${this.validateInput}></upload-input>
+                    <upload-input id="file" .value=${this.project?.file} @input=${this.validateInput}></upload-input>
                     <simple-input id="epochs" icon-name="bars" label="Count of Epochs:" .value=${this.project?.epochs} @input=${this.validateInput}></simple-input>
                     ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
                     ${!this.isModified ? html`<simple-button label="Обучить" @click=${this.LearnModel}></simple-button>` : ""}
@@ -307,8 +307,11 @@ class MyProjectsSection1Page1 extends BaseElement {
         validateInput(e) {
             if (e.target.value !== "") {
                 const currentProject = e.target.currentObject ?? this.project
-                if (!this.oldValues.has(e.target))
-                    this.oldValues.set(e.target, currentProject[e.target.id])
+                if (!this.oldValues.has(e.target)) {
+                    if (currentProject[e.target.id] !== e.target.value) {
+                        this.oldValues.set(e.target, currentProject[e.target.id])
+                    }
+                }
                 else {
                     if (this.oldValues.get(e.target) === e.target.value) {
                         this.oldValues.delete(e.target)

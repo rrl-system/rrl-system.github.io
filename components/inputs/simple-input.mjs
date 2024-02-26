@@ -74,7 +74,7 @@ customElements.define("simple-input", class SimpleInput extends BaseElement {
 
     get #button() {
         return html`
-            <simple-icon class="button" icon-name=${this.buttonName || nothing} @click=${this.updateLoginValue}></simple-icon>
+            <simple-icon class="button" icon-name=${this.buttonName || nothing}></simple-icon>
         `
     }
 

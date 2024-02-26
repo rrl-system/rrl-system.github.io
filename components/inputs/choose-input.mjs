@@ -74,7 +74,7 @@ customElements.define("choose-input", class ChooseInput extends BaseElement {
 
     get #button() {
         return html`
-            <simple-icon class="button" icon-name=${this.buttonName || nothing} @click=${this.fileChange}></simple-icon>
+            <simple-icon class="button" icon-name=${this.buttonName || nothing} @click=${this.fileRemove}></simple-icon>
         `
     }
 
@@ -89,7 +89,7 @@ customElements.define("choose-input", class ChooseInput extends BaseElement {
                 <input type=${this.type}
                     placeholder=${this.placeholder || nothing}
                     ${this.required ? 'required' : ''}
-                    .value=${this.value || nothing} @keyup=${this.valueChange}
+                    .value=${this.value?.name || nothing} @input=${this.valueChange}
                     readonly
                 >
                 ${this.iconName ? this.#icon : ''}
@@ -103,22 +103,16 @@ customElements.define("choose-input", class ChooseInput extends BaseElement {
     }
 
     valueChange(e) {
-        const input = this.#input;
-        if (input) {
-            input.value= value;
-        }
-        const options = {
-            bubbles: true,
-            composed: true
-          };
-        this.dispatchEvent(new CustomEvent('value-changed', options));
+        // this.value = e.target.value;
     }
 
-    fileChange(e) {
+    fileRemove(e) {
+        this.value = undefined;
+        e.stopPropagation();
         const options = {
             bubbles: true,
             composed: true
           };
-        this.dispatchEvent(new CustomEvent('file-changed', options));
+        this.dispatchEvent(new CustomEvent('input', options));
     }
 });
