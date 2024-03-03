@@ -183,13 +183,7 @@ class MyProjectsSection1Page2 extends BaseElement {
 
 
         render() {
-            const chartData = [
-                {"date": "2024-02-18", "Series 1": 84, "Series 2": 16},
-                {"date": "2024-02-17", "Series 1": 20, "Series 2": 30},
-                {"date": "2024-02-16", "Series 1": 14, "Series 2": 93},
-                {"date": "2024-02-15", "Series 1": 33, "Series 2": 87},
-                {"date": "2024-02-14", "Series 1": 95, "Series 2": 83}
-            ];
+            const chartData = this.fetchChartData();
 
             return html`
                 <div>
@@ -197,6 +191,30 @@ class MyProjectsSection1Page2 extends BaseElement {
                 </div>
             `;
         }
+
+        async fetchChartData() {
+            const token = await this.getToken(); 
+            const projectId = this.currentProject._id;
+
+            fetch(`http://localhost:7000/api/neural-data/${projectId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+        }        
 
         async getNewFileHandle() {
             const options = {
