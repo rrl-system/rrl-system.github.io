@@ -8,7 +8,7 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
         return {
             value: { type: Object, default: {}},
             file: { type: Object, default: {}},
-            src: { type: String, default: ''},
+            avatar: { type: String, default: ''},
             isFirstUpdated: { type: Boolean, default: false},
             currentObject: { type: Object, default: undefined},
         }
@@ -95,18 +95,17 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
 
     changeFileInput(e) {
         this.value = e.target.files[0];
-        this.valueChange();
     }
 
     #showImage() {
-        if (this.src) {
-            window.URL.revokeObjectURL(this.src)
-        }
-        this.src = window.URL.createObjectURL(this.value);
+        // if (this.src) {
+        //     window.URL.revokeObjectURL(this.src)
+        // }
+        // this.src = window.URL.createObjectURL(this.value);
         // let reader = new FileReader();
         // reader.readAsDataURL(this.value);
         return html`
-            <img src=${this.src} @click=${this.clickButton}>
+            <img src=${this.avatar} @click=${this.clickButton}>
         `
     }
 
@@ -114,15 +113,11 @@ customElements.define("avatar-input", class AvatarInput extends BaseElement {
         return html`<simple-icon icon-name="no-avatar" @click=${this.clickButton}></simple-icon>`
     }
 
-    valueChanged(e) {
-        this.value.name = e.target.value;
-    }
-
     render() {
         return html`
             <div title="Drag & Drop or Click Me" @drop=${this.dropHandler} @dragover=${this.dragOverHandler}>
-                <input type="file" id="fileInput" accept="image/*" @change=${this.changeFileInput}/>
-                ${this.value?.size ? this.#showImage() : this.isFirstUpdated ? this.#showDefaultImage(): ''}
+                <input type="file" id="fileInput" accept="image/*" @input=${this.changeFileInput}/>
+                ${this.avatar ? this.#showImage() : this.isFirstUpdated ? this.#showDefaultImage(): ''}
             </div>
         `
     }

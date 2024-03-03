@@ -41,6 +41,7 @@ customElements.define('project-button', class ProjectButton extends BaseElement 
                     position: relative;
                     height: 100%;
                     aspect-ratio: 1 / 1;
+                    margin-left: 2px;
                 }
                 .status-icon {
                     position: absolute;
@@ -112,7 +113,7 @@ customElements.define('project-button', class ProjectButton extends BaseElement 
         return html`
             <div class="container">
                 <div class="avatar">
-                    <img src=${this.avatar} alt="Логотип проекта" />
+                    <img src=${this.avatar || '/images/home/project-avatar.svg'} alt="Логотип проекта" />
                 </div>
                 <div class="content">
                     <h1>${this.label}</h1>

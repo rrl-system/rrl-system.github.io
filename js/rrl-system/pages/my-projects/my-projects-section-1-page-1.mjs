@@ -172,9 +172,8 @@ class MyProjectsSection1Page1 extends BaseElement {
         render() {
             return html`
                 <div>
-                    ${this.project?.name}
                     <simple-input id="name" icon-name="user" label="Project name:" .value=${this.project?.name} @input=${this.validateInput}></simple-input>
-                    <avatar-input id="avatar" .value=${this.statusDataSet?.get(this.project?._id)?.status} @input=${this.validateAvatar}></avatar-input>
+                    <avatar-input id="avatar" .avatar=${this.project?.avatar} @input=${this.validateAvatar}></avatar-input>
                     <upload-input id="file" .value=${this.project?.file} @input=${this.validateInput}></upload-input>
                     <simple-input id="epochs" icon-name="bars" label="Count of Epochs:" .value=${this.project?.epochs} @input=${this.validateInput}></simple-input>
                     ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
@@ -292,15 +291,23 @@ class MyProjectsSection1Page1 extends BaseElement {
         }
 
         validateAvatar(e) {
-            const userProfile = this
-            if (!this.oldValues.has(e.target))
-                this.oldValues.set(e.target, userProfile[e.target.id])
+            if (!this.oldValues.has(e.target)) {
+                this.oldValues.set(e.target, e.target.avatar)
+                this.project.avatar = window.URL.createObjectURL(e.target.value);
+                this.project.avatarFile = e.target.value;
+                this.parentNode.parentNode.host.requestUpdate()
+                this.requestUpdate();
+            }
             else {
-                if (this.oldValues.get(e.target) === e.target.value) {
-                    this.oldValues.delete(e.target)
+                if (this.oldValues.get(e.target) === e.target.avatar) {
+                    this.oldValues.delete(e.target.id)
+                } else {
+                    this.project.avatar = window.URL.createObjectURL(e.target.value);
+                    this.project.avatarFile = e.target.value;
+                    this.parentNode.parentNode.host.requestUpdate()
+                    this.requestUpdate();
                 }
             }
-            userProfile[e.target.id] = e.target.value
             this.isModified = this.oldValues.size !== 0;
         }
 
@@ -317,7 +324,11 @@ class MyProjectsSection1Page1 extends BaseElement {
                         this.oldValues.delete(e.target)
                     }
                 }
+
                 currentProject[e.target.id] = e.target.value
+                if (e.target.id === 'name') {
+                    this.parentNode.parentNode.host.requestUpdate()
+                }
                 this.isModified = this.oldValues.size !== 0;
             }
         }

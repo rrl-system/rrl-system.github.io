@@ -252,7 +252,7 @@ class MyProjectsSection1 extends BaseElement {
                         html `<project-button
                                     label=${project.name}
                                     title=${project._id}
-                                    project=${project}
+                                    .avatar=${project.avatar}
                                     .status=${this.statusDataSet.get(project._id)}
                                     ?selected=${this.currentProject === project}
                                     @click=${() => this.showProject(index, project._id)}
@@ -433,6 +433,7 @@ class MyProjectsSection1 extends BaseElement {
 
         async getProjectList() {
             const token = await this.getToken();
+            this.avatarList = await this.getProjectAvatarList()
             return fetch('http://localhost:7000/api/projects', {
                 headers: {
                   'Authorization': `Bearer ${token}`
@@ -462,7 +463,6 @@ class MyProjectsSection1 extends BaseElement {
             })
             .then(projects => this.saveDataSet(projects))
             .then( () => this.getProjectStatusList() )
-            .then( () => this.getProjectAvatarList() )
             // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err.message)});
         }
@@ -470,9 +470,10 @@ class MyProjectsSection1 extends BaseElement {
         async saveDataSet(projects) {
             if (projects.length === 0)
                 return;
-            this.dataSet = projects.map(project =>
-                project.doc
-            ).sort( (a, b) => b._id.localeCompare(a._id) )
+            this.dataSet = projects.map(project => {
+                project.doc.avatar = this.avatarList.get(project.doc._id)
+                return project.doc;
+            }).sort( (a, b) => b._id.localeCompare(a._id) )
             this.currentProject = this.getCurrentProject();
             this.requestUpdate()
         }
@@ -593,17 +594,17 @@ class MyProjectsSection1 extends BaseElement {
             .then(async blob => {
                 const zipFile = new File([blob], "name.zip");
                 var zip = await JSZip.loadAsync(zipFile);
-                let fileList = [];
+                let avatarList = new Map();
                     // async-forEach loop inspired from jszip source
                 for(const filename in zip.files) {
                     // if (!zip.files.hasOwnProperty(filename)) {
                     //     continue;
                     // }
-                    var blob = await zip.file( filename ).async("blob");
+                    const blob = await zip.file( filename ).async("blob");
                     var file = new File( [blob], filename, {type : 'application/octet-stream'} );
-                    this.obj = window.URL.createObjectURL(blob);
-                    fileList.push(file);
-                    console.log()
+                    const avatarImage = window.URL.createObjectURL(blob);
+                    const projectId = filename.replaceAll('-',':');
+                    avatarList.set(projectId, avatarImage);
                     // Object key is the filename
                     // var match = filename.match( /REGEX.pdf$/ );
                     // if(match) {
@@ -613,6 +614,11 @@ class MyProjectsSection1 extends BaseElement {
                     // }
                 }
 
+                // this.dataSet.forEach(project => {
+                //     project.avatar = fileList.get(project._id)
+                // })
+                // this.requestUpdate();
+                return avatarList;
                 console.log(fileList)
 
             })
@@ -723,10 +729,10 @@ class MyProjectsSection1 extends BaseElement {
                 }
                 this.currentProject.file = file;
             }
-            // result = await this.uploadAvatarFile();
-            // if (!result) return;
-            const clonedObj = { ...this.currentProject.filename };
-            console.log(clonedObj)
+            if (this.currentProject.avatarFile) {
+                let result = await this.uploadAvatarFile();
+                if (!result) return;
+            }
             return fetch(`http://localhost:7000/api/project/${this.currentProject._id}`, {
                 method: "PUT",
                 headers: {
@@ -772,13 +778,9 @@ class MyProjectsSection1 extends BaseElement {
         }
 
         async uploadAvatarFile() {
-            const uploadInput = this.renderRoot?.querySelector('avatar-input')
-            if (!uploadInput?.file) {
-                return 1
-            }
             const token = await this.getToken();
             const formData = new FormData();
-            formData.append("file", uploadInput.value);
+            formData.append("file", this.currentProject.avatarFile);
             return fetch(`http://localhost:7000/api/upload/project-avatar/${this.currentProject._id}`, {
                 method: "POST",
                 headers: {
@@ -855,6 +857,7 @@ class MyProjectsSection1 extends BaseElement {
                 key.value = value;
             });
             this.oldValues.clear();
+            delete this.currentProject.avatarFile;
             this.isModified = false;
         }
 

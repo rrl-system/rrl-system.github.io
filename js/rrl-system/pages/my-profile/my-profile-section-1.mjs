@@ -235,7 +235,7 @@ class MyProfileSection1 extends BaseElement {
                 <header id="property-header">Personal data</header>
                 <div class="left-layout">
                     <div class="avatar">
-                        ${this.isFirstUpdated ? html`<avatar-input id="avatar" .currentObject=${this} .value=${this.avatar} @input=${this.validateAvatar}></avatar-input>` : ''}
+                        ${this.isFirstUpdated ? html`<avatar-input id="avatar" .currentObject=${this} .avatar=${this.avatar} @input=${this.validateAvatar}></avatar-input>` : ''}
                     </div>
                     <div class="label">
                         ${JSON.parse(this.#userName).login}
@@ -600,7 +600,8 @@ class MyProfileSection1 extends BaseElement {
                 // if (json.error) {
                 //     throw Error(json.error)
                 // }
-                return blob;
+
+                return blob ? window.URL.createObjectURL(blob) : blob;
             })
             // .then(projectHeader => this.updateDataset(projectHeader))
             // .then(() => this.modalDialogShow())
