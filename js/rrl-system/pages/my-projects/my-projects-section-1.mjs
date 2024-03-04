@@ -873,12 +873,11 @@ class MyProjectsSection1 extends BaseElement {
             this.dataSet.unshift(project);
             this.currentProject = this.dataSet[0]
             return project
-        }
+        } 
 
         async afterSave(projectHeader) {
             this.currentProject._rev = projectHeader.rev;
-            // const uploadInput = this.renderRoot?.querySelector('upload-input')
-            // uploadInput.file = null;
+            this.currentProject.avatarFile = null
             this.oldValues?.clear();
             this.isModified = false;
         }

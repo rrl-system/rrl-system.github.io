@@ -499,7 +499,6 @@ class MyProjectsSection1Page1 extends BaseElement {
                     var file = new File( [blob], filename, {type : 'application/octet-stream'} );
                     this.obj = window.URL.createObjectURL(blob);
                     fileList.push(file);
-                    console.log()
                     // Object key is the filename
                     // var match = filename.match( /REGEX.pdf$/ );
                     // if(match) {
@@ -509,7 +508,7 @@ class MyProjectsSection1Page1 extends BaseElement {
                     // }
                 }
 
-                console.log(fileList)
+
 
             })
             // .then(projects => this.saveChildDataSet(projects))

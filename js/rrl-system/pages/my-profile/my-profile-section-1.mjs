@@ -18,7 +18,7 @@ class MyProfileSection1 extends BaseElement {
                 isReady: {type: Boolean, default: true},
                 avatar: {type: Object, default: {}},
                 projectCount: {type: BigInt, default: 0},
-                isFirstUpdated: {type: Boolean, default: false}
+                isFirst: {type: Boolean, default: false}
             }
         }
 
@@ -235,7 +235,7 @@ class MyProfileSection1 extends BaseElement {
                 <header id="property-header">Personal data</header>
                 <div class="left-layout">
                     <div class="avatar">
-                        ${this.isFirstUpdated ? html`<avatar-input id="avatar" .currentObject=${this} .avatar=${this.avatar} @input=${this.validateAvatar}></avatar-input>` : ''}
+                        ${this.isFirst ? html`<avatar-input id="avatar" .currentObject=${this} .avatar=${this.avatar || 'images/no-avatar.svg'} @input=${this.validateAvatar}></avatar-input>` : ''}
                     </div>
                     <div class="label">
                         ${JSON.parse(this.#userName).login}
@@ -271,14 +271,23 @@ class MyProfileSection1 extends BaseElement {
         validateAvatar(e) {
             this.oldValues ??= new Map();
             const userProfile = this
-            if (!this.oldValues.has(e.target))
-                this.oldValues.set(e.target, userProfile[e.target.id])
+
+            if (!this.oldValues.has(e.target)) {
+                this.oldValues.set(e.target, e.target.avatar)
+                this.avatar = window.URL.createObjectURL(e.target.value);
+                this.avatarFile = e.target.value;
+                this.requestUpdate();
+            }
             else {
-                if (this.oldValues.get(e.target) === e.target.value) {
-                    this.oldValues.delete(e.target)
+                if (this.oldValues.get(e.target) === e.target.avatar) {
+                    this.oldValues.delete(e.target.id)
+                    this.avatarFile = null;
+                } else {
+                    this.avatar = window.URL.createObjectURL(e.target.value);
+                    this.avatarFile = e.target.value;
+                    this.requestUpdate();
                 }
             }
-            userProfile[e.target.id] = e.target.value
             this.isModified = this.oldValues.size !== 0;
         }
 
@@ -484,8 +493,11 @@ class MyProfileSection1 extends BaseElement {
         }
         async saveProfile() {
             const token = await this.getToken();
-            const result = await this.uploadAvatarFile();
-            if (!result) return;
+            if (this.avatarFile) {
+                let result = await this.uploadAvatarFile();
+                if (!result) return;
+            }
+
             return fetch(`http://localhost:7000/api/user-profile`, {
                 method: "PUT",
                 headers: {
@@ -507,13 +519,9 @@ class MyProfileSection1 extends BaseElement {
         }
 
         async uploadAvatarFile() {
-            const uploadInput = this.renderRoot?.querySelector('avatar-input')
-            if (uploadInput.value.constructor.name !== 'File') {
-                return true;
-            }
             const token = await this.getToken();
             const formData = new FormData();
-            formData.append("file", uploadInput.value);
+            formData.append("file", this.avatarFile);
             return fetch(`http://localhost:7000/api/upload/avatar`, {
                 method: "POST",
                 headers: {
@@ -528,16 +536,13 @@ class MyProfileSection1 extends BaseElement {
                 }
                 return json;
             })
-            // .then(projectHeader => this.updateDataset(projectHeader))
-            // .then(() => this.modalDialogShow())
             .catch(err => {console.error(err)});
         }
 
         async afterSave(profileHeader) {
             this.dataSet._rev = profileHeader.rev;
             sessionStorage.setItem('userProfile', JSON.stringify(this.dataSet));
-            //const uploadInput = this.renderRoot?.querySelector('upload-input')
-            //uploadInput.file = null;
+            delete this.avatarFile
             this.oldValues?.clear();
             this.isModified = false;
         }
@@ -549,6 +554,9 @@ class MyProfileSection1 extends BaseElement {
             this.oldValues.forEach( (value, key) => {
                 const currentObject = key.currentObject ?? this.dataSet.personalInfo
                 currentObject[key.id] = value;
+                if (key.id === 'avatar') {
+                    delete currentObject.avatarFile;
+                }
             });
             this.oldValues.clear();
             this.isModified = false;
@@ -556,10 +564,11 @@ class MyProfileSection1 extends BaseElement {
 
         async firstUpdated() {
             super.firstUpdated();
+            this.isFirst  = false;
             this.dataSet = await this.getUserInfo();
             this.avatar = await this.downloadAvatar();
             this.projectCount = await this.getProjectCount();
-            this.isFirstUpdated = true;
+            this.isFirst = true;
         }
 
         async getProjectCount() {
@@ -595,7 +604,9 @@ class MyProfileSection1 extends BaseElement {
                   'Authorization': `Bearer ${token}`,
                 }
             })
-            .then(response => response.blob())
+            .then(response =>
+                 response.ok ? response.blob() : null
+            )
             .then(blob => {
                 // if (json.error) {
                 //     throw Error(json.error)
