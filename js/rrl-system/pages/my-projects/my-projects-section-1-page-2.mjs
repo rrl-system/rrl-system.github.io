@@ -193,8 +193,8 @@ class MyProjectsSection1Page2 extends BaseElement {
         }
 
         async fetchChartData() {
-            const token = await this.getToken(); 
-            const projectId = this.currentProject._id;
+            const token = await this.getToken();
+            const projectId = this.project._id;
 
             fetch(`http://localhost:7000/api/neural-data/${projectId}`, {
                 method: 'GET',
@@ -214,7 +214,7 @@ class MyProjectsSection1Page2 extends BaseElement {
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
             });
-        }        
+        }
 
         async getNewFileHandle() {
             const options = {
