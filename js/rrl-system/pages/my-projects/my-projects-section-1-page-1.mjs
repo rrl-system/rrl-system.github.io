@@ -178,6 +178,7 @@ class MyProjectsSection1Page1 extends BaseElement {
                     <simple-input id="epochs" icon-name="bars" label="Count of Epochs:" .value=${this.project?.epochs} @input=${this.validateInput}></simple-input>
                     ${this.isReady ? html`<download-input icon-name="download-file" placeholder='Download trained model' id='modelname' .value='Trained model' @click=${this.downloadFile}></download-input>` : ""}
                     ${!this.isModified ? html`<simple-button label="Обучить" @click=${this.LearnModel}></simple-button>` : ""}
+                    ${!this.isModified ? html`<simple-button label="Предсказать" @click=${this.PredictModel}></simple-button>` : ""}
                 </div>
             `;
         }
@@ -578,11 +579,43 @@ class MyProjectsSection1Page1 extends BaseElement {
             .catch(err => {console.error(err.message)});
         }
 
+        async PredictModel() {
+            const token = await this.getToken();
+            //const result = await this.uploadFile();
+            //if (!result) return;
+            const input = this.project._id;
+            const parts = input.split(":project:");
+            const projectId = parts[1];
+            const steps = {epochs: this.project.epochs}
+
+            return fetch(`http://localhost:7000/api/learn-model/${projectId}`, {
+                method: "POST",
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(steps)
+            })
+            .then(response => response.json())
+            .then(json => {
+                if (json.error) {
+                    throw Error(json.error)
+                }
+                return json;
+            })
+            // .then(() => this.modalDialogShow())
+            .catch(err => {console.error(err)});
+        }
+
         async LearnModel() {
             const token = await this.getToken();
-            const result = await this.uploadFile();
-            if (!result) return;
-            return fetch(`http://localhost:7000/api/learn-model/${this.currentProject._id}?epochs=${this.currentProject.epochs}`, {
+            //const result = await this.uploadFile();
+            //if (!result) return;
+            const input = this.project._id;
+            const parts = input.split(":project:");
+            const projectId = parts[1];
+
+            return fetch(`http://localhost:7000/api/learn-model/${projectId}?epochs=${this.project.epochs}`, {
                 headers: {
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json'

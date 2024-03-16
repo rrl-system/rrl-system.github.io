@@ -26,6 +26,7 @@ customElements.define("prediction-chart", class PredictionChart extends BaseElem
 
     constructor() {
         super();
+        this.chart = null;
         this.data = [];
     }
 
@@ -43,8 +44,20 @@ customElements.define("prediction-chart", class PredictionChart extends BaseElem
     }
 
     _renderChart() {
+        if (this.chart) {
+            this.chart.destroy();
+        }
         const ctx = this.renderRoot.querySelector('canvas').getContext('2d');
-        const labels = this.data.map(item => item.date);
+        const labels = this.data.map(item => 
+            new Date(item.date).toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            })
+        );
         const dataSets = Object.keys(this.data[0]).filter(key => key !== 'date').map(key => {
             return {
                 label: key,
@@ -55,7 +68,7 @@ customElements.define("prediction-chart", class PredictionChart extends BaseElem
             }
         });
 
-        new Chart(ctx, {
+        this.chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,

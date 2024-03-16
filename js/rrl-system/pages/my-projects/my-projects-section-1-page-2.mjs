@@ -21,6 +21,7 @@ class MyProjectsSection1Page2 extends BaseElement {
                 obj: { type: Object, default: null },
                 currentPage: {type: BigInt, default: 0, attrubute: 'current-page'},
                 project: {type: Object, default: null},
+                chartData: { type: Array },
             }
         }
 
@@ -172,6 +173,13 @@ class MyProjectsSection1Page2 extends BaseElement {
             super();
         }
 
+        updated(changedProperties) {
+            if (changedProperties.has('project') && this.project) {
+                this.chartData = [];
+                this.loadChartData();
+            }
+        }
+
         // update(changedProps) {
         //     super.update(changedProps);
         //     if (!changedProps) return;
@@ -183,19 +191,19 @@ class MyProjectsSection1Page2 extends BaseElement {
 
 
         render() {
-            const chartData = this.fetchChartData();
-
             return html`
                 <div>
-                    <prediction-chart .data=${chartData}></prediction-chart>
+                    <prediction-chart .data=${this.chartData}></prediction-chart>
                 </div>
             `;
         }
 
-        async fetchChartData() {
+        async loadChartData() {
             const token = await this.getToken();
-            const projectId = this.project._id;
-
+            const input = this.project._id;
+            const parts = input.split(":project:");
+            const projectId = parts[1];
+    
             fetch(`http://localhost:7000/api/neural-data/${projectId}`, {
                 method: 'GET',
                 headers: {
@@ -209,7 +217,7 @@ class MyProjectsSection1Page2 extends BaseElement {
                 return response.json();
             })
             .then(data => {
-                return data;
+                this.chartData = data;
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
