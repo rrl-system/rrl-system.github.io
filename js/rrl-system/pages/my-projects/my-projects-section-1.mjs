@@ -206,6 +206,9 @@ class MyProjectsSection1 extends BaseElement {
                 this.statusDataSet.set(this.projectStatus._id, this.projectStatus)
                 this.requestUpdate()
             }
+            if (changedProps.has('currentProject')) {
+                this.currentPage = 0;
+            }
         }
 
         async showProject(index, projectId) {
@@ -873,7 +876,7 @@ class MyProjectsSection1 extends BaseElement {
             this.dataSet.unshift(project);
             this.currentProject = this.dataSet[0]
             return project
-        } 
+        }
 
         async afterSave(projectHeader) {
             this.currentProject._rev = projectHeader.rev;
