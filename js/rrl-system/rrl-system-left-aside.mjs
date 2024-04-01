@@ -15,7 +15,7 @@ class RrlSystemLeftAside extends BaseElement {
     }
 
     get title() {
-        return 'Anastasia Mudrova';
+        return 'Vladislav Antoshkin';
     }
 
     static get styles() {

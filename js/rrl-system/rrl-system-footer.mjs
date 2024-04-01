@@ -10,7 +10,7 @@ class RrlSystemFooter extends BaseElement {
     }
 
     get title() {
-        return 'Anastasia Mudrova';
+        return 'Vladislav Antoshkin';
     }
 
     static get styles() {
@@ -104,9 +104,9 @@ class RrlSystemFooter extends BaseElement {
     social() {
         return html`
             <div>
-                <a href="https://t.me/moodrila"><img src="/images/telegram.svg" alt=""/></a>
-                <a href="https://vk.com/moodrila"><img src="/images/vk.svg" alt=""/></a>
-                <a href="mailto:a.mudrova0205@stud.rsu.edu.ru"><img src="/images/mail.svg" alt=""/></a>
+                <a href="https://t.me/v_a_antoshkin"><img src="/images/telegram.svg" alt=""/></a>
+                <a href="https://vk.com/id63554332"><img src="/images/vk.svg" alt=""/></a>
+                <a href="mailto:v.a.antoshkin@mail.ru"><img src="/images/mail.svg" alt=""/></a>
             </div>
         `;
     }
@@ -114,7 +114,7 @@ class RrlSystemFooter extends BaseElement {
     render() {
         return html`
             <footer>
-                <p>©Mudrova Anastasia Aleksandrovna</p>
+                <p>©Antoshkin Vladislav Aleksandrovich</p>
                 ${this.social()}
             </footer>
         `;

@@ -243,7 +243,7 @@ class RrlSystemHeader extends BaseElement {
 
     createEventSource() {
         console.log(`Bearer ${this.getToken()}`)
-        this.eventSource = new EventSource(`http://localhost:7000/api/sse?token=${this.getToken()}`)
+        this.eventSource = new EventSource(`http://cs.rsu.edu.ru:4500/api/sse?token=${this.getToken()}`)
         this.eventSource.onmessage = (event) => {
             console.log(event);
         };
@@ -262,7 +262,7 @@ class RrlSystemHeader extends BaseElement {
 
     async getNotificationOffset(projectId) {
         const token = await this.getToken();
-        return fetch(`http://localhost:7000/api/notification-offset`, {
+        return fetch(`http://cs.rsu.edu.ru:4500/api/notification-offset`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
