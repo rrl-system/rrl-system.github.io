@@ -183,7 +183,7 @@ class MyNotificationsSection1 extends BaseElement {
                 const obj = {
                     offset: this.notificationCurrentOffset
                 }
-                return fetch(`http://cs.rsu.edu.ru:4500/api/notification-offset`, {
+                return fetch(`https://cs.rsu.edu.ru:4500/api/notification-offset`, {
                     method: "PUT",
                     headers: {
                       'Authorization': `Bearer ${token}`,
@@ -268,7 +268,7 @@ class MyNotificationsSection1 extends BaseElement {
             const token = await this.getToken();
             const projectId = this.currentProject._id;
             // const fileHandle = await window.getNewFileHandle();
-            fetch(`http://cs.rsu.edu.ru:4500/api/download/${projectId}`, {
+            fetch(`https://cs.rsu.edu.ru:4500/api/download/${projectId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -379,7 +379,7 @@ class MyNotificationsSection1 extends BaseElement {
 
         async getNotificationList() {
             const token = await this.getToken();
-            return fetch('http://cs.rsu.edu.ru:4500/api/notifications', {
+            return fetch('https://cs.rsu.edu.ru:4500/api/notifications', {
                 headers: {
                   'Authorization': `Bearer ${token}`
                 }
@@ -388,7 +388,7 @@ class MyNotificationsSection1 extends BaseElement {
             .then(response => {
                 if (response.status === 419){
                     return this.refreshToken().then( token =>
-                        fetch('http://cs.rsu.edu.ru:4500/api/notifications', {
+                        fetch('https://cs.rsu.edu.ru:4500/api/notifications', {
                             headers: {
                             'Authorization': `Bearer ${token}`
                             }
@@ -420,7 +420,7 @@ class MyNotificationsSection1 extends BaseElement {
         }
 
         refreshToken() {
-            return fetch('http://cs.rsu.edu.ru:4500/api/refresh-token', {
+            return fetch('https://cs.rsu.edu.ru:4500/api/refresh-token', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json;charset=utf-8'
@@ -450,7 +450,7 @@ class MyNotificationsSection1 extends BaseElement {
         async addProject() {
             const token = await this.getToken();
             const project = {name: "Новый проект"}
-            return fetch(`http://cs.rsu.edu.ru:4500/api/project`, {
+            return fetch(`https://cs.rsu.edu.ru:4500/api/project`, {
                 method: "POST",
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -475,7 +475,7 @@ class MyNotificationsSection1 extends BaseElement {
             const token = await this.getToken();
             const result = await this.uploadFile();
             if (!result) return;
-            return fetch(`http://cs.rsu.edu.ru:4500/api/project/${this.currentProject._id}`, {
+            return fetch(`https://cs.rsu.edu.ru:4500/api/project/${this.currentProject._id}`, {
                 method: "PUT",
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -500,7 +500,7 @@ class MyNotificationsSection1 extends BaseElement {
             const formData = new FormData();
             const uploadInput = this.renderRoot?.querySelector('upload-input')
             formData.append("file", uploadInput.file);
-            return fetch(`http://cs.rsu.edu.ru:4500/api/upload/project/${this.currentProject._id}`, {
+            return fetch(`https://cs.rsu.edu.ru:4500/api/upload/project/${this.currentProject._id}`, {
                 method: "POST",
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -530,7 +530,7 @@ class MyNotificationsSection1 extends BaseElement {
                 console.error(err.message)
                 return
             }
-            return fetch(`http://cs.rsu.edu.ru:4500/api/project/${this.currentProject._id}?rev=${this.currentProject._rev}`, {
+            return fetch(`https://cs.rsu.edu.ru:4500/api/project/${this.currentProject._id}?rev=${this.currentProject._rev}`, {
                 method: "DELETE",
                 headers: {
                   'Authorization': `Bearer ${token}`
@@ -549,7 +549,7 @@ class MyNotificationsSection1 extends BaseElement {
         }
 
         async deleteProjectFiles(token) {
-            return fetch(`http://cs.rsu.edu.ru:4500/api/upload/${this.currentProject._id}`, {
+            return fetch(`https://cs.rsu.edu.ru:4500/api/upload/${this.currentProject._id}`, {
                 method: "DELETE",
                 headers: {
                   'Authorization': `Bearer ${token}`
@@ -602,7 +602,7 @@ class MyNotificationsSection1 extends BaseElement {
 
         async getProject(projectId) {
             const token = await this.getToken();
-            return fetch(`http://cs.rsu.edu.ru:4500/api/project/${projectId}`, {
+            return fetch(`https://cs.rsu.edu.ru:4500/api/project/${projectId}`, {
                 headers: {
                   'Authorization': `Bearer ${token}`
                 }
